@@ -156,6 +156,8 @@
   .country-list { font-size: 14px; color: #3d4350; line-height: 1.9; word-break: break-word; }
   .section-head { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
   .chinese-targets { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.9; word-break: break-word; }
+  .target-line { margin-bottom: 6px; }
+  .target-line:last-child { margin-bottom: 0; }
 
   .unknown-box {
     margin-top: 4px; padding: 12px 14px; border-radius: 14px; font-size: 13.5px;
@@ -356,6 +358,45 @@ const REGIONS = {
   ]}
 };
 
+const CN_NAMES = {
+  "Antigua and Barbuda":"安提瓜和巴布达","Argentina":"阿根廷","Bahamas":"巴哈马","Barbados":"巴巴多斯","Belize":"伯利兹",
+  "Bolivia":"玻利维亚","Brazil":"巴西","Canada":"加拿大","Chile":"智利","Colombia":"哥伦比亚","Costa Rica":"哥斯达黎加",
+  "Cuba":"古巴","Dominica":"多米尼克","Dominican Republic":"多米尼加共和国","Ecuador":"厄瓜多尔","El Salvador":"萨尔瓦多",
+  "Grenada":"格林纳达","Guatemala":"危地马拉","Guyana":"圭亚那","Haiti":"海地","Honduras":"洪都拉斯","Jamaica":"牙买加",
+  "Mexico":"墨西哥","Nicaragua":"尼加拉瓜","Panama":"巴拿马","Paraguay":"巴拉圭","Peru":"秘鲁",
+  "Saint Kitts and Nevis":"圣基茨和尼维斯","Saint Lucia":"圣卢西亚","Saint Vincent and the Grenadines":"圣文森特和格林纳丁斯",
+  "Suriname":"苏里南","Trinidad and Tobago":"特立尼达和多巴哥","United States":"美国","Uruguay":"乌拉圭","Venezuela":"委内瑞拉",
+  "Albania":"阿尔巴尼亚","Andorra":"安道尔","Austria":"奥地利","Belarus":"白俄罗斯","Belgium":"比利时",
+  "Bosnia and Herzegovina":"波斯尼亚和黑塞哥维那","Bulgaria":"保加利亚","Croatia":"克罗地亚","Czech Republic":"捷克",
+  "Denmark":"丹麦","Estonia":"爱沙尼亚","Finland":"芬兰","France":"法国","Germany":"德国","Greece":"希腊","Hungary":"匈牙利",
+  "Iceland":"冰岛","Ireland":"爱尔兰","Italy":"意大利","Latvia":"拉脱维亚","Liechtenstein":"列支敦士登","Lithuania":"立陶宛",
+  "Luxembourg":"卢森堡","Malta":"马耳他","Moldova":"摩尔多瓦","Monaco":"摩纳哥","Montenegro":"黑山","Netherlands":"荷兰",
+  "North Macedonia":"北马其顿","Norway":"挪威","Poland":"波兰","Portugal":"葡萄牙","Romania":"罗马尼亚","Russia":"俄罗斯",
+  "San Marino":"圣马力诺","Serbia":"塞尔维亚","Slovakia":"斯洛伐克","Slovenia":"斯洛文尼亚","Spain":"西班牙","Sweden":"瑞典",
+  "Switzerland":"瑞士","Ukraine":"乌克兰","United Kingdom":"英国","Vatican City":"梵蒂冈","Cyprus":"塞浦路斯",
+  "Afghanistan":"阿富汗","Armenia":"亚美尼亚","Azerbaijan":"阿塞拜疆","Bahrain":"巴林","Bangladesh":"孟加拉国","Bhutan":"不丹",
+  "Brunei":"文莱","Cambodia":"柬埔寨","China":"中国","Georgia":"格鲁吉亚","India":"印度","Indonesia":"印度尼西亚",
+  "Iran":"伊朗","Iraq":"伊拉克","Israel":"以色列","Japan":"日本","Jordan":"约旦","Kazakhstan":"哈萨克斯坦","Kuwait":"科威特",
+  "Kyrgyzstan":"吉尔吉斯斯坦","Laos":"老挝","Lebanon":"黎巴嫩","Malaysia":"马来西亚","Maldives":"马尔代夫","Mongolia":"蒙古",
+  "Myanmar":"缅甸","Nepal":"尼泊尔","North Korea":"朝鲜","Oman":"阿曼","Pakistan":"巴基斯坦","Palestine":"巴勒斯坦",
+  "Philippines":"菲律宾","Qatar":"卡塔尔","Saudi Arabia":"沙特阿拉伯","Singapore":"新加坡","South Korea":"韩国",
+  "Sri Lanka":"斯里兰卡","Syria":"叙利亚","Tajikistan":"塔吉克斯坦","Thailand":"泰国","Timor-Leste":"东帝汶","Turkey":"土耳其",
+  "Turkmenistan":"土库曼斯坦","United Arab Emirates":"阿拉伯联合酋长国","Uzbekistan":"乌兹别克斯坦","Vietnam":"越南","Yemen":"也门",
+  "Algeria":"阿尔及利亚","Angola":"安哥拉","Benin":"贝宁","Botswana":"博茨瓦纳","Burkina Faso":"布基纳法索","Burundi":"布隆迪",
+  "Cabo Verde":"佛得角","Cameroon":"喀麦隆","Central African Republic":"中非共和国","Chad":"乍得","Comoros":"科摩罗",
+  "Congo":"刚果（布）","Côte d'Ivoire":"科特迪瓦","Democratic Republic of the Congo":"刚果（金）","Djibouti":"吉布提","Egypt":"埃及",
+  "Equatorial Guinea":"赤道几内亚","Eritrea":"厄立特里亚","Eswatini":"斯威士兰","Ethiopia":"埃塞俄比亚","Gabon":"加蓬",
+  "Gambia":"冈比亚","Ghana":"加纳","Guinea":"几内亚","Guinea-Bissau":"几内亚比绍","Kenya":"肯尼亚","Lesotho":"莱索托",
+  "Liberia":"利比里亚","Libya":"利比亚","Madagascar":"马达加斯加","Malawi":"马拉维","Mali":"马里","Mauritania":"毛里塔尼亚",
+  "Mauritius":"毛里求斯","Morocco":"摩洛哥","Mozambique":"莫桑比克","Namibia":"纳米比亚","Niger":"尼日尔","Nigeria":"尼日利亚",
+  "Rwanda":"卢旺达","São Tomé and Príncipe":"圣多美和普林西比","Senegal":"塞内加尔","Seychelles":"塞舌尔","Sierra Leone":"塞拉利昂",
+  "Somalia":"索马里","South Africa":"南非","South Sudan":"南苏丹","Sudan":"苏丹","Tanzania":"坦桑尼亚","Togo":"多哥",
+  "Tunisia":"突尼斯","Uganda":"乌干达","Zambia":"赞比亚","Zimbabwe":"津巴布韦",
+  "Australia":"澳大利亚","Fiji":"斐济","Kiribati":"基里巴斯","Marshall Islands":"马绍尔群岛","Micronesia":"密克罗尼西亚",
+  "Nauru":"瑙鲁","New Zealand":"新西兰","Palau":"帕劳","Papua New Guinea":"巴布亚新几内亚","Samoa":"萨摩亚",
+  "Solomon Islands":"所罗门群岛","Tonga":"汤加","Tuvalu":"图瓦卢","Vanuatu":"瓦努阿图"
+};
+
 const ALIASES = {
   '美洲':'america','america':'america','americas':'america','the americas':'america',
   '北美':'north-america','北美洲':'north-america','north america':'north-america',
@@ -412,16 +453,15 @@ function run(){
     $('countLine').textContent = '（没有匹配到任何地区）';
   }
 
-  const merged = [];
-  for (const r of results){
-    for (const c of r.region.countries){
-      if (!merged.includes(c)) merged.push(c);
-    }
-  }
-  $('resultSubtitle').textContent = '共识别 ' + results.length + ' 个目标，合并去重后共 ' + merged.length + ' 个国家';
-  $('chineseTargets').textContent = results.map(r => r.input).join('、');
-  $('mergedList').textContent = merged.join(', ');
-  $('mergedCount').textContent = '共 ' + merged.length + ' 个国家';
+  const totalCountries = results.reduce((n, r) => n + r.region.countries.length, 0);
+  $('resultSubtitle').textContent = '共识别 ' + results.length + ' 个目标，合计 ' + totalCountries + ' 个国家';
+  $('chineseTargets').innerHTML = results.map(r =>
+    '<div class="target-line">' + escapeHtml(r.input) + '：' + escapeHtml(r.region.countries.map(c => CN_NAMES[c] || c).join('、')) + '</div>'
+  ).join('');
+  $('mergedList').innerHTML = results.map(r =>
+    '<div class="target-line">' + escapeHtml(r.region.en) + '：' + escapeHtml(r.region.countries.join(', ')) + '</div>'
+  ).join('');
+  $('mergedCount').textContent = '共 ' + totalCountries + ' 个国家';
 
   if (unknown.length){
     $('unknownBox').style.display = 'block';
