@@ -230,6 +230,134 @@
     .tile-tools { --tint: #bf5af2; --tint-soft: rgba(191, 90, 242, 0.13); --tint-border: rgba(191, 90, 242, 0.3); }
     .tile-notes { --tint: #ff9f0a; --tint-soft: rgba(255, 159, 10, 0.14); --tint-border: rgba(255, 159, 10, 0.32); }
 
+    .workgate {
+      margin-bottom: 22px;
+      padding: 30px 26px;
+    }
+
+    .gate-locked {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      padding: 18px 0 8px;
+    }
+
+    .gate-locked[hidden], .gate-open[hidden] { display: none; }
+
+    .gate-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      color: var(--blue);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 1px 0 #fff, 0 10px 22px rgba(31, 58, 105, 0.14);
+    }
+
+    .gate-icon svg { width: 30px; height: 30px; }
+
+    .gate-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .gate-desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .gate-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      width: min(400px, 100%);
+    }
+
+    .gate-input {
+      flex: 1;
+      min-width: 0;
+      padding: 13px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--ink);
+      font-size: 15px;
+      font-family: inherit;
+      box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(31, 58, 105, 0.08);
+      outline: none;
+    }
+
+    .gate-input:focus {
+      border-color: rgba(10, 132, 255, 0.5);
+      box-shadow: inset 0 1px 0 #fff, 0 0 0 4px rgba(10, 132, 255, 0.15);
+    }
+
+    .gate-btn {
+      padding: 0 26px;
+      border-radius: 999px;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 650;
+      font-family: inherit;
+      background: linear-gradient(180deg, #1a8fff, #0a84ff);
+      box-shadow: 0 10px 22px rgba(10, 132, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .gate-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(10, 132, 255, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .gate-btn:active { transform: translateY(0) scale(0.98); }
+
+    .gate-error {
+      margin: 0;
+      color: #ff3b30;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .gate-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .gate-remain {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .gate-lockbtn {
+      margin-left: auto;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .gate-lockbtn:hover { background: rgba(255, 255, 255, 0.85); color: var(--ink); }
+    .gate-lockbtn svg { width: 18px; height: 18px; }
+    .gate-grid { margin-bottom: 0; }
+
     .footer {
       display: flex;
       flex-wrap: wrap;
@@ -288,6 +416,26 @@
       .tile-mail { --tint: #6cb9ff; --tint-soft: rgba(108, 185, 255, 0.14); --tint-border: rgba(108, 185, 255, 0.3); }
       .tile-tools { --tint: #d68cff; --tint-soft: rgba(214, 140, 255, 0.14); --tint-border: rgba(214, 140, 255, 0.3); }
       .tile-notes { --tint: #ffc260; --tint-soft: rgba(255, 194, 96, 0.14); --tint-border: rgba(255, 194, 96, 0.3); }
+      .gate-icon {
+        color: #6cb9ff;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+        border-color: rgba(255, 255, 255, 0.14);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      }
+      .gate-input {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.16);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .gate-input:focus {
+        border-color: rgba(108, 185, 255, 0.5);
+        box-shadow: 0 0 0 4px rgba(108, 185, 255, 0.15);
+      }
+      .gate-lockbtn {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+      .gate-lockbtn:hover { background: rgba(255, 255, 255, 0.16); }
       .footer-links a {
         color: var(--ink);
         background: rgba(255, 255, 255, 0.08);
@@ -320,38 +468,70 @@
       <p>这里是我的数字工具空间，所有工具都在下面的板块里。</p>
     </header>
 
-    <nav class="grid" aria-label="功能板块">
-      <a class="tile glass tile-mail" href="email-check/index.html" id="email-diagnosis">
-        <span class="tile-icon" aria-hidden="true">
+    <section class="workgate glass" id="workpoint" aria-label="工作点这">
+      <div class="gate-locked" id="gateLocked">
+        <span class="gate-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="5" width="18" height="14" rx="3"></rect>
-            <path d="m3.5 7 8.5 6 8.5-6"></path>
-            <path d="M12 13v7"></path>
-            <circle cx="18.5" cy="17.5" r="1.6"></circle>
+            <rect x="5" y="11" width="14" height="9" rx="3"></rect>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
           </svg>
         </span>
-        <span class="tile-body">
-          <span class="tile-title">邮件内容诊断 <span class="chev" aria-hidden="true">→</span></span>
-          <span class="tile-desc">分析邮件文案的清晰度、语气与风险点，让每一封邮件更有效。</span>
-          <span class="tile-status">点击进入</span>
-        </span>
-      </a>
+        <h2 class="gate-title">工作点这</h2>
+        <p class="gate-desc">此板块需要密码才能进入。解锁后 30 分钟内无需再次输入密码。</p>
+        <form class="gate-form" id="gateForm" autocomplete="off">
+          <input class="gate-input" id="gateInput" type="password" placeholder="请输入密码" aria-label="密码" />
+          <button class="gate-btn" type="submit">解锁</button>
+        </form>
+        <p class="gate-error" id="gateError" role="alert" hidden>密码不正确，请重新输入</p>
+      </div>
 
-            <a class="tile glass tile-tools" href="country-query/index.html" id="country-query">
-        <span class="tile-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"></circle>
-            <path d="M3 12h18"></path>
-            <path d="M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9Z"></path>
-          </svg>
-        </span>
-        <span class="tile-body">
-          <span class="tile-title">目标国家查询 <span class="chev" aria-hidden="true">→</span></span>
-          <span class="tile-desc">输入中文目标地区，一键获取该地区所有国家的英文名单与数量。</span>
-          <span class="tile-status">点击进入</span>
-        </span>
-      </a>
+      <div class="gate-open" id="gateOpen" hidden>
+        <div class="gate-head">
+          <h2 class="gate-title">工作点这</h2>
+          <span class="gate-remain" id="gateRemain">已解锁</span>
+          <button class="gate-lockbtn" id="gateLockBtn" type="button" title="立即锁定" aria-label="立即锁定">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="11" width="14" height="9" rx="3"></rect>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="grid gate-grid">
+          <a class="tile tile-mail" href="email-check/index.html" id="email-diagnosis">
+            <span class="tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+                <path d="m3.5 7 8.5 6 8.5-6"></path>
+                <path d="M12 13v7"></path>
+                <circle cx="18.5" cy="17.5" r="1.6"></circle>
+              </svg>
+            </span>
+            <span class="tile-body">
+              <span class="tile-title">邮件内容诊断 <span class="chev" aria-hidden="true">→</span></span>
+              <span class="tile-desc">分析邮件文案的清晰度、语气与风险点，让每一封邮件更有效。</span>
+              <span class="tile-status">点击进入</span>
+            </span>
+          </a>
 
+          <a class="tile tile-tools" href="country-query/index.html" id="country-query">
+            <span class="tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18"></path>
+                <path d="M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9Z"></path>
+              </svg>
+            </span>
+            <span class="tile-body">
+              <span class="tile-title">目标国家查询 <span class="chev" aria-hidden="true">→</span></span>
+              <span class="tile-desc">输入中文目标地区，一键获取该地区所有国家的英文名单与数量。</span>
+              <span class="tile-status">点击进入</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <nav class="grid" aria-label="其他板块">
       <div class="tile glass tile-notes" aria-disabled="true">
         <span class="tile-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -376,5 +556,131 @@
       </span>
     </footer>
   </div>
+
+  <script>
+    (function () {
+      var GATE_KEY = 'yeuhub_gate_unlock_ts';
+      var GATE_MS = 30 * 60 * 1000;
+      var PASSWORD_HASH = 'b9923b452417dfe6a7c239e8396493d72c7fa4b1147acfd8879c0411397ad8b1';
+
+      var lockedEl = document.getElementById('gateLocked');
+      var openEl = document.getElementById('gateOpen');
+      var formEl = document.getElementById('gateForm');
+      var inputEl = document.getElementById('gateInput');
+      var errorEl = document.getElementById('gateError');
+      var lockBtn = document.getElementById('gateLockBtn');
+      var remainEl = document.getElementById('gateRemain');
+      var gateTimer = null;
+
+      function utf8(s) {
+        try { return unescape(encodeURIComponent(s)); } catch (e) { return s; }
+      }
+
+      function sha256(ascii) {
+        function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+        var mathPow = Math.pow;
+        var maxWord = mathPow(2, 32);
+        var lengthProperty = 'length';
+        var i, j;
+        var result = '';
+        var words = [];
+        var asciiBitLength = ascii[lengthProperty] * 8;
+        var hash = sha256.h = sha256.h || [];
+        var k = sha256.k = sha256.k || [];
+        var primeCounter = k[lengthProperty];
+        var isComposite = {};
+        for (var candidate = 2; primeCounter < 64; candidate++) {
+          if (!isComposite[candidate]) {
+            for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+            hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+            k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+          }
+        }
+        ascii += '\x80';
+        while ((ascii[lengthProperty] % 64) - 56) ascii += '\x00';
+        for (i = 0; i < ascii[lengthProperty]; i++) {
+          j = ascii.charCodeAt(i);
+          if (j >> 8) return '';
+          words[i >> 2] |= j << (((3 - i) % 4) * 8);
+        }
+        words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+        words[words[lengthProperty]] = (asciiBitLength);
+        for (j = 0; j < words[lengthProperty];) {
+          var w = words.slice(j, (j += 16));
+          var oldHash = hash;
+          hash = hash.slice(0, 8);
+          for (i = 0; i < 64; i++) {
+            var w15 = w[i - 15], w2 = w[i - 2];
+            var a = hash[0], e = hash[4];
+            var temp1 = hash[7]
+              + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+              + ((e & hash[5]) ^ (~e & hash[6]))
+              + k[i]
+              + (w[i] = (i < 16) ? w[i] : (
+                w[i - 16]
+                + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+                + w[i - 7]
+                + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+              ) | 0);
+            var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+              + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+            hash = [(temp1 + temp2) | 0].concat(hash);
+            hash[4] = (hash[4] + temp1) | 0;
+          }
+          for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+        }
+        for (i = 0; i < 8; i++) {
+          for (j = 3; j + 1; j--) {
+            var b = (hash[i] >> (j * 8)) & 255;
+            result += ((b < 16) ? 0 : '') + b.toString(16);
+          }
+        }
+        return result;
+      }
+
+      function remainingMs() {
+        var ts = parseInt(localStorage.getItem(GATE_KEY) || '0', 10);
+        if (!ts) return 0;
+        var left = GATE_MS - (Date.now() - ts);
+        return left > 0 ? left : 0;
+      }
+
+      function render() {
+        var left = remainingMs();
+        if (left > 0) {
+          lockedEl.hidden = true;
+          openEl.hidden = false;
+          remainEl.textContent = '已解锁 · ' + Math.ceil(left / 60000) + ' 分钟内免密进入';
+          clearTimeout(gateTimer);
+          gateTimer = setTimeout(render, left + 1000);
+        } else {
+          if (localStorage.getItem(GATE_KEY)) localStorage.removeItem(GATE_KEY);
+          lockedEl.hidden = false;
+          openEl.hidden = true;
+        }
+      }
+
+      formEl.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var pw = inputEl.value || '';
+        if (sha256(utf8(pw)) === PASSWORD_HASH) {
+          localStorage.setItem(GATE_KEY, String(Date.now()));
+          errorEl.hidden = true;
+          inputEl.value = '';
+          render();
+        } else {
+          errorEl.hidden = false;
+          inputEl.select();
+        }
+      });
+
+      lockBtn.addEventListener('click', function () {
+        localStorage.removeItem(GATE_KEY);
+        render();
+      });
+
+      render();
+    })();
+  </script>
 </body>
 </html>
