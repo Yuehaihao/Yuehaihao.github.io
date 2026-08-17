@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>行业关键词速览 · YEuhub.ME</title>
+<meta name="description" content="输入客户主营业务的中文关键词，一键获取英文名称、通俗解读与关联关键词拓展" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230fb5a0'/%3E%3Ctext x='32' y='43' font-size='32' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%97%8F%3C/text%3E%3C/svg%3E" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #1c1c1e;
+    --muted: #64646b;
+    --teal: #0fb5a0;
+    --teal-dark: #0a8c7c;
+    --blue: #0a84ff;
+    --red: #e5484d;
+  }
+
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    line-height: 1.6;
+    background:
+      radial-gradient(1100px 720px at 12% -8%, #e0f7f2 0%, transparent 55%),
+      radial-gradient(900px 640px at 100% 0%, #eaf3ff 0%, transparent 55%),
+      linear-gradient(180deg, #f6f8fc 0%, #e9eef7 100%);
+    background-attachment: fixed;
+  }
+
+  .scene { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(72px); opacity: 0.8; }
+  .orb-a { width: 380px; height: 380px; left: -90px; top: -70px; background: #8be8d5; animation: drift 24s ease-in-out infinite alternate; }
+  .orb-b { width: 340px; height: 340px; right: -80px; top: 60px; background: #7cc7ff; animation: drift 28s ease-in-out infinite alternate-reverse; }
+  .orb-c { width: 300px; height: 300px; left: 32%; bottom: -120px; background: #ffb3d9; opacity: 0.6; animation: drift 32s ease-in-out infinite alternate; }
+
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(46px, 34px, 0) scale(1.08); }
+  }
+
+  .shell { width: min(980px, 100%); margin: 0 auto; padding: clamp(24px, 5vw, 56px) 20px 44px; }
+
+  .glass {
+    position: relative;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.26));
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 28px;
+    box-shadow:
+      0 24px 60px rgba(31, 58, 105, 0.13),
+      0 6px 18px rgba(31, 58, 105, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass { background: rgba(255, 255, 255, 0.9); }
+  }
+
+  .hero { padding: 34px 28px 30px; margin-bottom: 20px; }
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600;
+    padding: 8px 14px; border-radius: 999px; margin-bottom: 18px;
+    background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.85);
+    transition: background 0.2s ease;
+  }
+  .back:hover { background: rgba(255, 255, 255, 0.85); }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 13px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    color: var(--teal-dark); background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+  }
+  .hero-badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px rgba(15, 181, 160, 0.2); }
+  .hero h1 { margin: 14px 0 6px; font-size: clamp(30px, 6vw, 44px); font-weight: 700; letter-spacing: -0.035em; }
+  .hero p { color: var(--muted); font-size: 15px; }
+
+  .card { padding: 24px; margin-bottom: 20px; }
+  .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .card-num {
+    flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px;
+    background: linear-gradient(145deg, #4fd8c5, #0fb5a0); color: #fff;
+    font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 16px rgba(15, 181, 160, 0.3), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .card h2 { font-size: 17px; font-weight: 700; }
+  .subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  label.field { display: block; font-size: 14px; font-weight: 600; color: #45454d; margin-bottom: 7px; }
+  textarea {
+    width: 100%; padding: 12px 15px; font-size: 15px; font-family: inherit;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 14px; outline: none;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(31, 58, 105, 0.07);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-height: 90px; resize: vertical; line-height: 1.7;
+  }
+  textarea:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 4px rgba(15, 181, 160, 0.16), inset 0 1px 0 #fff;
+  }
+  .hint { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+  .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 30px; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer;
+    border: none; border-radius: 14px;
+    background: linear-gradient(145deg, #4fd8c5, #0fb5a0);
+    box-shadow: 0 10px 22px rgba(15, 181, 160, 0.35), inset 0 1px 0 rgba(255,255,255,.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(15, 181, 160, 0.42), inset 0 1px 0 rgba(255,255,255,.4); }
+  .btn:active { transform: translateY(0) scale(0.99); }
+  .btn-ghost {
+    color: var(--teal-dark); background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(15, 181, 160, 0.45);
+    box-shadow: 0 6px 14px rgba(31, 58, 105, 0.1);
+  }
+  .btn-ghost:hover { background: rgba(255, 255, 255, 0.85); box-shadow: 0 10px 20px rgba(31, 58, 105, 0.14); }
+
+  .section-block {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px; padding: 15px 17px; margin-bottom: 12px;
+    box-shadow: 0 6px 16px rgba(31, 58, 105, 0.06);
+  }
+  .section-block:last-child { margin-bottom: 0; }
+  .block-head { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; flex-wrap: wrap; }
+  .block-title { font-size: 16px; font-weight: 700; }
+  .block-sub { font-size: 12.5px; color: var(--muted); }
+  .copy-btn {
+    margin-left: auto; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--teal-dark); background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(15, 181, 160, 0.4); border-radius: 999px;
+    transition: background 0.2s ease;
+  }
+  .copy-btn:hover { background: rgba(255, 255, 255, 0.95); }
+
+  .en-name { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.35; word-break: break-word; }
+  .explain-text { font-size: 15px; color: #3d4350; line-height: 1.85; word-break: break-word; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 6px 13px; font-size: 13.5px; border-radius: 999px;
+    color: var(--teal-dark); background: rgba(15, 181, 160, 0.1);
+    border: 1px solid rgba(15, 181, 160, 0.3);
+  }
+  .group-list { font-size: 14.5px; color: #3d4350; line-height: 2; word-break: break-word; }
+  .note-box {
+    margin-top: 4px; padding: 12px 14px; border-radius: 14px; font-size: 13.5px;
+    background: rgba(255, 159, 10, 0.1); border: 1px solid rgba(255, 159, 10, 0.35); color: #8a5a00;
+  }
+  .copy-all-row { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+  .loading { color: var(--muted); font-size: 14px; padding: 4px 0; }
+  .empty-tip { text-align: center; color: var(--muted); padding: 30px 0; font-size: 14px; }
+  .footer { text-align: center; padding: 16px; font-size: 12.5px; color: var(--muted); }
+
+  @media (max-width: 640px) {
+    .card { padding: 18px; }
+    .hero { padding: 26px 20px 24px; }
+    .btn { flex: 1; }
+    .en-name { font-size: 22px; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root { --ink: #f5f5f7; --muted: #9da0aa; --teal: #4fd8c5; --teal-dark: #4fd8c5; --red: #ff7a7f; }
+    body {
+      background:
+        radial-gradient(1100px 720px at 12% -8%, #0e2b27 0%, transparent 55%),
+        radial-gradient(900px 640px at 100% 0%, #12223a 0%, transparent 55%),
+        linear-gradient(180deg, #13151b 0%, #0c0e12 100%);
+    }
+    .orb { opacity: 0.34; }
+    .glass {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045));
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+    .back, .hero-badge { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.14); }
+    label.field { color: #c6c9d2; }
+    textarea {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: none;
+    }
+    textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(79, 216, 197, 0.18); }
+    .btn-ghost { color: var(--teal); background: rgba(255, 255, 255, 0.08); border-color: rgba(79, 216, 197, 0.4); }
+    .section-block { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.14); box-shadow: none; }
+    .explain-text, .group-list { color: #c9cedb; }
+    .chip { color: var(--teal); background: rgba(79, 216, 197, 0.12); border-color: rgba(79, 216, 197, 0.3); }
+    .copy-btn { color: var(--teal); background: rgba(255,255,255,.08); border-color: rgba(79,216,197,.35); }
+    .note-box { color: #ffc260; background: rgba(255, 159, 10, 0.1); border-color: rgba(255, 159, 10, 0.3); }
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .glass { background: rgba(26, 29, 38, 0.9); }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb { animation: none; }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true">
+  <span class="orb orb-a"></span>
+  <span class="orb orb-b"></span>
+  <span class="orb orb-c"></span>
+</div>
+
+<div class="shell">
+  <header class="hero glass">
+    <a class="back" href="../index.html">← 返回首页</a>
+    <div class="hero-badge">关键词工具</div>
+    <h1>行业关键词速览</h1>
+    <p>输入客户主营业务的中文关键词，快速看懂这个行业：英文名称、通俗解读、应用领域和关联关键词</p>
+  </header>
+
+  <section class="card glass">
+    <div class="card-head"><span class="card-num">一</span><div><h2>输入客户主营业务</h2><p class="subtitle">用中文输入，例如：电子元器件、服装、汽车零部件</p></div></div>
+    <label class="field" for="kwInput">主营业务关键词</label>
+    <textarea id="kwInput" placeholder="例如：电子元器件"></textarea>
+    <div class="hint">已收录 40+ 常见行业关键词；未收录的关键词也会自动翻译英文并给出提示。</div>
+    <div class="btn-row">
+      <button class="btn" id="runBtn">一键解析</button>
+      <button class="btn btn-ghost" id="sampleBtn">载入示例</button>
+    </div>
+  </section>
+
+  <section class="card glass" id="resultCard" style="display:none;">
+    <div class="copy-all-row">
+      <button class="copy-btn" id="copyAllBtn">复制全部结果</button>
+    </div>
+
+    <div class="section-block">
+      <div class="block-head">
+        <span class="block-title">英文关键词</span>
+        <span class="block-sub">客户行业的本土英文叫法</span>
+        <button class="copy-btn" id="copyEnBtn">复制</button>
+      </div>
+      <div class="en-name" id="enName">—</div>
+      <div class="loading" id="transNote" style="display:none;"></div>
+    </div>
+
+    <div class="section-block">
+      <div class="block-head"><span class="block-title">通俗解读</span><span class="block-sub">这个行业是做什么的</span></div>
+      <div class="explain-text" id="explainText">—</div>
+      <div class="block-head" style="margin-top:14px;"><span class="block-title">应用领域</span></div>
+      <div class="chip-row" id="fieldChips">—</div>
+    </div>
+
+    <div class="section-block">
+      <div class="block-head"><span class="block-title">关键词拓展</span><span class="block-sub">围绕客户行业展开的关联关键词</span></div>
+      <div class="section-block" style="border:none; background:transparent; box-shadow:none; padding:0; margin-bottom:0;">
+        <div class="block-head"><span class="block-title" style="font-size:14px;">同义词 / 近似词</span></div>
+        <div class="group-list" id="synList">—</div>
+        <div class="block-head" style="margin-top:12px;"><span class="block-title" style="font-size:14px;">客户关联的产品</span></div>
+        <div class="group-list" id="relatedList">—</div>
+        <div class="block-head" style="margin-top:12px;"><span class="block-title" style="font-size:14px;">客户的下游产品</span></div>
+        <div class="group-list" id="downstreamList">—</div>
+        <div class="block-head" style="margin-top:12px;"><span class="block-title" style="font-size:14px;">客户产品的作用</span></div>
+        <div class="group-list" id="functionList">—</div>
+        <div class="block-head" style="margin-top:12px;"><span class="block-title" style="font-size:14px;">客户产品的应用领域</span></div>
+        <div class="group-list" id="fieldList">—</div>
+      </div>
+      <div class="note-box" id="unknownNote" style="display:none;"></div>
+    </div>
+  </section>
+
+  <footer class="footer">Powered by GitHub Pages · yeuhub.me</footer>
+</div>
+
+<script>
+var INDUSTRY_DB = {
+  "电子元器件": { en:"Electronic Components", explain:"电子设备里最小的基础零件，比如电阻、电容、二极管、芯片、连接器等。手机、电脑、家电、汽车里的电路板，都是由这些元器件一个个组装起来的。", fields:["消费电子（手机、电脑）","汽车电子","工业控制设备","通信设备"], synonyms:["电子元件","电子零部件"], related:["印制电路板（PCB）","连接器","传感器","芯片（IC）","被动元件（电阻、电容、电感）"], downstream:["手机","电脑","智能家电","新能源汽车","工控设备"], functions:["导电、控制电流","存储和处理信号","连接电路","感知和转换物理量"] },
+  "连接器": { en:"Connectors", explain:"连接器就是电路与电路之间的“插头插座”，负责把电信号或电流从一个部件接到另一个部件，同时方便拔插和维修。", fields:["消费电子","汽车","工业设备","通信基站"], synonyms:["接插件","插头插座"], related:["线束","端子","PCB","线缆"], downstream:["手机","电脑","汽车","家电","服务器"], functions:["连接电路","传输信号和电流","方便拆装维修"] },
+  "传感器": { en:"Sensors", explain:"传感器相当于设备的“五官”，把温度、压力、光线、运动等物理量转成电信号，让机器能“感知”外界环境。", fields:["汽车（自动驾驶）","智能家居","工业自动化","医疗设备"], synonyms:["感应器"], related:["芯片（IC）","连接器","传感器模组"], downstream:["汽车","无人机","机器人","智能手表","工厂设备"], functions:["感知温度、压力、光线、运动","把物理量转成电信号"] },
+  "芯片": { en:"Integrated Circuits (IC) / Chips", explain:"芯片是把上亿个晶体管集成在一小片硅片上的“大脑”，负责计算、存储和控制，几乎所有电子设备都离不开它。", fields:["手机、电脑","汽车","家电","工业","通信"], synonyms:["集成电路","半导体","晶片","IC"], related:["晶圆","封装测试","PCB","被动元件"], downstream:["手机","电脑","服务器","汽车","家电"], functions:["运算处理","数据存储","信号控制"] },
+  "印制电路板": { en:"Printed Circuit Boards (PCB)", explain:"PCB 俗称“电路板”，是一块把元器件固定并连接起来的板子，是所有电子产品的地基。", fields:["消费电子","汽车电子","通信","工业控制"], synonyms:["电路板","线路板","PCB板"], related:["电子元器件","连接器","焊料"], downstream:["手机","电脑","家电","汽车","医疗设备"], functions:["固定元器件","导通电路","支撑电子系统"] },
+  "电线电缆": { en:"Wires and Cables", explain:"用来传输电力或信号的线材，从家里墙内的电线，到汽车线束、通信光缆都属于这一类。", fields:["电力","建筑","通信","汽车","家电"], synonyms:["线材","电缆","线缆"], related:["连接器","线束","绝缘材料"], downstream:["电网","楼宇","汽车","数据中心"], functions:["传输电力","传输信号"] },
+  "电池": { en:"Batteries", explain:"把化学能转成电能储存起来的装置，给手机、汽车、储能电站供电，常见的有锂电池、铅酸电池等。", fields:["消费电子","新能源汽车","储能","电动工具"], synonyms:["蓄电池","电芯","锂电池"], related:["电池管理系统（BMS）","充电器","电解液","隔膜"], downstream:["手机","电动汽车","储能电站","无人机"], functions:["储存电能","供电","可重复充放电"] },
+  "太阳能": { en:"Solar / Photovoltaic", explain:"利用光伏板把太阳光直接变成电的技术，用于屋顶发电、地面电站等，属于清洁能源。", fields:["发电","建筑屋顶","农业大棚","离网供电"], synonyms:["光伏","太阳能发电","光伏组件"], related:["光伏板","逆变器","储能电池","支架"], downstream:["光伏电站","家庭屋顶","充电桩","路灯"], functions:["把光能转换为电能"] },
+  "照明": { en:"Lighting / Lamps", explain:"各种灯和照明设备，从家里的灯泡到工厂灯、道路灯、舞台灯都属于这个行业。", fields:["家居","商业照明","道路","工业"], synonyms:["灯具","灯饰","LED灯"], related:["LED芯片","驱动电源","灯罩","智能控制"], downstream:["家庭","商场","道路","工厂","展会"], functions:["照明","装饰","营造氛围"] },
+  "家用电器": { en:"Home Appliances", explain:"家里用的电器，分白色家电（冰箱、洗衣机）和小家电（电饭煲、吸尘器、吹风机）等。", fields:["家庭","酒店","出租公寓"], synonyms:["家电","白色家电","小家电"], related:["压缩机","电机","控制板","塑料外壳"], downstream:["家庭","酒店","公寓","餐厅"], functions:["冷藏、洗涤、烹饪、清洁等家务"] },
+  "汽车零部件": { en:"Auto Parts", explain:"汽车上的各种零件，从发动机、刹车到座椅、车灯，整车厂和售后维修都需要。", fields:["整车制造","汽车售后维修"], synonyms:["汽配","汽车配件"], related:["发动机","变速箱","刹车系统","传感器","线束"], downstream:["汽车主机厂","4S店","维修厂"], functions:["驱动","制动","转向","安全保护"] },
+  "新能源汽车": { en:"New Energy Vehicles (NEV)", explain:"以电池为动力、用电驱动的汽车，包括纯电和混动，是当前增长最快的整车品类。", fields:["出行","物流","公交","充电网络"], synonyms:["电动车","纯电动汽车","EV"], related:["动力电池","电机","电控系统","充电桩"], downstream:["出行平台","物流公司","公交公司","个人用户"], functions:["代步","运输","减少碳排放"] },
+  "机械设备": { en:"Machinery / Mechanical Equipment", explain:"用于生产加工的机器，比如注塑机、机床、包装机、工程机械等，是工厂和工地的主力。", fields:["制造业","建筑","农业","物流"], synonyms:["机器设备","工业设备"], related:["电机","轴承","液压件","控制器"], downstream:["工厂","建筑工地","农场","仓库"], functions:["加工","搬运","施工","自动化生产"] },
+  "五金": { en:"Hardware", explain:"金属制成的小型工业品和工具，如螺丝、合页、锁具、水龙头等，建材市场和工厂都大量使用。", fields:["建筑装修","家具","维修"], synonyms:["五金件","建筑五金"], related:["螺丝紧固件","合页铰链","锁具","水暖件"], downstream:["建筑工地","家具厂","装修公司"], functions:["连接","固定","开关","支撑"] },
+  "工具": { en:"Tools", explain:"手动和电动工具，如扳手、电钻、锯、测量工具，用于维修、安装和家庭 DIY。", fields:["建筑","维修","家庭DIY","工厂"], synonyms:["手动工具","电动工具","工具套装"], related:["五金件","收纳箱","电池","配件"], downstream:["建筑队","维修店","五金店","家庭用户"], functions:["拧紧","切割","钻孔","测量"] },
+  "模具": { en:"Molds / Dies", explain:"用来把塑料、金属压成固定形状的“模子”，几乎所有塑料件和金属件都是靠模具做出来的。", fields:["塑料制品","汽车","家电","包装"], synonyms:["注塑模具","冲压模具"], related:["注塑机","模具钢","CNC加工"], downstream:["塑料厂","五金厂","汽车厂","家电厂"], functions:["成型","批量复制产品形状"] },
+  "塑料制品": { en:"Plastic Products", explain:"用塑料做的各种东西：包装、日用品、汽车内饰、玩具等，轻便又便宜。", fields:["包装","日用品","汽车","家电","玩具"], synonyms:["塑胶制品","塑料件"], related:["注塑机","模具","塑料原料"], downstream:["超市","电商","汽车厂","家电厂"], functions:["包装","盛装","结构件","装饰"] },
+  "橡胶制品": { en:"Rubber Products", explain:"用橡胶做的密封圈、轮胎、胶管、鞋底等，特点是弹性好、耐磨、防水。", fields:["汽车","工业密封","鞋材","医疗器械"], synonyms:["胶制品","硅胶制品"], related:["轮胎","密封件","胶管","硅胶"], downstream:["汽车厂","机械厂","鞋厂","医疗厂"], functions:["密封","减震","防滑","绝缘"] },
+  "包装材料": { en:"Packaging Materials", explain:"用于产品包装和保护的材料：纸箱、塑料袋、泡沫、气泡膜、胶带等。", fields:["电商物流","食品","日化","电子产品"], synonyms:["包装耗材","包材"], related:["纸箱","塑料袋","气泡膜","标签","胶带"], downstream:["电商卖家","工厂","物流公司"], functions:["保护产品","便于运输","展示品牌"] },
+  "纸制品": { en:"Paper Products", explain:"用纸做的产品：纸箱、纸巾、纸杯、印刷品等，日常消耗量大。", fields:["包装","餐饮","办公","卫生"], synonyms:["纸品","纸类制品"], related:["包装材料","印刷","纸浆原料"], downstream:["电商","餐饮","办公室","家庭"], functions:["包装","清洁","书写","盛装"] },
+  "印刷": { en:"Printing", explain:"把文字和图案印到纸、塑料、布料上的服务：宣传册、包装盒、标签、衣服印花等。", fields:["包装","广告","出版","服装"], synonyms:["印刷包装","丝网印刷","数码印刷"], related:["油墨","纸张","包装盒","标签"], downstream:["品牌商","电商","出版社","展会"], functions:["呈现图文","品牌包装","防伪标识"] },
+  "服装": { en:"Garments / Apparel", explain:"衣服的生产和贸易，从面料裁剪缝制到成衣出口，是全球最大的外贸品类之一。", fields:["日常穿着","工装","运动","时尚零售"], synonyms:["成衣","服饰"], related:["面料","辅料","拉链纽扣","吊牌"], downstream:["品牌商","零售商","电商","批发市场"], functions:["保暖","遮体","职业防护","时尚表达"] },
+  "纺织品": { en:"Textiles / Fabrics", explain:"织出来的布料，如棉、涤纶、尼龙等，是做衣服、家纺、箱包的基础材料。", fields:["服装","家纺","汽车内饰","箱包"], synonyms:["面料","布料","纺织面料"], related:["纱线","印染","服装","家纺"], downstream:["服装厂","家纺厂","沙发厂","箱包厂"], functions:["保暖透气","遮光","装饰","防护"] },
+  "鞋": { en:"Footwear / Shoes", explain:"各种鞋子：运动鞋、皮鞋、拖鞋、劳保鞋等，涉及鞋底、鞋面、鞋材等配套。", fields:["日常穿着","运动","工装劳保"], synonyms:["鞋类","鞋履"], related:["鞋底","鞋面材料","橡胶","五金扣件"], downstream:["品牌商","零售商","电商","批发市场"], functions:["行走保护","运动支撑","职业防护"] },
+  "箱包": { en:"Bags and Luggage", explain:"背包、手提包、行李箱等，常用布料、皮革、塑料等材料制作。", fields:["出行旅行","商务","时尚"], synonyms:["包袋","皮具"], related:["拉链","五金扣件","面料","皮革"], downstream:["品牌商","电商","商超","批发市场"], functions:["收纳携带","出行防护","时尚搭配"] },
+  "家具": { en:"Furniture", explain:"桌椅、柜子、床、沙发等，家里和办公室的“大件”，材质有木材、金属、板材和软包。", fields:["家庭","办公室","酒店","餐饮"], synonyms:["家居家具","家私"], related:["板材","五金","海绵","面料"], downstream:["家庭","办公室","酒店","餐厅","展会"], functions:["坐卧","收纳","办公","装饰"] },
+  "卫浴": { en:"Sanitary Ware / Bathroom Products", explain:"卫生间和浴室的产品：马桶、洗手盆、花洒、龙头、浴缸等。", fields:["家庭","酒店","公共卫生间"], synonyms:["卫浴洁具","水暖卫浴"], related:["五金龙头","陶瓷","玻璃","密封件"], downstream:["家庭装修","酒店工程","房地产"], functions:["清洁","洗浴","节水"] },
+  "厨房用品": { en:"Kitchenware", explain:"厨房里的锅碗瓢盆、刀具、烘焙工具、收纳用品等。", fields:["家庭烹饪","餐厅","烘焙"], synonyms:["厨具","厨房用具"], related:["不锈钢","硅胶","塑料","木制品"], downstream:["家庭","餐厅","酒店","电商"], functions:["烹饪","备菜","收纳","烘焙"] },
+  "建筑材料": { en:"Building Materials", explain:"盖房子、装修用的材料：瓷砖、水泥、玻璃、管材、涂料、门窗等。", fields:["房地产","基建","装修"], synonyms:["建材","装修材料"], related:["钢材","水泥","玻璃","管材","涂料"], downstream:["建筑工地","装修公司","房地产"], functions:["结构支撑","防水保温","装饰"] },
+  "钢材": { en:"Steel", explain:"建筑、机械、汽车的基础金属材料，有钢板、钢管、螺纹钢等多种形态。", fields:["建筑","基建","机械","汽车","船舶"], synonyms:["钢铁","不锈钢","钢管"], related:["钢板","钢管","五金件","紧固件"], downstream:["建筑工地","机械厂","汽车厂","船厂"], functions:["承重","结构件","耐磨"] },
+  "铝材": { en:"Aluminum Products", explain:"铝做的型材和产品，轻便又耐腐蚀，广泛用于门窗、汽车、电子外壳和包装。", fields:["门窗","汽车","电子","包装","家具"], synonyms:["铝合金","铝型材","铝制品"], related:["铝锭","铝型材","压铸件","氧化处理"], downstream:["门窗厂","汽车厂","电子厂","包装厂"], functions:["轻量化结构","散热","装饰"] },
+  "化工原料": { en:"Chemical Raw Materials", explain:"工业生产的基础化学品，如树脂、溶剂、酸碱、添加剂，是涂料、塑料、纺织等行业的源头。", fields:["涂料","塑料","纺织","日化","医药"], synonyms:["化工品","精细化工"], related:["树脂","溶剂","助剂","颜料"], downstream:["涂料厂","塑料厂","日化厂","药厂"], functions:["合成材料","清洁溶解","添加改性"] },
+  "涂料": { en:"Coatings / Paints", explain:"刷在物体表面的液体，干了以后形成保护膜，既美观又防腐，如墙面漆、木器漆、汽车漆。", fields:["建筑装修","家具","汽车","工业防腐"], synonyms:["油漆","漆料","水性漆"], related:["树脂","颜料","溶剂","稀释剂"], downstream:["装修公司","家具厂","汽车厂","工厂"], functions:["保护表面","防腐","装饰"] },
+  "化妆品": { en:"Cosmetics", explain:"护肤、彩妆、洗护等用在人身上的产品，如水乳、口红、洗发水。", fields:["美容护肤","彩妆","洗护"], synonyms:["美妆","护肤品"], related:["包装材料","活性原料","香精","泵头"], downstream:["美容院","电商","商超","专柜"], functions:["清洁","保湿","防晒","修饰"] },
+  "医疗器械": { en:"Medical Devices", explain:"用于诊断、治疗、监测的设备和耗材，如血压计、口罩、手术器械、监护仪。", fields:["医院","诊所","家庭护理","康复"], synonyms:["医疗设备","医疗耗材"], related:["电子元器件","塑料耗材","包装","传感器"], downstream:["医院","诊所","药店","养老机构"], functions:["诊断监测","治疗","防护","康复"] },
+  "医药": { en:"Pharmaceuticals / Medicines", explain:"治疗疾病的药品和原料药，包括中成药、西药、原料药。", fields:["医院","药店","家庭"], synonyms:["药品","原料药"], related:["原料药","辅料","包装","医疗器械"], downstream:["医院","药店","医药公司"], functions:["治疗疾病","预防","缓解症状"] },
+  "玩具": { en:"Toys", explain:"儿童和成人的玩具，如积木、毛绒、遥控车、桌游，材质多为塑料、木、布。", fields:["儿童教育","娱乐","礼品"], synonyms:["玩具礼品","益智玩具"], related:["塑料制品","电子元器件","布料","包装"], downstream:["商超","电商","玩具店","幼儿园"], functions:["娱乐","早教","减压"] },
+  "文具": { en:"Stationery", explain:"笔、本子、文件夹等办公学习用品，学校和企业日常消耗量大。", fields:["学校","办公室","家庭"], synonyms:["办公文具","学生文具"], related:["纸制品","塑料制品","印刷"], downstream:["学校","企业","商超","电商"], functions:["书写","记录","整理"] },
+  "体育用品": { en:"Sporting Goods", explain:"运动健身用的装备：球类、跑步机、哑铃、瑜伽垫、护具等。", fields:["健身","户外","球类运动"], synonyms:["运动器材","健身器材","户外用品"], related:["塑料","金属管材","橡胶","电子表计"], downstream:["健身房","学校","家庭","运动队"], functions:["锻炼","竞技","防护"] },
+  "宠物用品": { en:"Pet Supplies", explain:"给猫狗等宠物用的东西：粮食、窝、牵引绳、玩具、清洁用品。", fields:["家庭养宠","宠物店"], synonyms:["宠物产品","宠物周边"], related:["食品","塑料制品","纺织品","清洁用品"], downstream:["宠物店","电商","家庭"], functions:["喂养","玩耍","清洁","出行"] },
+  "礼品": { en:"Gifts and Crafts", explain:"送礼和装饰用的产品：摆件、奖杯、包装礼盒、定制小商品等。", fields:["商务送礼","节日","促销活动"], synonyms:["工艺品","促销品"], related:["包装","印刷","塑料制品","五金"], downstream:["企业","展会","婚庆","电商"], functions:["纪念","装饰","品牌宣传"] },
+  "安防设备": { en:"Security Equipment", explain:"监控摄像头、门禁、报警器等保护人身和财产安全的设备。", fields:["家庭","商铺","园区","交通"], synonyms:["监控设备","安防监控"], related:["摄像头","传感器","门禁","报警器","存储设备"], downstream:["家庭","企业","园区","政府"], functions:["监控","报警","门禁管理"] },
+  "农业机械": { en:"Agricultural Machinery", explain:"种地、收割、灌溉用的机器：拖拉机、收割机、植保无人机、水泵等。", fields:["种植","畜牧","灌溉","园林"], synonyms:["农机","农用设备"], related:["发动机","液压件","轮胎","传感器"], downstream:["农场","合作社","园林公司"], functions:["耕整","播种","收割","灌溉"] },
+  "食品": { en:"Food", explain:"可食用的加工食品：零食、罐头、调味品、冷冻食品等。", fields:["家庭餐桌","餐饮","商超零售"], synonyms:["食品饮料","加工食品"], related:["包装","冷链","调味料","保鲜"], downstream:["商超","餐厅","电商","批发"], functions:["补充营养","食用"] },
+  "饮料": { en:"Beverages", explain:"喝的饮品：瓶装水、果汁、茶饮、碳酸饮料、功能性饮料等。", fields:["家庭","餐饮","便利店"], synonyms:["饮品","饮料产品"], related:["包装瓶罐","瓶盖","标签","冷链"], downstream:["便利店","餐厅","电商","商超"], functions:["解渴","补充能量","社交"] }
+};
+
+var ALIASES = {
+  "电子元件":"电子元器件","电子零部件":"电子元器件",
+  "集成电路":"芯片","半导体":"芯片","晶片":"芯片","ic":"芯片",
+  "电路板":"印制电路板","线路板":"印制电路板","pcb":"印制电路板","pcb板":"印制电路板",
+  "线材":"电线电缆","电缆":"电线电缆","线缆":"电线电缆",
+  "蓄电池":"电池","电芯":"电池","锂电池":"电池",
+  "光伏":"太阳能","太阳能发电":"太阳能","光伏组件":"太阳能",
+  "灯具":"照明","灯饰":"照明","led灯":"照明",
+  "家电":"家用电器","白色家电":"家用电器","小家电":"家用电器",
+  "汽配":"汽车零部件","汽车配件":"汽车零部件",
+  "电动汽车":"新能源汽车","电动车":"新能源汽车","ev":"新能源汽车",
+  "机器设备":"机械设备","工业设备":"机械设备","机械":"机械设备",
+  "塑胶制品":"塑料制品","塑料件":"塑料制品",
+  "包装耗材":"包装材料","包材":"包装材料",
+  "纸品":"纸制品","纸类制品":"纸制品",
+  "面料":"纺织品","布料":"纺织品","纺织面料":"纺织品",
+  "鞋类":"鞋","鞋履":"鞋",
+  "包袋":"箱包","皮具":"箱包",
+  "家私":"家具","家居家具":"家具",
+  "卫浴洁具":"卫浴","水暖卫浴":"卫浴",
+  "厨具":"厨房用品","厨房用具":"厨房用品",
+  "建材":"建筑材料","装修材料":"建筑材料",
+  "钢铁":"钢材","不锈钢":"钢材","钢管":"钢材",
+  "铝合金":"铝材","铝型材":"铝材","铝制品":"铝材",
+  "化工品":"化工原料","精细化工":"化工原料",
+  "油漆":"涂料","漆料":"涂料","水性漆":"涂料",
+  "美妆":"化妆品","护肤品":"化妆品",
+  "医疗设备":"医疗器械","医疗耗材":"医疗器械",
+  "药品":"医药","原料药":"医药",
+  "运动器材":"体育用品","健身器材":"体育用品","户外用品":"体育用品",
+  "宠物产品":"宠物用品","宠物周边":"宠物用品",
+  "工艺品":"礼品","促销品":"礼品",
+  "监控设备":"安防设备","安防监控":"安防设备","摄像头":"安防设备",
+  "农机":"农业机械","农用设备":"农业机械",
+  "饮品":"饮料","饮料产品":"饮料"
+};
+
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function normalize(s){ return String(s||'').toLowerCase().replace(/\s+/g,'').trim(); }
+function chips(items){ return items.map(function(x){ return '<span class="chip">' + escapeHtml(x) + '</span>'; }).join(''); }
+function bulletList(items){ return items.map(function(x){ return '· ' + escapeHtml(x); }).join('<br>'); }
+
+async function translateFallback(text){
+  try {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, 7000);
+    var res = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=zh-CN|en', { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    var data = await res.json();
+    var mt = (data.responseData && data.responseData.translatedText) || '';
+    if (mt && !/INVALID|NO QUERY|MYMEMORY WARNING/i.test(mt)) return mt.trim();
+    return null;
+  } catch (e) { return null; }
+}
+
+async function run(){
+  var input = $('kwInput').value;
+  if (!input.trim()){ alert('请先输入客户的主营业务关键词'); return; }
+
+  var key = normalize(input);
+  var entry = INDUSTRY_DB[key] || (ALIASES[key] ? INDUSTRY_DB[ALIASES[key]] : null);
+  var resultCard = $('resultCard');
+  resultCard.style.display = 'block';
+
+  var enText = entry ? entry.en : '翻译中…';
+  $('enName').textContent = enText;
+  $('transNote').style.display = 'none';
+
+  if (entry){
+    $('explainText').innerHTML = escapeHtml(entry.explain);
+    $('fieldChips').innerHTML = chips(entry.fields);
+    $('synList').innerHTML = bulletList(entry.synonyms);
+    $('relatedList').innerHTML = bulletList(entry.related);
+    $('downstreamList').innerHTML = bulletList(entry.downstream);
+    $('functionList').innerHTML = bulletList(entry.functions);
+    $('fieldList').innerHTML = bulletList(entry.fields);
+    $('unknownNote').style.display = 'none';
+  } else {
+    $('explainText').textContent = '该关键词暂未收录到行业知识库。';
+    $('fieldChips').textContent = '暂未收录';
+    $('synList').textContent = '暂未收录';
+    $('relatedList').textContent = '暂未收录';
+    $('downstreamList').textContent = '暂未收录';
+    $('functionList').textContent = '暂未收录';
+    $('fieldList').textContent = '暂未收录';
+    var note = $('unknownNote');
+    note.style.display = 'block';
+    note.textContent = '这个关键词不在行业库中：英文名称为在线自动翻译，仅供参考；如果你想补充它的通俗解读和关联产品，把行业说明发给我，我来帮你收录。';
+
+    var translated = await translateFallback(input);
+    $('enName').textContent = translated || '未找到翻译（请检查输入或网络）';
+    if (!translated){
+      $('transNote').style.display = 'block';
+      $('transNote').textContent = '在线翻译暂不可用，建议直接使用词典里已收录的关键词。';
+    }
+  }
+
+  resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyText(text, btn){
+  function done(){ if (btn){ var old = btn.textContent; btn.textContent = '已复制'; setTimeout(function(){ btn.textContent = old; }, 1500); } }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+  } else { fallback(); }
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta); done();
+  }
+}
+
+function collectResult(){
+  var lines = [];
+  lines.push('行业关键词速览');
+  lines.push('英文名称：' + $('enName').textContent);
+  lines.push('通俗解读：' + $('explainText').textContent);
+  var chipTexts = Array.prototype.map.call($('fieldChips').querySelectorAll('.chip'), function(c){ return c.textContent; });
+  lines.push('应用领域：' + (chipTexts.length ? chipTexts.join('、') : $('fieldChips').textContent));
+  function grab(el){
+    var items = Array.prototype.map.call(el.children || [], function(c){ return c.textContent; });
+    return items.length ? items.join('、') : el.textContent;
+  }
+  var synEl = $('synList'), relEl = $('relatedList'), downEl = $('downstreamList'), funEl = $('functionList'), fldEl = $('fieldList');
+  lines.push('同义词：' + grab(synEl));
+  lines.push('关联产品：' + grab(relEl));
+  lines.push('下游产品：' + grab(downEl));
+  lines.push('产品作用：' + grab(funEl));
+  lines.push('应用领域：' + grab(fldEl));
+  return lines.join('\n');
+}
+
+$('runBtn').addEventListener('click', run);
+$('sampleBtn').addEventListener('click', function(){ $('kwInput').value = '电子元器件'; run(); });
+$('kwInput').addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) run(); });
+$('copyEnBtn').addEventListener('click', function(){ copyText($('enName').textContent, $('copyEnBtn')); });
+$('copyAllBtn').addEventListener('click', function(){ copyText(collectResult(), $('copyAllBtn')); });
+</script>
+</body>
+</html>
