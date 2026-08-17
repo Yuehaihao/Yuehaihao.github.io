@@ -228,6 +228,7 @@
 
     .tile-mail { --tint: #0a84ff; --tint-soft: rgba(10, 132, 255, 0.13); --tint-border: rgba(10, 132, 255, 0.3); }
     .tile-tools { --tint: #bf5af2; --tint-soft: rgba(191, 90, 242, 0.13); --tint-border: rgba(191, 90, 242, 0.3); }
+    .tile-kw { --tint: #0fb5a0; --tint-soft: rgba(15, 181, 160, 0.13); --tint-border: rgba(15, 181, 160, 0.32); }
     .tile-notes { --tint: #ff9f0a; --tint-soft: rgba(255, 159, 10, 0.14); --tint-border: rgba(255, 159, 10, 0.32); }
 
     .workgate {
@@ -415,6 +416,7 @@
       }
       .tile-mail { --tint: #6cb9ff; --tint-soft: rgba(108, 185, 255, 0.14); --tint-border: rgba(108, 185, 255, 0.3); }
       .tile-tools { --tint: #d68cff; --tint-soft: rgba(214, 140, 255, 0.14); --tint-border: rgba(214, 140, 255, 0.3); }
+      .tile-kw { --tint: #4fd8c5; --tint-soft: rgba(79, 216, 197, 0.14); --tint-border: rgba(79, 216, 197, 0.3); }
       .tile-notes { --tint: #ffc260; --tint-soft: rgba(255, 194, 96, 0.14); --tint-border: rgba(255, 194, 96, 0.3); }
       .gate-icon {
         color: #6cb9ff;
@@ -527,6 +529,21 @@
               <span class="tile-status">点击进入</span>
             </span>
           </a>
+
+          <a class="tile tile-kw" href="industry-keyword/index.html" id="industry-keyword">
+            <span class="tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3.5 13.7 8.3 18.5 10 13.7 11.7 12 16.5 10.3 11.7 5.5 10 10.3 8.3 12 3.5Z"></path>
+                <path d="M18.5 15.5 19.3 17.7 21.5 18.5 19.3 19.3 18.5 21.5 17.7 19.3 15.5 18.5 17.7 17.7 18.5 15.5Z"></path>
+                <path d="M5 16.5 5.7 18 7.2 18.7 5.7 19.4 5 20.9 4.3 19.4 2.8 18.7 4.3 18 5 16.5Z"></path>
+              </svg>
+            </span>
+            <span class="tile-body">
+              <span class="tile-title">行业关键词速览 <span class="chev" aria-hidden="true">→</span></span>
+              <span class="tile-desc">输入客户主营业务的中文，一键翻译英文，并用大白话解释它的用途与关联产品。</span>
+              <span class="tile-status">点击进入</span>
+            </span>
+          </a>
         </div>
       </div>
     </section>
@@ -561,7 +578,7 @@
     (function () {
       var GATE_KEY = 'yeuhub_gate_unlock_ts';
       var GATE_MS = 30 * 60 * 1000;
-      var PASSWORD_HASH = 'b9923b452417dfe6a7c239e8396493d72c7fa4b1147acfd8879c0411397ad8b1';
+      var PASSWORD_HASH = '1fe00ee9a4a47a889df0f79d0fb52fb024670306ee9130e0dd6c000e3ef7ab78';
 
       var lockedEl = document.getElementById('gateLocked');
       var openEl = document.getElementById('gateOpen');
