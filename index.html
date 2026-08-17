@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yuehaihao</title>
+  <meta name="description" content="Yuehaihao 的个人主页" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: rgba(255, 255, 255, 0.08);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top left, #1e293b, var(--bg));
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      padding: 24px;
+    }
+    main {
+      width: min(720px, 100%);
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 48px 32px;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 8vw, 56px);
+      letter-spacing: -0.03em;
+    }
+    p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 17px;
+      margin: 20px 0 28px;
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    a {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    a:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-2px);
+    }
+    footer {
+      margin-top: 36px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="badge">YEuhub.ME 已上线</div>
+    <h1>Haihao Yue</h1>
+    <p>这里是我的个人主页。接下来我会在这里放上作品、项目、文章和联系方式。</p>
+    <div class="links">
+      <a href="https://github.com/Yuehaihao" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="mailto:yuehaihao@example.com">联系我</a>
+    </div>
+    <footer>Powered by GitHub Pages · yeuhub.me</footer>
+  </main>
+</body>
+</html>
