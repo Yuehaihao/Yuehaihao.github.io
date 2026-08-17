@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>邮件内容诊断 · YEuhub.ME</title>
+<meta name="description" content="粘贴开发信，一键按 SOP 体检，输出改进点、原文与优化建议" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230a84ff'/%3E%3Ctext x='32' y='43' font-size='32' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%9C%89%3C/text%3E%3C/svg%3E" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #1c1c1e;
+    --muted: #64646b;
+    --blue: #0a84ff;
+    --blue-dark: #0060df;
+    --red: #e5484d; --red-bg: rgba(229, 72, 77, 0.12);
+    --orange: #d97706; --orange-bg: rgba(217, 119, 6, 0.12);
+    --green: #16a34a; --green-bg: rgba(22, 163, 74, 0.12);
+  }
+
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    line-height: 1.6;
+    background:
+      radial-gradient(1100px 720px at 12% -8%, #eaf3ff 0%, transparent 55%),
+      radial-gradient(900px 640px at 100% 0%, #f3edff 0%, transparent 55%),
+      linear-gradient(180deg, #f6f8fc 0%, #e9eef7 100%);
+    background-attachment: fixed;
+  }
+
+  .scene { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(72px); opacity: 0.8; }
+  .orb-a { width: 380px; height: 380px; left: -90px; top: -70px; background: #7cc7ff; animation: drift 24s ease-in-out infinite alternate; }
+  .orb-b { width: 340px; height: 340px; right: -80px; top: 60px; background: #c5a8ff; animation: drift 28s ease-in-out infinite alternate-reverse; }
+  .orb-c { width: 300px; height: 300px; left: 32%; bottom: -120px; background: #ffb3d9; opacity: 0.6; animation: drift 32s ease-in-out infinite alternate; }
+
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(46px, 34px, 0) scale(1.08); }
+  }
+
+  .shell { width: min(980px, 100%); margin: 0 auto; padding: clamp(24px, 5vw, 56px) 20px 44px; }
+
+  .glass {
+    position: relative;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.26));
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 28px;
+    box-shadow:
+      0 24px 60px rgba(31, 58, 105, 0.13),
+      0 6px 18px rgba(31, 58, 105, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass { background: rgba(255, 255, 255, 0.9); }
+  }
+
+  .hero { padding: 34px 28px 30px; margin-bottom: 20px; }
+  .back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600;
+    padding: 8px 14px; border-radius: 999px; margin-bottom: 18px;
+    background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.85);
+    transition: background 0.2s ease;
+  }
+  .back:hover { background: rgba(255, 255, 255, 0.85); }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 13px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    color: var(--blue); background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+  }
+  .hero-badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #30d158; box-shadow: 0 0 0 4px rgba(48, 209, 88, 0.18); }
+  .hero h1 { margin: 14px 0 6px; font-size: clamp(30px, 6vw, 44px); font-weight: 700; letter-spacing: -0.035em; }
+  .hero p { color: var(--muted); font-size: 15px; }
+
+  .card { padding: 24px; margin-bottom: 20px; }
+  .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .card-num {
+    flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px;
+    background: linear-gradient(145deg, #3b9dff, #0a84ff); color: #fff;
+    font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 16px rgba(10, 132, 255, 0.3), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .card h2 { font-size: 17px; font-weight: 700; }
+  .subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  label.field { display: block; font-size: 14px; font-weight: 600; color: #45454d; margin-bottom: 7px; }
+  input[type=text], textarea {
+    width: 100%; padding: 12px 15px; font-size: 15px; font-family: inherit;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 14px; outline: none;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(31, 58, 105, 0.07);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type=text]:focus, textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.16), inset 0 1px 0 #fff;
+  }
+  textarea { min-height: 240px; resize: vertical; line-height: 1.7; }
+  .form-row { margin-bottom: 15px; }
+  .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 30px; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer;
+    border: none; border-radius: 14px;
+    background: linear-gradient(145deg, #3b9dff, #0a84ff);
+    box-shadow: 0 10px 22px rgba(10, 132, 255, 0.35), inset 0 1px 0 rgba(255,255,255,.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(10, 132, 255, 0.42), inset 0 1px 0 rgba(255,255,255,.4); }
+  .btn:active { transform: translateY(0) scale(0.99); }
+  .btn-ghost {
+    color: var(--blue); background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(10, 132, 255, 0.45);
+    box-shadow: 0 6px 14px rgba(31, 58, 105, 0.1);
+  }
+  .btn-ghost:hover { background: rgba(255, 255, 255, 0.85); box-shadow: 0 10px 20px rgba(31, 58, 105, 0.14); }
+  .sop-toggle { font-size: 13.5px; color: var(--blue); cursor: pointer; user-select: none; font-weight: 600; padding: 8px 0; }
+  .sop-panel { display: none; margin-top: 12px; background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 14px; padding: 15px 18px; }
+  .sop-panel.show { display: block; }
+  .sop-panel li { font-size: 13px; color: #4a5568; margin: 4px 0 4px 18px; }
+  .sop-panel h4 { font-size: 13.5px; margin: 12px 0 4px; color: var(--ink); }
+  .sop-panel h4:first-child { margin-top: 0; }
+
+  .summary { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .summary-item {
+    flex: 1; min-width: 120px; text-align: center; padding: 15px 14px;
+    background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px; box-shadow: 0 6px 16px rgba(31, 58, 105, 0.07);
+  }
+  .summary-item b { font-size: 28px; display: block; }
+  .summary-item span { font-size: 12.5px; color: var(--muted); }
+  .b-high { color: var(--red); } .b-mid { color: var(--orange); } .b-low { color: var(--blue); }
+
+  .group-title { font-size: 15px; font-weight: 700; margin: 18px 0 10px; padding-left: 12px; border-left: 4px solid var(--blue); }
+  .item {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px; padding: 15px 17px; margin-bottom: 12px;
+    box-shadow: 0 6px 16px rgba(31, 58, 105, 0.06);
+  }
+  .item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; flex-wrap: wrap; }
+  .badge { font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 999px; white-space: nowrap; }
+  .badge-high { background: var(--red-bg); color: var(--red); }
+  .badge-mid { background: var(--orange-bg); color: var(--orange); }
+  .badge-low { background: rgba(10, 132, 255, 0.13); color: var(--blue); }
+  .item-title { font-weight: 700; font-size: 14.5px; }
+  .kv { margin-bottom: 8px; }
+  .kv-label { font-size: 12px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 3px; letter-spacing: 0.5px; }
+  .kv-original {
+    background: rgba(255, 255, 255, 0.55); border: 1px dashed rgba(100, 116, 139, 0.4);
+    border-radius: 10px; padding: 9px 12px; font-size: 13.5px; color: #475569; word-break: break-word; white-space: pre-wrap;
+  }
+  .kv-advice { background: var(--green-bg); border-radius: 10px; padding: 9px 12px; font-size: 13.5px; color: #14532d; }
+  .kv-advice .tip { color: #166534; font-weight: 600; }
+  .empty-tip { text-align: center; color: var(--muted); padding: 30px 0; font-size: 14px; }
+  .footer { text-align: center; padding: 16px; font-size: 12.5px; color: var(--muted); }
+
+  @media (max-width: 640px) {
+    .card { padding: 18px; }
+    .hero { padding: 26px 20px 24px; }
+    .btn { flex: 1; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root { --ink: #f5f5f7; --muted: #9da0aa; --blue: #6cb9ff; --red: #ff7a7f; --orange: #ffb45c; --green: #4ade80; }
+    body {
+      background:
+        radial-gradient(1100px 720px at 12% -8%, #12223a 0%, transparent 55%),
+        radial-gradient(900px 640px at 100% 0%, #241b38 0%, transparent 55%),
+        linear-gradient(180deg, #13151b 0%, #0c0e12 100%);
+    }
+    .orb { opacity: 0.34; }
+    .glass {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045));
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+    .back, .hero-badge { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.14); }
+    label.field { color: #c6c9d2; }
+    input[type=text], textarea {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: none;
+    }
+    input[type=text]:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(108, 185, 255, 0.18); }
+    .btn-ghost { color: var(--blue); background: rgba(255, 255, 255, 0.08); border-color: rgba(108, 185, 255, 0.4); }
+    .sop-panel, .summary-item, .item { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.14); box-shadow: none; }
+    .sop-panel li { color: #b7bcc8; }
+    .kv-original { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.16); color: #c9cedb; }
+    .kv-advice { background: rgba(74, 222, 128, 0.12); color: #bbf7d0; }
+    .kv-advice .tip { color: #d1fae5; }
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .glass { background: rgba(26, 29, 38, 0.9); }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb { animation: none; }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true">
+  <span class="orb orb-a"></span>
+  <span class="orb orb-b"></span>
+  <span class="orb orb-c"></span>
+</div>
+
+<div class="shell">
+  <header class="hero glass">
+    <a class="back" href="../index.html">← 返回首页</a>
+    <div class="hero-badge">邮件工具</div>
+    <h1>邮件内容诊断</h1>
+    <p>粘贴开发信，一键按 SOP 体检，输出改进点 · 原文 · 优化建议</p>
+  </header>
+
+  <section class="card glass">
+    <div class="card-head"><span class="card-num">一</span><div><h2>输入开发信</h2><p class="subtitle">填写邮件主题（选填）和正文，点击「一键解析」</p></div></div>
+    <div class="form-row">
+      <label class="field" for="subject">邮件主题 Subject（选填）</label>
+      <input type="text" id="subject" placeholder="例如：Direct Supplier of LED Lights from China" />
+    </div>
+    <div class="form-row">
+      <label class="field" for="body">邮件正文 Body</label>
+      <textarea id="body" placeholder="在此粘贴你的开发信正文…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="runBtn">一键解析</button>
+      <button class="btn btn-ghost" id="sampleBtn">载入示例</button>
+      <span class="sop-toggle" id="sopToggle" role="button" tabindex="0">▸ 查看诊断 SOP 清单</span>
+    </div>
+    <div class="sop-panel" id="sopPanel">
+      <h4>标题规则</h4>
+      <li>禁用 Re / Fwd 开头，禁用 introduce、inquiry、dear 等敏感词</li>
+      <li>突出工厂性质 / 产品 / 型号 / 价格 / MOQ / 新品 / 免费样品</li>
+      <li>加变量（客户邮箱前缀、公司名），同一标题用 2000 次后更换</li>
+      <h4>开头规则</h4>
+      <li>禁用 Dear 开头（易判垃圾邮件），改用 Greetings / Hello / Hi / Good Day</li>
+      <li>加"暖启动"：体现了解过客户（官网关注到产品 / 行业市场）</li>
+      <h4>正文规则</h4>
+      <li>120~150 词以内，重点内容加粗/换色；第一轮不放图片</li>
+      <li>不放网址、超链接、附件、大图（易进垃圾箱），官网写纯文本</li>
+      <li>放 Facebook / WhatsApp 社媒链接（纯文本）提升送达率</li>
+      <li>核心优势分条列出，写 1-2 个已合作重点客户名</li>
+      <li>补认证 / 专利 / 客户案例背书；避免 "We are a leading supplier" 空话</li>
+      <h4>结尾规则</h4>
+      <li>结尾放"钩子"引导回复，不要陈述句，加行动号召 CTA</li>
+    </div>
+  </section>
+
+  <section class="card glass" id="resultCard" style="display:none;">
+    <div class="card-head"><span class="card-num">二</span><div><h2>诊断报告</h2><p class="subtitle" id="resultSubtitle"></p></div></div>
+    <div class="summary" id="summary"></div>
+    <div id="report"></div>
+  </section>
+
+  <footer class="footer glass">诊断依据：《邮件内容-如何写好开发信》SOP · 仅供内部优化参考</footer>
+</div>
+
+<script>
+function $(id){ return document.getElementById(id); }
+
+function grab(text, re){ const m = text.match(re); return m ? m[0].trim() : ''; }
+
+function wordCount(text){
+  const en = (text.match(/[A-Za-z0-9'\-]+/g) || []).length;
+  const cn = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+  return en + Math.ceil(cn / 2);
+}
+
+function lastSentence(text){
+  const sig = /^(best regards|regards|sincerely|yours|thanks|thank you|cheers|best|kind regards|warm regards|[\w.'-]+@[\w.-]+\.\w+|(\+?\d[\d\s-]{6,})|[A-Z][a-z]+( [A-Z][a-z]+)?(,|\.)?\s*(co\.?,?\s*ltd\.?|inc\.?|corp\.?|llc\.?|group|company)?\.?)$/i;
+  const s = text.trim().split(/[。.!?\n]/).map(x=>x.trim()).filter(Boolean);
+  let end = s.length - 1;
+  while (end >= 0 && sig.test(s[end])) end--;
+  return end >= 0 ? s[end] : (s.length ? s[s.length-1] : '');
+}
+
+function analyze(subject, body){
+  const items = [];
+  const t = (body || '').trim();
+  const lower = t.toLowerCase();
+  const wc = wordCount(t);
+
+  if (subject && subject.trim()){
+    const s = subject.trim();
+    const sl = s.toLowerCase();
+    if (/^(re|fwd)[\s:：]/i.test(s)){
+      items.push({cat:'标题', sev:'高', title:'标题以 Re / Fwd 开头',
+        original: s,
+        advice:'新客户邮件主题不要用 Re / Fwd 开头，会触发对方服务器反垃圾检测，直接投递到垃圾箱。示例：<span class="tip">【Factory Direct】New Arrival 产品</span>、<span class="tip">Direct Supplier of 产品</span>、<span class="tip">产品 Manufacturer from China</span>。'});
+    }
+    const spamHit = sl.match(/(introduce|inquiry|dear|price\s*list|buyers?\s*wanted)/g);
+    if (spamHit){
+      items.push({cat:'标题', sev:'中', title:'标题含敏感词：' + spamHit.join('、'),
+        original: s,
+        advice:'introduce、inquiry、dear 等词容易被判垃圾邮件，建议替换。示例：用 <span class="tip">If you need 产品</span>、<span class="tip">产品 from 公司名</span>、<span class="tip">Explore Our High-Quality 产品</span>。'});
+    }
+    if (!/(factory|manufacturer|supplier|moq|new arrival|sample|price|best|quality|exclusive|output)/i.test(sl)){
+      items.push({cat:'标题', sev:'中', title:'标题未体现价值点',
+        original: s,
+        advice:'标题建议突出一个核心卖点。示例：<span class="tip">20,000pcs Monthly Output 产品 Factory</span>（工厂产能）、<span class="tip">MOQ 1pc Only——产品</span>（起订量）、<span class="tip">100USD 产品 for the First Order</span>（价格）、<span class="tip">Free Sample——产品</span>（免费样品）。'});
+    }
+    if (!/【.*?】|\{\{.*?\}\}|\$\{.*?\}/.test(s)){
+      items.push({cat:'标题', sev:'低', title:'标题未使用变量',
+        original: s,
+        advice:'标题加变量（客户邮箱前缀 / 公司名）可提升打开率，也可用「AI 生成主题」润色。注意同一标题使用约 2000 次后需更换，避免高重复率被判垃圾。'});
+    }
+    if (s.length > 80){
+      items.push({cat:'标题', sev:'低', title:'标题过长（' + s.length + ' 字符）',
+        original: s,
+        advice:'标题建议控制在 60~80 字符内，移动端显示不全。保留最核心卖点，其余信息放进正文。'});
+    }
+  } else {
+    items.push({cat:'标题', sev:'低', title:'未填写邮件主题',
+      original:'（未填写主题）',
+      advice:'开发信主题是打开率关键，建议填写并突出价值点。示例：<span class="tip">【Factory Direct】New Arrival 产品</span>、<span class="tip">Helping your xxx with 产品 from 公司名</span>。'});
+  }
+
+  const dearM = grab(t, /^\s*dear\b[^,\n]*/i);
+  if (dearM){
+    items.push({cat:'开头', sev:'高', title:'开头使用 Dear',
+      original: dearM,
+      advice:'Dear 开头比其他招呼词更容易被判垃圾邮件，建议改为 <span class="tip">Greetings 【名字变量】</span>、<span class="tip">Hello 【名字变量】</span>、<span class="tip">Hi 【名字变量】</span> 或 <span class="tip">Good Day</span>。'});
+  }
+  if (!/(your website|官网|noticed|learn you are|on the market of|glad to learn|i saw|following your)/i.test(t)){
+    items.push({cat:'开头', sev:'中', title:'缺少"暖启动"',
+      original:'（开头未体现对客户的了解）',
+      advice:'开头加"暖启动"，体现非盲目发信、对客户有过了解。示例：<span class="tip">I noticed your products on your website…</span> 或 <span class="tip">Glad to learn you are on the market of 行业</span>。'});
+  }
+  if (!/(greetings|hello|hi |good day|dear|hope everything)/i.test(t.slice(0,80))){
+    items.push({cat:'开头', sev:'低', title:'缺少招呼词',
+      original: t.slice(0,60) + (t.length>60?'…':''),
+      advice:'建议以招呼词开篇。示例：<span class="tip">Hello 【名字变量】</span>、<span class="tip">Good Day</span>、<span class="tip">Hope everything goes well on your side</span>。'});
+  }
+  if (!/(this is .*from|i am .*from|we are .*from|my name)/i.test(t)){
+    items.push({cat:'开头', sev:'中', title:'缺少自我介绍（人名+公司+行业+年限）',
+      original:'（未找到自我介绍）',
+      advice:'开头做自我介绍：人名+公司名+行业+年限。示例：<span class="tip">This is 人名 from 公司名, a leading player in the 行业 industry for 10 years.</span>'});
+  }
+
+  if (wc > 150){
+    items.push({cat:'正文', sev:'中', title:'正文过长（约 ' + wc + ' 词，建议 ≤150 词）',
+      original: t.slice(0,100) + (t.length>100?'…':''),
+      advice:'正文控制在 120~150 词以内，重点内容加粗或换色展示，删减冗余铺垫，直说客户能获得什么。'});
+  }
+  if (/(https?:\/\/|www\.|\.(jpg|jpeg|png|gif|pdf|zip|rar|docx?|xlsx?)\b)/i.test(t)){
+    items.push({cat:'正文', sev:'高', title:'正文包含网址 / 超链接 / 附件',
+      original: grab(t, /(https?:\/\/[^\s]+|www\.[^\s]+|\b[\w.\-]+\.(jpg|jpeg|png|gif|pdf|zip|rar|docx?|xlsx?)\b)/i),
+      advice:'邮件采用纯文本格式，不放网址、超链接、附件和大内存图片，极易进垃圾箱/广告邮箱。官网如需呈现，写成纯文本（不带链接），图片第二轮第三轮再放 1~2 张（300KB 内、宽 800px 内）。'});
+  }
+  if (!/(facebook|whatsapp|linkedin|wechat|instagram)/i.test(t)){
+    items.push({cat:'正文', sev:'低', title:'缺少社媒链接',
+      original:'（未找到社媒账号）',
+      advice:'建议放自己的 Facebook、WhatsApp 社媒账号（纯文本），可提升送达率。示例：<span class="tip">WhatsApp: +86 1xx xxxx xxxx</span>。'});
+  }
+  if (/(we are a leading supplier|we are a professional supplier|we are the best|we are a manufacturer of)/i.test(t)){
+    items.push({cat:'正文', sev:'中', title:'空洞开场："' + grab(t, /(we are a leading supplier|we are a professional supplier|we are the best|we are a manufacturer of)[^.]*\.?/i) + '"',
+      original: grab(t, /(we are a leading supplier|we are a professional supplier|we are the best|we are a manufacturer of)[^.]*\.?/i),
+      advice:'避免 "We are a leading supplier of…" 这类空话开场，改用价值锚定+数据。示例：<span class="tip">Last quarter, 214 行业名 executives reduced 具体痛点 by 38% using 解决方案…</span>'});
+  }
+  if (!/\d/.test(t)){
+    items.push({cat:'正文', sev:'中', title:'正文无任何数据支撑',
+      original:'（正文未出现数字）',
+      advice:'带数字的邮件使转化率更高。加入产能、年限、价格、降本比例等数据。示例：<span class="tip">20,000pcs monthly output</span>、<span class="tip">29% energy reduction in 8 weeks</span>。'});
+  }
+  if (!/(iso|ce |rohs|fda|tüv|tuv|ul |patent|认证|专利|sgs|reach)/i.test(t)){
+    items.push({cat:'正文', sev:'低', title:'缺少认证 / 专利等可信度背书',
+      original:'（未找到认证或专利信息）',
+      advice:'补充行业认证、专利号或合作客户背书，增强信任。示例：<span class="tip">ISO 9001 certified</span>、<span class="tip">Patented 技术名称 #US9,876,543B2</span>、<span class="tip">Served 50+ clients including 重点客户名</span>。'});
+  }
+  if (!/(oem|odm|moq|delivery|lead time|warranty|after.?sales|sample)/i.test(t)){
+    items.push({cat:'正文', sev:'低', title:'未提及 OEM/ODM、MOQ、交期、样品等服务点',
+      original:'（未找到相关表述）',
+      advice:'突出核心优势与竞争力，可分条列出，客户观感更清晰。示例：<span class="tip">OEM/ODM welcome</span>、<span class="tip">MOQ 1pc</span>、<span class="tip">Free sample for review</span>。'});
+  }
+  if (/(price|quotation|quote|cost)/i.test(t) && !/\d/.test(t)){
+    items.push({cat:'正文', sev:'低', title:'提到价格但无具体金额',
+      original: grab(t, /[^.]*(price|quotation|quote|cost)[^.]*\.?/i),
+      advice:'价格话术可更具体。示例：<span class="tip">Quality 产品 at Competitive Prices</span> 或 <span class="tip">100USD 产品 for the First Order</span>。'});
+  }
+
+  const ls = lastSentence(t);
+  if (/(\?|would you|interested|reply|let us know|contact me|quotation|sample|rfq|feedback|look forward)/i.test(ls)){
+  } else {
+    items.push({cat:'结尾', sev:'高', title:'结尾缺少"钩子"',
+      original: ls || '（结尾为空）',
+      advice:'结尾放一句"钩子"勾客户回复，不要用陈述句。示例：<span class="tip">Would you like to see more designs? We can provide samples for your review.</span>、<span class="tip">Would you be interested in discussing potential cooperation? Let us know your requirements.</span>、<span class="tip">If you are interested in any 产品, just don\'t hesitate to ask me for quotation.</span>'});
+  }
+  if (!/(reply|contact|let me know|let us know|rfq|send|tell|reach|call|book|schedule|visit)/i.test(ls)){
+    items.push({cat:'结尾', sev:'中', title:'结尾缺少行动号召 CTA',
+      original: ls,
+      advice:'结尾加明确的行动号召，引导客户下一步动作。示例：<span class="tip">Send us RFQ today if you have a project in mind, we will provide the best cost to you.</span>、<span class="tip">Would you like to visit our factory? We can arrange a video call.</span>'});
+  }
+
+  return items;
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function run(){
+  const subject = $('subject').value;
+  const body = $('body').value;
+  if (!body.trim()){ alert('请先粘贴开发信正文'); return; }
+
+  const items = analyze(subject, body);
+  const resultCard = $('resultCard');
+  resultCard.style.display = 'block';
+
+  const high = items.filter(i=>i.sev==='高').length;
+  const mid = items.filter(i=>i.sev==='中').length;
+  const low = items.filter(i=>i.sev==='低').length;
+  $('summary').innerHTML =
+    '<div class="summary-item"><b class="b-high">'+high+'</b><span>高风险问题</span></div>' +
+    '<div class="summary-item"><b class="b-mid">'+mid+'</b><span>中等建议</span></div>' +
+    '<div class="summary-item"><b class="b-low">'+low+'</b><span>优化建议</span></div>';
+  $('resultSubtitle').textContent = '共发现 ' + items.length + ' 处可改进点，按优先级排列';
+
+  const cats = ['标题','开头','正文','结尾'];
+  let html = '';
+  if (items.length === 0){
+    html = '<div class="empty-tip">✅ 未发现明显问题，你的开发信已符合 SOP 基本要求，可结合具体行业继续打磨。</div>';
+  } else {
+    for (const c of cats){
+      const list = items.filter(i=>i.cat===c);
+      if (!list.length) continue;
+      html += '<div class="group-title">' + c + '（' + list.length + ' 项）</div>';
+      const order = {高:0,中:1,低:2};
+      list.sort((a,b)=>order[a.sev]-order[b.sev]);
+      for (const it of list){
+        const badge = it.sev==='高'?'badge-high':it.sev==='中'?'badge-mid':'badge-low';
+        const sevName = it.sev==='高'?'高优先级':it.sev==='中'?'中优先级':'低优先级';
+        html += '<div class="item">' +
+          '<div class="item-head"><span class="badge '+badge+'">'+sevName+'</span><span class="item-title">'+escapeHtml(it.title)+'</span></div>' +
+          '<div class="kv"><span class="kv-label">原 文</span><div class="kv-original">'+escapeHtml(it.original)+'</div></div>' +
+          '<div class="kv"><span class="kv-label">优化建议</span><div class="kv-advice">'+it.advice+'</div></div>' +
+          '</div>';
+      }
+    }
+  }
+  $('report').innerHTML = html;
+  resultCard.scrollIntoView({behavior:'smooth'});
+}
+
+function loadSample(){
+  $('subject').value = 'Re: Inquiry about LED lights introduction';
+  $('body').value = [
+    'Dear Sir/Madam,',
+    '',
+    'We are a leading supplier of LED lights from China. We have good quality and competitive price.',
+    'Our company was established many years ago. We export to many countries.',
+    'Please visit our website: http://www.abc-led.com for more products.',
+    '',
+    'If you need anything, please contact us.',
+    '',
+    'Best regards,',
+    'Mike',
+    'ABC Lighting Co., Ltd.'
+  ].join('\n');
+  run();
+}
+
+function toggleSop(){
+  const p = $('sopPanel');
+  const toggle = $('sopToggle');
+  p.classList.toggle('show');
+  toggle.textContent = p.classList.contains('show') ? '▾ 收起诊断 SOP 清单' : '▸ 查看诊断 SOP 清单';
+}
+
+$('runBtn').addEventListener('click', run);
+$('sampleBtn').addEventListener('click', loadSample);
+$('sopToggle').addEventListener('click', toggleSop);
+$('sopToggle').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleSop(); }
+});
+</script>
+</body>
+</html>
