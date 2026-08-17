@@ -141,6 +141,18 @@
   .summary-item b { font-size: 28px; display: block; }
   .summary-item span { font-size: 12.5px; color: var(--muted); }
   .b-high { color: var(--red); } .b-mid { color: var(--orange); } .b-low { color: var(--blue); }
+  .initial-summary {
+    margin-bottom: 16px;
+    padding: 13px 16px;
+    background: rgba(10, 132, 255, 0.09);
+    border: 1px solid rgba(10, 132, 255, 0.25);
+    border-radius: 14px;
+    font-size: 13.5px;
+    line-height: 1.9;
+  }
+  .initial-summary-line b { color: var(--ink); }
+  .hit-yes { color: var(--red); font-weight: 700; }
+  .hit-no { color: var(--green); font-weight: 700; }
 
   .group-title { font-size: 15px; font-weight: 700; margin: 18px 0 10px; padding-left: 12px; border-left: 4px solid var(--blue); }
   .item {
@@ -224,7 +236,7 @@
     <a class="back" href="../index.html">← 返回首页</a>
     <div class="hero-badge">邮件工具</div>
     <h1>邮件内容诊断</h1>
-    <p>粘贴开发信，一键按 SOP 体检，输出改进点 · 原文 · 优化建议</p>
+    <p>粘贴开发信，按 12 项标准一键体检，输出初步总结与逐项反馈</p>
   </header>
 
   <section class="card glass">
@@ -240,34 +252,37 @@
     <div class="btn-row">
       <button class="btn" id="runBtn">一键解析</button>
       <button class="btn btn-ghost" id="sampleBtn">载入示例</button>
-      <span class="sop-toggle" id="sopToggle" role="button" tabindex="0">▸ 查看诊断 SOP 清单</span>
+      <span class="sop-toggle" id="sopToggle" role="button" tabindex="0">▸ 查看 12 项诊断标准</span>
     </div>
     <div class="sop-panel" id="sopPanel">
-      <h4>标题规则</h4>
-      <li>禁用 Re / Fwd 开头，禁用 introduce、inquiry、dear 等敏感词</li>
-      <li>突出工厂性质 / 产品 / 型号 / 价格 / MOQ / 新品 / 免费样品</li>
-      <li>加变量（客户邮箱前缀、公司名），同一标题用 2000 次后更换</li>
-      <h4>开头规则</h4>
-      <li>禁用 Dear 开头（易判垃圾邮件），改用 Greetings / Hello / Hi / Good Day</li>
-      <li>加"暖启动"：体现了解过客户（官网关注到产品 / 行业市场）</li>
-      <h4>正文规则</h4>
-      <li>120~150 词以内，重点内容加粗/换色；第一轮不放图片</li>
-      <li>不放网址、超链接、附件、大图（易进垃圾箱），官网写纯文本</li>
-      <li>放 Facebook / WhatsApp 社媒链接（纯文本）提升送达率</li>
-      <li>核心优势分条列出，写 1-2 个已合作重点客户名</li>
-      <li>补认证 / 专利 / 客户案例背书；避免 "We are a leading supplier" 空话</li>
-      <h4>结尾规则</h4>
-      <li>结尾放"钩子"引导回复，不要陈述句，加行动号召 CTA</li>
+      <h4>标题 · 7 项</h4>
+      <li>存在营销特征词（free、sale、discount、促销、特价等）</li>
+      <li>标题全大写</li>
+      <li>标题书写错误（拼写、重复字母、多余空格）</li>
+      <li>标题词字数过多（约 12 词 / 80 字符）</li>
+      <li>标题重复情况（同词堆砌 + 与历史提交重复）</li>
+      <li>标题有错误变量（花括号不完整、语法错误）</li>
+      <li>标题变量替换有问题（残留 {{变量名}} / 占位符）</li>
+      <h4>正文 · 5 项</h4>
+      <li>开头有 Dear</li>
+      <li>开头有未替换的变量名</li>
+      <li>开头有错误的变量名</li>
+      <li>邮件中有加黑的 URL</li>
+      <li>邮件正文字数过多（超过 150 词）</li>
+      <h4>输出</h4>
+      <li>命中的问题逐条记录：问题点 · 原文 · 优化建议</li>
+      <li>报告顶部输出「初步总结」（标题 + 内容两行结论）</li>
     </div>
   </section>
 
   <section class="card glass" id="resultCard" style="display:none;">
     <div class="card-head"><span class="card-num">二</span><div><h2>诊断报告</h2><p class="subtitle" id="resultSubtitle"></p></div></div>
+    <div class="initial-summary" id="initialSummary" style="display:none;"></div>
     <div class="summary" id="summary"></div>
     <div id="report"></div>
   </section>
 
-  <footer class="footer glass">诊断依据：《邮件内容-如何写好开发信》SOP · 仅供内部优化参考</footer>
+  <footer class="footer glass">诊断标准：《邮件审核标准》12 项 · 命中问题逐条反馈 · 仅供内部优化参考</footer>
 </div>
 
 <script>
@@ -295,120 +310,158 @@ function analyze(subject, body){
   const lower = t.toLowerCase();
   const wc = wordCount(t);
 
+  // ===== 标题 · 7 项 =====
   if (subject && subject.trim()){
     const s = subject.trim();
     const sl = s.toLowerCase();
-    if (/^(re|fwd)[\s:：]/i.test(s)){
-      items.push({cat:'标题', sev:'高', title:'标题以 Re / Fwd 开头',
-        original: s,
-        advice:'新客户邮件主题不要用 Re / Fwd 开头，会触发对方服务器反垃圾检测，直接投递到垃圾箱。示例：<span class="tip">【Factory Direct】New Arrival 产品</span>、<span class="tip">Direct Supplier of 产品</span>、<span class="tip">产品 Manufacturer from China</span>。'});
+
+    // 1. 营销特征词
+    const marketRules = [
+      [/\bfree\b/i,'free'], [/\bsale\b/i,'sale'], [/\bdiscount\b/i,'discount'],
+      [/\bpromotion\b/i,'promotion'], [/\boffer\b/i,'offer'], [/\bcheap(?:est|er)?\b/i,'cheap'],
+      [/\bdeal\b/i,'deal'], [/\bbest\s*price\b/i,'best price'], [/\bbuy\s*now\b/i,'buy now'],
+      [/\bhot\s*sale\b/i,'hot sale'], [/\blimited\s*time\b/i,'limited time'], [/\burgent\b/i,'urgent'],
+      [/[%％]\s*off/i,'% off'], [/免费/,'免费'], [/优惠/,'优惠'], [/促销/,'促销'],
+      [/特价/,'特价'], [/低价/,'低价'], [/折扣/,'折扣']
+    ];
+    const marketHits = marketRules.filter(r => r[0].test(sl)).map(r => r[1]);
+    if (marketHits.length){
+      items.push({key:'title-marketing', cat:'标题', sev:'高', title:'标题存在营销特征词：' + marketHits.join('、'),
+        original:s,
+        advice:'营销特征词容易触发邮件服务商的反垃圾规则，建议改为突出工厂 / 产品 / 型号 / 价格 / MOQ / 新品 / 免费样品等价值点，避免直接出现 free、sale、discount、促销、特价 等词。'});
     }
-    const spamHit = sl.match(/(introduce|inquiry|dear|price\s*list|buyers?\s*wanted)/g);
-    if (spamHit){
-      items.push({cat:'标题', sev:'中', title:'标题含敏感词：' + spamHit.join('、'),
-        original: s,
-        advice:'introduce、inquiry、dear 等词容易被判垃圾邮件，建议替换。示例：用 <span class="tip">If you need 产品</span>、<span class="tip">产品 from 公司名</span>、<span class="tip">Explore Our High-Quality 产品</span>。'});
+
+    // 2. 全大写
+    const letters = s.replace(/[^A-Za-z]/g, '');
+    if (letters.length >= 3 && letters === letters.toUpperCase()){
+      items.push({key:'title-caps', cat:'标题', sev:'中', title:'标题全大写',
+        original:s,
+        advice:'全大写标题容易被判为营销 / 垃圾邮件，建议只保留首字母大写或产品名大写。示例：<span class="tip">Factory Direct New Arrival LED Lights</span>。'});
     }
-    if (!/(factory|manufacturer|supplier|moq|new arrival|sample|price|best|quality|exclusive|output)/i.test(sl)){
-      items.push({cat:'标题', sev:'中', title:'标题未体现价值点',
-        original: s,
-        advice:'标题建议突出一个核心卖点。示例：<span class="tip">20,000pcs Monthly Output 产品 Factory</span>（工厂产能）、<span class="tip">MOQ 1pc Only——产品</span>（起订量）、<span class="tip">100USD 产品 for the First Order</span>（价格）、<span class="tip">Free Sample——产品</span>（免费样品）。'});
+
+    // 3. 书写错误
+    const typoRules = [
+      [/\brecieve\b/i,'recieve→receive'], [/\bseperate\b/i,'seperate→separate'],
+      [/\bteh\b/i,'teh→the'], [/\badress\b/i,'adress→address'],
+      [/\bbecuase\b/i,'becuase→because'], [/\boportunity\b/i,'oportunity→opportunity'],
+      [/\bfuther\b/i,'futher→further'], [/\bmanger\b/i,'manger→manager'],
+      [/\bshippment\b/i,'shippment→shipment'], [/\binquriy\b/i,'inquriy→inquiry'],
+      [/([A-Za-z])\1{2,}/,'连续重复字母'], [/\s{2,}/,'多余空格']
+    ];
+    const typoHits = typoRules.filter(r => r[0].test(s)).map(r => r[1]);
+    if (typoHits.length){
+      items.push({key:'title-typo', cat:'标题', sev:'中', title:'标题存在书写错误：' + typoHits.join('、'),
+        original:s,
+        advice:'请修正拼写错误、连续重复字母和多余空格，发送前可用拼写检查工具再校验一遍。'});
     }
-    if (!/【.*?】|\{\{.*?\}\}|\$\{.*?\}/.test(s)){
-      items.push({cat:'标题', sev:'低', title:'标题未使用变量',
-        original: s,
-        advice:'标题加变量（客户邮箱前缀 / 公司名）可提升打开率，也可用「AI 生成主题」润色。注意同一标题使用约 2000 次后需更换，避免高重复率被判垃圾。'});
+
+    // 4. 词字数过多
+    const tw = wordCount(s);
+    if (tw > 12 || s.length > 80){
+      items.push({key:'title-length', cat:'标题', sev:'中', title:'标题词字数过多（' + tw + ' 词 / ' + s.length + ' 字符）',
+        original:s,
+        advice:'标题建议控制在 80 字符（约 12 词）以内，只保留一个核心卖点，避免移动端显示不全。'});
     }
-    if (s.length > 80){
-      items.push({cat:'标题', sev:'低', title:'标题过长（' + s.length + ' 字符）',
-        original: s,
-        advice:'标题建议控制在 60~80 字符内，移动端显示不全。保留最核心卖点，其余信息放进正文。'});
+
+    // 5. 重复情况（同词堆砌；跨提交重复在 run() 中检查）
+    const words = s.match(/[A-Za-z0-9]+/g) || [];
+    const stop = new Set(['a','an','the','and','or','of','to','for','with','from','in','on','at','is','are','your','you','we','our']);
+    const counts = {};
+    for (const w of words){ const k = w.toLowerCase(); counts[k] = (counts[k]||0) + 1; }
+    const dups = Object.keys(counts).filter(k => !stop.has(k) && counts[k] >= 3);
+    const nearDup = /(\b[A-Za-z0-9]+\b)(?:\s+\1)+/i.test(s);
+    if (dups.length || nearDup){
+      items.push({key:'title-dup', cat:'标题', sev:'中', title:'标题存在重复情况' + (dups.length ? '：' + dups.join('、') : ''),
+        original:s,
+        advice:'同一标题中同一词重复 3 次及以上容易被判为关键词堆砌，建议精简为一个核心关键词。'});
+    }
+
+    // 6. 错误变量
+    const openCount = (s.match(/\{/g)||[]).length;
+    const closeCount = (s.match(/\}/g)||[]).length;
+    const badVarSyntax = /\{[^{}]*$|^\s*[^}]*\}|\{\{[^{}]*\}(?!\})|\$\{[^}]*$/.test(s);
+    if (openCount !== closeCount || badVarSyntax){
+      items.push({key:'title-badvar', cat:'标题', sev:'高', title:'标题有错误变量（花括号不完整或语法错误）',
+        original:s,
+        advice:'请检查变量写法：正确格式为 <span class="tip">{{变量名}}</span>，不要出现单个 {、单个 } 或未闭合的 ${...}。'});
+    }
+
+    // 7. 变量替换问题
+    const placeholderRe = /\{\{[^}]+\}\}|\{[A-Za-z_][A-Za-z0-9_]*\}|\$\{[^}]+\}|\[\[[^\]]+\]\]|【[^】]+】|(?:xxx|xxxx|xxxxx|名字变量|客户名|公司名|姓名)/i;
+    const placeholders = s.match(placeholderRe) || [];
+    if (placeholders.length){
+      items.push({key:'title-unreplaced', cat:'标题', sev:'高', title:'标题变量替换有问题：' + placeholders.map(p=>p.trim()).join('、'),
+        original:s,
+        advice:'标题中仍有未替换的变量名 / 占位符，请确认模板已正确替换后再发送。'});
     }
   } else {
-    items.push({cat:'标题', sev:'低', title:'未填写邮件主题',
+    items.push({key:'title-empty', cat:'标题', sev:'低', title:'未填写邮件主题',
       original:'（未填写主题）',
-      advice:'开发信主题是打开率关键，建议填写并突出价值点。示例：<span class="tip">【Factory Direct】New Arrival 产品</span>、<span class="tip">Helping your xxx with 产品 from 公司名</span>。'});
+      advice:'开发信主题是打开率的关键，请填写并突出价值点。'});
   }
 
+  // ===== 正文 · 5 项 =====
+  // 1. 开头有 dear
   const dearM = grab(t, /^\s*dear\b[^,\n]*/i);
   if (dearM){
-    items.push({cat:'开头', sev:'高', title:'开头使用 Dear',
-      original: dearM,
+    items.push({key:'body-dear', cat:'正文', sev:'高', title:'开头有 Dear',
+      original:dearM,
       advice:'Dear 开头比其他招呼词更容易被判垃圾邮件，建议改为 <span class="tip">Greetings 【名字变量】</span>、<span class="tip">Hello 【名字变量】</span>、<span class="tip">Hi 【名字变量】</span> 或 <span class="tip">Good Day</span>。'});
   }
-  if (!/(your website|官网|noticed|learn you are|on the market of|glad to learn|i saw|following your)/i.test(t)){
-    items.push({cat:'开头', sev:'中', title:'缺少"暖启动"',
-      original:'（开头未体现对客户的了解）',
-      advice:'开头加"暖启动"，体现非盲目发信、对客户有过了解。示例：<span class="tip">I noticed your products on your website…</span> 或 <span class="tip">Glad to learn you are on the market of 行业</span>。'});
-  }
-  if (!/(greetings|hello|hi |good day|dear|hope everything)/i.test(t.slice(0,80))){
-    items.push({cat:'开头', sev:'低', title:'缺少招呼词',
-      original: t.slice(0,60) + (t.length>60?'…':''),
-      advice:'建议以招呼词开篇。示例：<span class="tip">Hello 【名字变量】</span>、<span class="tip">Good Day</span>、<span class="tip">Hope everything goes well on your side</span>。'});
-  }
-  if (!/(this is .*from|i am .*from|we are .*from|my name)/i.test(t)){
-    items.push({cat:'开头', sev:'中', title:'缺少自我介绍（人名+公司+行业+年限）',
-      original:'（未找到自我介绍）',
-      advice:'开头做自我介绍：人名+公司名+行业+年限。示例：<span class="tip">This is 人名 from 公司名, a leading player in the 行业 industry for 10 years.</span>'});
+
+  const opening = (t.split(/\n\s*\n/)[0] || t).trim();
+  const placeholderRe = /\{\{[^}]+\}\}|\{[A-Za-z_][A-Za-z0-9_]*\}|\$\{[^}]+\}|\[\[[^\]]+\]\]|【[^】]+】|(?:xxx|xxxx|xxxxx|名字变量|客户名|公司名|姓名)/i;
+
+  // 2. 开头有未替换的变量名
+  const opPlaceholders = opening.match(placeholderRe) || [];
+  if (opPlaceholders.length){
+    items.push({key:'body-unreplaced', cat:'正文', sev:'高', title:'开头存在未替换的变量名：' + opPlaceholders.map(p=>p.trim()).join('、'),
+      original:opening.slice(0, 120),
+      advice:'正文开头仍有未替换的变量名 / 占位符，请确认模板已正确替换后再发送。'});
   }
 
+  // 3. 开头有错误的变量名
+  const opOpen = (opening.match(/\{/g)||[]).length;
+  const opClose = (opening.match(/\}/g)||[]).length;
+  const opBadVar = /\{[^{}]*$|^\s*[^}]*\}|\{\{[^{}]*\}(?!\})|\$\{[^}]*$/.test(opening);
+  if (opOpen !== opClose || opBadVar){
+    items.push({key:'body-badvar', cat:'正文', sev:'高', title:'开头有错误的变量名（花括号不完整或语法错误）',
+      original:opening.slice(0, 120),
+      advice:'请检查开头变量写法：正确格式为 <span class="tip">{{变量名}}</span>，不要出现单个 {、单个 } 或未闭合的 ${...}。'});
+  }
+
+  // 4. 加黑的 URL
+  const urls = t.match(/(?:https?:\/\/|www\.)[^\s<)】]*/gi) || [];
+  if (urls.length){
+    const bolded = /\*\*[^*]*(?:https?:\/\/|www\.)[^*]*\*\*|<a\s[^>]*href|<strong>[^<]*(?:https?:\/\/|www\.)[^<]*<\/strong>|<b>[^<]*(?:https?:\/\/|www\.)[^<]*<\/b>|\[[^\]]+\]\((?:https?:\/\/|www\.)[^)]+\)/i.test(t);
+    items.push({key:'body-url', cat:'正文', sev:'高', title:bolded ? '邮件中有加黑的 URL：' + urls[0] : '邮件中出现 URL（会被加粗/转成链接）：' + urls[0],
+      original:urls.join(' '),
+      advice:'邮件采用纯文本格式，正文不要放 URL 或超链接，否则极易进垃圾箱 / 广告邮箱。官网如需要呈现，只写纯文本（不带链接）。'});
+  }
+
+  // 5. 正文字数过多
   if (wc > 150){
-    items.push({cat:'正文', sev:'中', title:'正文过长（约 ' + wc + ' 词，建议 ≤150 词）',
-      original: t.slice(0,100) + (t.length>100?'…':''),
-      advice:'正文控制在 120~150 词以内，重点内容加粗或换色展示，删减冗余铺垫，直说客户能获得什么。'});
-  }
-  if (/(https?:\/\/|www\.|\.(jpg|jpeg|png|gif|pdf|zip|rar|docx?|xlsx?)\b)/i.test(t)){
-    items.push({cat:'正文', sev:'高', title:'正文包含网址 / 超链接 / 附件',
-      original: grab(t, /(https?:\/\/[^\s]+|www\.[^\s]+|\b[\w.\-]+\.(jpg|jpeg|png|gif|pdf|zip|rar|docx?|xlsx?)\b)/i),
-      advice:'邮件采用纯文本格式，不放网址、超链接、附件和大内存图片，极易进垃圾箱/广告邮箱。官网如需呈现，写成纯文本（不带链接），图片第二轮第三轮再放 1~2 张（300KB 内、宽 800px 内）。'});
-  }
-  if (!/(facebook|whatsapp|linkedin|wechat|instagram)/i.test(t)){
-    items.push({cat:'正文', sev:'低', title:'缺少社媒链接',
-      original:'（未找到社媒账号）',
-      advice:'建议放自己的 Facebook、WhatsApp 社媒账号（纯文本），可提升送达率。示例：<span class="tip">WhatsApp: +86 1xx xxxx xxxx</span>。'});
-  }
-  if (/(we are a leading supplier|we are a professional supplier|we are the best|we are a manufacturer of)/i.test(t)){
-    items.push({cat:'正文', sev:'中', title:'空洞开场："' + grab(t, /(we are a leading supplier|we are a professional supplier|we are the best|we are a manufacturer of)[^.]*\.?/i) + '"',
-      original: grab(t, /(we are a leading supplier|we are a professional supplier|we are the best|we are a manufacturer of)[^.]*\.?/i),
-      advice:'避免 "We are a leading supplier of…" 这类空话开场，改用价值锚定+数据。示例：<span class="tip">Last quarter, 214 行业名 executives reduced 具体痛点 by 38% using 解决方案…</span>'});
-  }
-  if (!/\d/.test(t)){
-    items.push({cat:'正文', sev:'中', title:'正文无任何数据支撑',
-      original:'（正文未出现数字）',
-      advice:'带数字的邮件使转化率更高。加入产能、年限、价格、降本比例等数据。示例：<span class="tip">20,000pcs monthly output</span>、<span class="tip">29% energy reduction in 8 weeks</span>。'});
-  }
-  if (!/(iso|ce |rohs|fda|tüv|tuv|ul |patent|认证|专利|sgs|reach)/i.test(t)){
-    items.push({cat:'正文', sev:'低', title:'缺少认证 / 专利等可信度背书',
-      original:'（未找到认证或专利信息）',
-      advice:'补充行业认证、专利号或合作客户背书，增强信任。示例：<span class="tip">ISO 9001 certified</span>、<span class="tip">Patented 技术名称 #US9,876,543B2</span>、<span class="tip">Served 50+ clients including 重点客户名</span>。'});
-  }
-  if (!/(oem|odm|moq|delivery|lead time|warranty|after.?sales|sample)/i.test(t)){
-    items.push({cat:'正文', sev:'低', title:'未提及 OEM/ODM、MOQ、交期、样品等服务点',
-      original:'（未找到相关表述）',
-      advice:'突出核心优势与竞争力，可分条列出，客户观感更清晰。示例：<span class="tip">OEM/ODM welcome</span>、<span class="tip">MOQ 1pc</span>、<span class="tip">Free sample for review</span>。'});
-  }
-  if (/(price|quotation|quote|cost)/i.test(t) && !/\d/.test(t)){
-    items.push({cat:'正文', sev:'低', title:'提到价格但无具体金额',
-      original: grab(t, /[^.]*(price|quotation|quote|cost)[^.]*\.?/i),
-      advice:'价格话术可更具体。示例：<span class="tip">Quality 产品 at Competitive Prices</span> 或 <span class="tip">100USD 产品 for the First Order</span>。'});
-  }
-
-  const ls = lastSentence(t);
-  if (/(\?|would you|interested|reply|let us know|contact me|quotation|sample|rfq|feedback|look forward)/i.test(ls)){
-  } else {
-    items.push({cat:'结尾', sev:'高', title:'结尾缺少"钩子"',
-      original: ls || '（结尾为空）',
-      advice:'结尾放一句"钩子"勾客户回复，不要用陈述句。示例：<span class="tip">Would you like to see more designs? We can provide samples for your review.</span>、<span class="tip">Would you be interested in discussing potential cooperation? Let us know your requirements.</span>、<span class="tip">If you are interested in any 产品, just don\'t hesitate to ask me for quotation.</span>'});
-  }
-  if (!/(reply|contact|let me know|let us know|rfq|send|tell|reach|call|book|schedule|visit)/i.test(ls)){
-    items.push({cat:'结尾', sev:'中', title:'结尾缺少行动号召 CTA',
-      original: ls,
-      advice:'结尾加明确的行动号召，引导客户下一步动作。示例：<span class="tip">Send us RFQ today if you have a project in mind, we will provide the best cost to you.</span>、<span class="tip">Would you like to visit our factory? We can arrange a video call.</span>'});
+    items.push({key:'body-length', cat:'正文', sev:'中', title:'邮件正文字数过多（约 ' + wc + ' 词，建议 ≤150 词）',
+      original:t.slice(0, 100) + (t.length>100?'…':''),
+      advice:'正文控制在 120~150 词以内，删减冗余铺垫，直说客户能获得什么。'});
   }
 
   return items;
 }
 
+function buildSummary(items){
+  const hit = k => items.some(i => i.key === k);
+  const y = v => v ? '<span class="hit-yes">有</span>' : '<span class="hit-no">无</span>';
+  const s = v => v ? '<span class="hit-yes">是</span>' : '<span class="hit-no">否</span>';
+  const titleLine = '<b>邮件标题：</b>' + y(hit('title-marketing')) + '营销特征词；标题' + s(hit('title-caps')) + '全大写；' +
+    y(hit('title-typo')) + '书写错误；' + y(hit('title-length')) + '字数过多问题；' +
+    y(hit('title-dup')) + '重复情况；' + y(hit('title-badvar')) + '错误变量；' +
+    y(hit('title-unreplaced')) + '变量替换问题';
+  const bodyLine = '<b>邮件内容：</b>' + y(hit('body-dear')) + '出现开头dear问题；' +
+    y(hit('body-unreplaced')) + '出现未替换变量名；' + y(hit('body-badvar')) + '错误变量名；' +
+    y(hit('body-url')) + '加黑URL；' + y(hit('body-length')) + '出现字数过多问题';
+  return '<div class="initial-summary-line">' + titleLine + '</div><div class="initial-summary-line">' + bodyLine + '</div>';
+}
 function escapeHtml(s){
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
@@ -419,6 +472,24 @@ function run(){
   if (!body.trim()){ alert('请先粘贴开发信正文'); return; }
 
   const items = analyze(subject, body);
+
+  // 跨提交的标题重复检查（记录在本机浏览器中）
+  const cur = subject.trim();
+  try {
+    const storeKey = 'emailCheckSubjects';
+    let seen = [];
+    try { seen = JSON.parse(localStorage.getItem(storeKey) || '[]'); } catch(e){ seen = []; }
+    if (cur){
+      const idx = seen.findIndex(x => String(x || '').trim().toLowerCase() === cur.toLowerCase());
+      if (idx >= 0){
+        items.push({key:'title-dup', cat:'标题', sev:'中', title:'标题与之前提交的第 ' + (idx + 1) + ' 条重复', original:cur, advice:'同一标题重复使用容易被判为高重复率邮件。建议更换标题（可替换产品名、客户名变量或价值点），同一标题使用约 2000 次后需更换。'});
+      } else {
+        seen.unshift(cur);
+        try { localStorage.setItem(storeKey, JSON.stringify(seen.slice(0, 200))); } catch(e){}
+      }
+    }
+  } catch(e){}
+
   const resultCard = $('resultCard');
   resultCard.style.display = 'block';
 
@@ -429,12 +500,17 @@ function run(){
     '<div class="summary-item"><b class="b-high">'+high+'</b><span>高风险问题</span></div>' +
     '<div class="summary-item"><b class="b-mid">'+mid+'</b><span>中等建议</span></div>' +
     '<div class="summary-item"><b class="b-low">'+low+'</b><span>优化建议</span></div>';
-  $('resultSubtitle').textContent = '共发现 ' + items.length + ' 处可改进点，按优先级排列';
 
-  const cats = ['标题','开头','正文','结尾'];
+  const standardKeys = ['title-marketing','title-caps','title-typo','title-length','title-dup','title-badvar','title-unreplaced','body-dear','body-unreplaced','body-badvar','body-url','body-length'];
+  const hits = standardKeys.filter(k => items.some(i => i.key === k)).length;
+  $('resultSubtitle').textContent = '已按 12 项标准检查，命中 ' + hits + ' 项，共 ' + items.length + ' 条反馈';
+  $('initialSummary').innerHTML = buildSummary(items);
+  $('initialSummary').style.display = 'block';
+
+  const cats = ['标题','正文'];
   let html = '';
   if (items.length === 0){
-    html = '<div class="empty-tip">✅ 未发现明显问题，你的开发信已符合 SOP 基本要求，可结合具体行业继续打磨。</div>';
+    html = '<div class="empty-tip">✅ 未发现明显问题，邮件已符合审核标准的基本要求。</div>';
   } else {
     for (const c of cats){
       const list = items.filter(i=>i.cat===c);
@@ -456,16 +532,14 @@ function run(){
   $('report').innerHTML = html;
   resultCard.scrollIntoView({behavior:'smooth'});
 }
-
 function loadSample(){
-  $('subject').value = 'Re: Inquiry about LED lights introduction';
+  $('subject').value = 'FREE SALE!!! BEST PRICE LED LIGHTS!!! {客户名';
   $('body').value = [
-    'Dear Sir/Madam,',
+    'Dear {{客户名}},',
     '',
-    'We are a leading supplier of LED lights from China. We have good quality and competitive price.',
-    'Our company was established many years ago. We export to many countries.',
-    'Please visit our website: http://www.abc-led.com for more products.',
-    '',
+    'This is Mike from {公司名, a manufacturer of LED lights in China.',
+    'We are offering FREE SALE and the best price for you.',
+    'Please visit our website: **http://www.abc-led.com** to see more products.',
     'If you need anything, please contact us.',
     '',
     'Best regards,',
@@ -474,12 +548,11 @@ function loadSample(){
   ].join('\n');
   run();
 }
-
 function toggleSop(){
   const p = $('sopPanel');
   const toggle = $('sopToggle');
   p.classList.toggle('show');
-  toggle.textContent = p.classList.contains('show') ? '▾ 收起诊断 SOP 清单' : '▸ 查看诊断 SOP 清单';
+  toggle.textContent = p.classList.contains('show') ? '▾ 收起 12 项诊断标准' : '▸ 查看 12 项诊断标准';
 }
 
 $('runBtn').addEventListener('click', run);
