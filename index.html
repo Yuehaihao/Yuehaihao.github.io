@@ -3,95 +3,384 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Yuehaihao</title>
-  <meta name="description" content="Yuehaihao 的个人主页" />
+  <title>YEuhub.ME</title>
+  <meta name="description" content="Haihao Yue 的数字工具空间" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230a84ff'/%3E%3Ctext x='32' y='43' font-size='32' text-anchor='middle' fill='white' font-family='Arial'%3EY%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
-      --bg: #0f172a;
-      --card: rgba(255, 255, 255, 0.08);
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #38bdf8;
+      --ink: #1c1c1e;
+      --muted: #64646b;
+      --blue: #0a84ff;
+      --purple: #bf5af2;
+      --orange: #ff9f0a;
     }
+
     * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
     body {
       margin: 0;
-      min-height: 100vh;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(1100px 720px at 12% -8%, #eaf3ff 0%, transparent 55%),
+        radial-gradient(900px 640px at 100% 0%, #f3edff 0%, transparent 55%),
+        linear-gradient(180deg, #f6f8fc 0%, #e9eef7 100%);
+      background-attachment: fixed;
+    }
+
+    .scene {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(72px);
+      opacity: 0.8;
+      will-change: transform;
+    }
+
+    .orb-a { width: 380px; height: 380px; left: -90px; top: -70px; background: #7cc7ff; animation: drift 24s ease-in-out infinite alternate; }
+    .orb-b { width: 340px; height: 340px; right: -80px; top: 60px; background: #c5a8ff; animation: drift 28s ease-in-out infinite alternate-reverse; }
+    .orb-c { width: 300px; height: 300px; left: 32%; bottom: -120px; background: #ffb3d9; opacity: 0.65; animation: drift 32s ease-in-out infinite alternate; }
+    .orb-d { width: 260px; height: 260px; right: 22%; bottom: 4%; background: #ffd9a0; opacity: 0.6; animation: drift 26s ease-in-out infinite alternate-reverse; }
+
+    @keyframes drift {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(46px, 34px, 0) scale(1.08); }
+    }
+
+    .shell {
+      width: min(960px, 100%);
+      margin: 0 auto;
+      padding: clamp(28px, 6vw, 72px) 22px 44px;
+    }
+
+    .glass {
+      position: relative;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.26));
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 32px;
+      box-shadow:
+        0 26px 60px rgba(31, 58, 105, 0.14),
+        0 6px 18px rgba(31, 58, 105, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+      overflow: hidden;
+    }
+
+    .glass::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 42%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .glass { background: rgba(255, 255, 255, 0.86); }
+    }
+
+    .hero {
+      text-align: center;
+      padding: 52px 28px 48px;
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #0071e3;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(31, 58, 105, 0.1);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #30d158;
+      box-shadow: 0 0 0 4px rgba(48, 209, 88, 0.18);
+    }
+
+    .hero h1 {
+      margin: 18px 0 8px;
+      font-size: clamp(40px, 9vw, 68px);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      margin-bottom: 22px;
+    }
+
+    .tile {
+      position: relative;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 26px 24px;
+      border-radius: 28px;
+      color: inherit;
+      text-decoration: none;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+    }
+
+    a.tile:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 34px 70px rgba(31, 58, 105, 0.2),
+        0 8px 22px rgba(31, 58, 105, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    a.tile:active { transform: translateY(-1px) scale(0.995); }
+
+    .tile-icon {
+      flex: 0 0 56px;
+      width: 56px;
+      height: 56px;
       display: grid;
       place-items: center;
-      background: radial-gradient(circle at top left, #1e293b, var(--bg));
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-      padding: 24px;
+      border-radius: 18px;
+      color: var(--tint);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 1px 0 #fff, 0 10px 22px rgba(31, 58, 105, 0.14);
     }
-    main {
-      width: min(720px, 100%);
-      background: var(--card);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px;
-      padding: 48px 32px;
-      text-align: center;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+
+    .tile-icon svg { width: 26px; height: 26px; }
+
+    .tile-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
     }
-    .badge {
-      display: inline-block;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      margin-bottom: 20px;
+
+    .tile-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 18px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
     }
-    h1 {
-      margin: 0;
-      font-size: clamp(34px, 8vw, 56px);
-      letter-spacing: -0.03em;
+
+    .chev {
+      margin-left: auto;
+      font-size: 20px;
+      color: var(--tint);
+      transition: transform 0.25s ease;
     }
-    p {
+
+    a.tile:hover .chev { transform: translateX(4px); }
+
+    .tile-desc {
       color: var(--muted);
-      line-height: 1.8;
-      font-size: 17px;
-      margin: 20px 0 28px;
+      font-size: 14px;
+      line-height: 1.65;
     }
-    .links {
+
+    .tile-status {
+      margin-top: 10px;
+      align-self: flex-start;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tint);
+      background: var(--tint-soft);
+      border: 1px solid var(--tint-border);
+    }
+
+    .tile-mail { --tint: #0a84ff; --tint-soft: rgba(10, 132, 255, 0.13); --tint-border: rgba(10, 132, 255, 0.3); }
+    .tile-tools { --tint: #bf5af2; --tint-soft: rgba(191, 90, 242, 0.13); --tint-border: rgba(191, 90, 242, 0.3); }
+    .tile-notes { --tint: #ff9f0a; --tint-soft: rgba(255, 159, 10, 0.14); --tint-border: rgba(255, 159, 10, 0.32); }
+
+    .footer {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
       gap: 12px;
-      justify-content: center;
-    }
-    a {
-      display: inline-block;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text);
-      text-decoration: none;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-    a:hover {
-      background: rgba(255, 255, 255, 0.14);
-      transform: translateY(-2px);
-    }
-    footer {
-      margin-top: 36px;
-      color: #6b7280;
+      padding: 18px 22px;
+      border-radius: 24px;
       font-size: 13px;
+      color: var(--muted);
+    }
+
+    .footer-links { display: flex; gap: 8px; }
+
+    .footer-links a {
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: var(--ink);
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      transition: background 0.2s ease;
+    }
+
+    .footer-links a:hover { background: rgba(255, 255, 255, 0.8); }
+
+    @media (prefers-color-scheme: dark) {
+      :root { --ink: #f5f5f7; --muted: #9da0aa; }
+      body {
+        background:
+          radial-gradient(1100px 720px at 12% -8%, #12223a 0%, transparent 55%),
+          radial-gradient(900px 640px at 100% 0%, #241b38 0%, transparent 55%),
+          linear-gradient(180deg, #13151b 0%, #0c0e12 100%);
+      }
+      .orb { opacity: 0.34; }
+      .glass {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045));
+        border-color: rgba(255, 255, 255, 0.16);
+        box-shadow:
+          0 26px 60px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.16),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+      }
+      .glass::after { background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 42%); opacity: 1; }
+      .badge {
+        color: #6cb9ff;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.14);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      }
+      .tile-icon {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+        border-color: rgba(255, 255, 255, 0.14);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      }
+      .tile-mail { --tint: #6cb9ff; --tint-soft: rgba(108, 185, 255, 0.14); --tint-border: rgba(108, 185, 255, 0.3); }
+      .tile-tools { --tint: #d68cff; --tint-soft: rgba(214, 140, 255, 0.14); --tint-border: rgba(214, 140, 255, 0.3); }
+      .tile-notes { --tint: #ffc260; --tint-soft: rgba(255, 194, 96, 0.14); --tint-border: rgba(255, 194, 96, 0.3); }
+      .footer-links a {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+      .footer-links a:hover { background: rgba(255, 255, 255, 0.16); }
+      @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+        .glass { background: rgba(26, 29, 38, 0.9); }
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .orb { animation: none; }
+      a.tile, .chev { transition: none; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <div class="badge">YEuhub.ME 已上线</div>
-    <h1>Haihao Yue</h1>
-    <p>这里是我的个人主页。接下来我会在这里放上作品、项目、文章和联系方式。</p>
-    <div class="links">
-      <a href="https://github.com/Yuehaihao" target="_blank" rel="noreferrer">GitHub</a>
-      <a href="mailto:yuehaihao@example.com">联系我</a>
-    </div>
-    <footer>Powered by GitHub Pages · yeuhub.me</footer>
-  </main>
+  <div class="scene" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+    <span class="orb orb-d"></span>
+  </div>
+
+  <div class="shell">
+    <header class="hero glass">
+      <span class="badge"><span class="badge-dot"></span>YEuhub.ME</span>
+      <h1>Haihao Yue</h1>
+      <p>这里是我的数字工具空间，所有工具都在下面的板块里。</p>
+    </header>
+
+    <nav class="grid" aria-label="功能板块">
+      <a class="tile glass tile-mail" href="#" id="email-diagnosis">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+            <path d="m3.5 7 8.5 6 8.5-6"></path>
+            <path d="M12 13v7"></path>
+            <circle cx="18.5" cy="17.5" r="1.6"></circle>
+          </svg>
+        </span>
+        <span class="tile-body">
+          <span class="tile-title">邮件内容诊断 <span class="chev" aria-hidden="true">→</span></span>
+          <span class="tile-desc">分析邮件文案的清晰度、语气与风险点，让每一封邮件更有效。</span>
+          <span class="tile-status">点击进入</span>
+        </span>
+      </a>
+
+      <div class="tile glass tile-tools" aria-disabled="true">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v4"></path>
+            <path d="M12 17v4"></path>
+            <path d="M3 12h4"></path>
+            <path d="M17 12h4"></path>
+            <circle cx="12" cy="12" r="3.4"></circle>
+            <path d="M9.6 9.6 7 7"></path>
+            <path d="M14.4 14.4 17 17"></path>
+            <path d="M9.6 14.4 7 17"></path>
+            <path d="M14.4 9.6 17 7"></path>
+          </svg>
+        </span>
+        <span class="tile-body">
+          <span class="tile-title">板块二 <span class="chev" aria-hidden="true">＋</span></span>
+          <span class="tile-desc">这里预留给下一个功能，告诉我你想要什么，我来帮你实现。</span>
+          <span class="tile-status">敬请期待</span>
+        </span>
+      </div>
+
+      <div class="tile glass tile-notes" aria-disabled="true">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3c2.5 1.4 5.5 1.5 7.5 1.2.3 0 .5.3.5.6 0 5.8-2.4 10.4-8 13.2-5.6-2.8-8-7.4-8-13.2 0-.3.2-.6.5-.6 2 .3 5 .2 7.5-1.2Z"></path>
+            <path d="M12 7v6"></path>
+            <path d="M9.5 10h5"></path>
+          </svg>
+        </span>
+        <span class="tile-body">
+          <span class="tile-title">板块三 <span class="chev" aria-hidden="true">＋</span></span>
+          <span class="tile-desc">这里预留给另一个功能，也可以先当作你的灵感笔记区。</span>
+          <span class="tile-status">敬请期待</span>
+        </span>
+      </div>
+    </nav>
+
+    <footer class="footer glass">
+      <span>Powered by GitHub Pages · yeuhub.me</span>
+      <span class="footer-links">
+        <a href="https://github.com/Yuehaihao" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="mailto:yuehaihao@example.com">联系我</a>
+      </span>
+    </footer>
+  </div>
 </body>
 </html>
