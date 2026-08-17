@@ -136,7 +136,7 @@
   .count-label { flex-shrink: 0; font-size: 12.5px; font-weight: 700; color: var(--purple-dark); padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.6); }
   #countLine { min-height: 1em; }
 
-  .result-block {
+  .section-block {
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: 16px; padding: 15px 17px; margin-bottom: 12px;
@@ -154,6 +154,8 @@
   }
   .copy-btn:hover { background: rgba(255, 255, 255, 0.95); }
   .country-list { font-size: 14px; color: #3d4350; line-height: 1.9; word-break: break-word; }
+  .section-head { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .chinese-targets { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.9; word-break: break-word; }
 
   .unknown-box {
     margin-top: 4px; padding: 12px 14px; border-radius: 14px; font-size: 13.5px;
@@ -195,7 +197,7 @@
     .btn-ghost { color: var(--purple); background: rgba(255, 255, 255, 0.08); border-color: rgba(214, 140, 255, 0.4); }
     .count-line { background: rgba(214, 140, 255, 0.1); border-color: rgba(214, 140, 255, 0.28); }
     .count-label { color: var(--purple); background: rgba(255,255,255,.08); }
-    .result-block { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.14); box-shadow: none; }
+    .section-block { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.14); box-shadow: none; }
     .country-list { color: #c9cedb; }
     .copy-btn { color: var(--purple); background: rgba(255,255,255,.08); border-color: rgba(214,140,255,.35); }
     .block-count { color: var(--purple); background: rgba(214, 140, 255, 0.14); }
@@ -240,7 +242,14 @@
     <div class="card-head"><span class="card-num">二</span><div><h2>目标国家查询结果</h2><p class="subtitle" id="resultSubtitle"></p></div></div>
     <div class="copy-all-row"><button class="copy-btn" id="copyAllBtn" style="display:none;">复制全部结果</button></div>
     <div class="count-line"><span class="count-label">数量统计</span><span id="countLine"></span></div>
-    <div id="resultBlocks"></div>
+    <div class="section-block">
+      <div class="section-head">输入目标（中文）</div>
+      <div class="chinese-targets" id="chineseTargets"></div>
+    </div>
+    <div class="section-block">
+      <div class="section-head">国家名单（英文）<span class="block-count" id="mergedCount"></span></div>
+      <div class="country-list" id="mergedList"></div>
+    </div>
     <div class="unknown-box" id="unknownBox" style="display:none;"></div>
   </section>
 
@@ -403,21 +412,16 @@ function run(){
     $('countLine').textContent = '（没有匹配到任何地区）';
   }
 
-  const totalCountries = results.reduce((n, r) => n + r.region.countries.length, 0);
-  $('resultSubtitle').textContent = '共识别 ' + results.length + ' 个目标，合计 ' + totalCountries + ' 个国家';
-
-  let html = '';
-  results.forEach((r, i) => {
-    html += '<div class="result-block">' +
-      '<div class="block-head">' +
-      '<span class="block-title">' + escapeHtml(r.region.en) + '<span class="zh">' + escapeHtml(r.region.zh) + '</span></span>' +
-      '<span class="block-count">' + r.region.countries.length + ' 个国家</span>' +
-      '<button class="copy-btn" data-idx="' + i + '">复制名单</button>' +
-      '</div>' +
-      '<div class="country-list">' + escapeHtml(r.region.countries.join(', ')) + '</div>' +
-      '</div>';
-  });
-  $('resultBlocks').innerHTML = html;
+  const merged = [];
+  for (const r of results){
+    for (const c of r.region.countries){
+      if (!merged.includes(c)) merged.push(c);
+    }
+  }
+  $('resultSubtitle').textContent = '共识别 ' + results.length + ' 个目标，合并去重后共 ' + merged.length + ' 个国家';
+  $('chineseTargets').textContent = results.map(r => r.input).join('、');
+  $('mergedList').textContent = merged.join(', ');
+  $('mergedCount').textContent = '共 ' + merged.length + ' 个国家';
 
   if (unknown.length){
     $('unknownBox').style.display = 'block';
@@ -465,16 +469,15 @@ function loadSample(){
 
 $('runBtn').addEventListener('click', run);
 $('sampleBtn').addEventListener('click', loadSample);
-$('resultBlocks').addEventListener('click', function(e){
-  const btn = e.target.closest('.copy-btn');
-  if (!btn) return;
-  const idx = Number(btn.getAttribute('data-idx'));
-  const item = lastResults[idx];
-  if (item) copyText(item.region.countries.join(', '));
-});
+
 $('copyAllBtn').addEventListener('click', function(){
-  const text = lastResults.map(r => r.region.en + '（' + r.region.zh + '）: ' + r.region.countries.join(', ')).join('\n\n');
-  copyText(text);
+  const merged = [];
+  for (const r of lastResults){
+    for (const c of r.region.countries){
+      if (!merged.includes(c)) merged.push(c);
+    }
+  }
+  copyText(merged.join(', '));
 });
 </script>
 </body>
