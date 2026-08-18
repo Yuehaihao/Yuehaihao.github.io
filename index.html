@@ -688,7 +688,7 @@
         if (!width || !height) return;
         var centerY = height * 0.52;
         var barSpacing = Math.max(3, Math.round(width / 360));
-        var selectionWidth = Math.max(72, Math.min(120, width * 0.09));
+        var selectionWidth = Math.max(72, width / 6);
         var orangeStart = Math.max(0, selectionCenter - selectionWidth * 0.5);
         var orangeEnd = Math.min(width, selectionCenter + selectionWidth * 0.5);
         context.clearRect(0, 0, width, height);
@@ -726,7 +726,7 @@
         }
 
         context.fillStyle = 'rgba(223, 60, 29, 0.82)';
-        var blockWidth = Math.max(34, selectionWidth * 0.56);
+        var blockWidth = Math.max(48, selectionWidth * 0.72);
         var blockHeight = height * (0.42 + Math.sin(phase * 0.55) * 0.035);
         context.fillRect(selectionCenter - blockWidth * 0.5, centerY - blockHeight * 0.5, blockWidth, blockHeight);
 
