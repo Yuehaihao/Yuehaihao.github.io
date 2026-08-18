@@ -55,6 +55,8 @@
       font-size: 20px;
       font-weight: 600;
       letter-spacing: 0.04em;
+      line-height: 1;
+      flex: 0 0 auto;
       text-transform: uppercase;
     }
     .hero {
@@ -658,6 +660,8 @@
       var phase = 0;
       var previousTime = 0;
       var frameId = null;
+      var selectionCenter = 0;
+      var targetSelectionCenter = null;
       var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       function resizeCanvas() {
@@ -668,6 +672,8 @@
         canvas.width = Math.round(width * pixelRatio);
         canvas.height = Math.round(height * pixelRatio);
         context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        if (targetSelectionCenter === null) targetSelectionCenter = width * 0.5;
+        selectionCenter = Math.max(0, Math.min(width, targetSelectionCenter));
         drawWave();
       }
 
@@ -682,8 +688,9 @@
         if (!width || !height) return;
         var centerY = height * 0.52;
         var barSpacing = Math.max(3, Math.round(width / 360));
-        var orangeStart = width * 0.31;
-        var orangeEnd = width * 0.68;
+        var selectionWidth = Math.max(72, Math.min(120, width * 0.09));
+        var orangeStart = Math.max(0, selectionCenter - selectionWidth * 0.5);
+        var orangeEnd = Math.min(width, selectionCenter + selectionWidth * 0.5);
         context.clearRect(0, 0, width, height);
         context.fillStyle = '#e5e4df';
         context.fillRect(0, 0, width, height);
@@ -719,11 +726,9 @@
         }
 
         context.fillStyle = 'rgba(223, 60, 29, 0.82)';
-        var blockWidth = Math.max(26, width * 0.055);
-        var firstBlockX = width * 0.35 + Math.sin(phase * 0.45) * 6;
-        var secondBlockX = width * 0.59 + Math.cos(phase * 0.38) * 6;
-        context.fillRect(firstBlockX, centerY - height * 0.25, blockWidth, height * 0.5);
-        context.fillRect(secondBlockX, centerY - height * 0.22, blockWidth, height * 0.44);
+        var blockWidth = Math.max(34, selectionWidth * 0.56);
+        var blockHeight = height * (0.42 + Math.sin(phase * 0.55) * 0.035);
+        context.fillRect(selectionCenter - blockWidth * 0.5, centerY - blockHeight * 0.5, blockWidth, blockHeight);
 
         context.strokeStyle = 'rgba(18, 18, 17, 0.86)';
         context.lineWidth = 1.5;
@@ -741,6 +746,7 @@
         var elapsed = timestamp - previousTime;
         if (elapsed >= 42) {
           phase += elapsed * 0.00022;
+          selectionCenter += (targetSelectionCenter - selectionCenter) * 0.18;
           previousTime = timestamp;
           drawWave();
         }
@@ -748,6 +754,14 @@
       }
 
       window.addEventListener('resize', resizeCanvas);
+      hero.addEventListener('pointermove', function(event) {
+        var bounds = canvas.getBoundingClientRect();
+        targetSelectionCenter = Math.max(0, Math.min(width, event.clientX - bounds.left));
+        if (reducedMotion) {
+          selectionCenter = targetSelectionCenter;
+          drawWave();
+        }
+      });
       resizeCanvas();
       if (!reducedMotion) frameId = window.requestAnimationFrame(animateWave);
       window.addEventListener('pagehide', function () {
