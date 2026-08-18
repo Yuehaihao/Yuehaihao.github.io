@@ -272,6 +272,13 @@
       gap: 16px;
       grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
     }
+    .tilt-wrap {
+      perspective: 1100px;
+      will-change: transform;
+    }
+    .tilt-wrap .tile {
+      height: 100%;
+    }
     .tile {
       display: flex;
       gap: 16px;
@@ -408,6 +415,7 @@
             </button>
           </div>
           <div class="grid">
+            <div class="tilt-wrap" id="emailTiltWrap">
             <a class="tile tile-mail" href="email-check/index.html" id="email-diagnosis">
               <span class="tile-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -423,6 +431,7 @@
                 <span class="tile-status">点击进入</span>
               </span>
             </a>
+            </div>
 
             <a class="tile tile-tools" href="country-query/index.html" id="country-query">
               <span class="tile-icon" aria-hidden="true">
@@ -628,6 +637,40 @@
         });
       }, { threshold: 0.12 });
       els.forEach(function (el) { io.observe(el); });
+    })();
+
+    // 板块一卡片：随滚动旋转到固定定型
+    (function () {
+      var wrap = document.getElementById('emailTiltWrap');
+      if (!wrap) return;
+      var startRX = 5, endRX = 0;
+      var startRY = -22, endRY = 0;
+      var startTX = -4, endTX = 0;
+      var ticking = false;
+
+      function updateTilt() {
+        ticking = false;
+        var rect = wrap.getBoundingClientRect();
+        var vh = window.innerHeight || 1;
+        var p = (vh - rect.top) / (vh * 0.7);
+        p = Math.max(0, Math.min(1, p));
+        var eased = 1 - Math.pow(1 - p, 3);
+        var rx = startRX + (endRX - startRX) * eased;
+        var ry = startRY + (endRY - startRY) * eased;
+        var tx = startTX + (endTX - startTX) * eased;
+        wrap.style.transform = 'rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) translateX(' + tx.toFixed(2) + '%)';
+      }
+
+      function requestTilt() {
+        if (!ticking) {
+          ticking = true;
+          window.requestAnimationFrame(updateTilt);
+        }
+      }
+
+      window.addEventListener('scroll', requestTilt, { passive: true });
+      window.addEventListener('resize', requestTilt);
+      updateTilt();
     })();
 
     // 眼睛跟随鼠标
