@@ -30,7 +30,7 @@
       margin: 0;
       font-family: "Oswald", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: var(--ink);
-      background: var(--mustard);
+      background: #e5e4df;
       -webkit-font-smoothing: antialiased;
     }
     a { color: inherit; }
@@ -65,6 +65,18 @@
       padding: 96px 6vw 60px;
       overflow: hidden;
       position: relative;
+      background: #e5e4df;
+    }
+    .audio-wave {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .hero-title, .hero-meta { position: relative; z-index: 1; }
+    .scroll-hint { z-index: 1; }
     }
 
     .hero-title {
@@ -358,6 +370,7 @@
   </header>
 
   <section class="hero" id="top" aria-label="首页">
+    <canvas class="audio-wave" id="audioWave" aria-hidden="true"></canvas>
     <div class="hero-title">
       <span class="hero-line" id="heroLine1">
         <span class="char" style="animation-delay:0.05s">Y</span><span class="char" style="animation-delay:0.1s">E</span><span class="char" style="animation-delay:0.15s">u</span><span class="char" style="animation-delay:0.2s">h</span><span class="char" style="animation-delay:0.25s">u</span><span class="char" style="animation-delay:0.3s">b</span>
@@ -632,6 +645,114 @@
         });
       }, { threshold: 0.12 });
       els.forEach(function (el) { io.observe(el); });
+    })();
+
+    (function () {
+      var canvas = document.getElementById('audioWave');
+      if (!canvas) return;
+      var hero = canvas.parentElement;
+      var context = canvas.getContext('2d');
+      var width = 0;
+      var height = 0;
+      var pixelRatio = 1;
+      var phase = 0;
+      var previousTime = 0;
+      var frameId = null;
+      var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function resizeCanvas() {
+        var bounds = hero.getBoundingClientRect();
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        width = Math.max(1, Math.round(bounds.width));
+        height = Math.max(1, Math.round(bounds.height));
+        canvas.width = Math.round(width * pixelRatio);
+        canvas.height = Math.round(height * pixelRatio);
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        drawWave();
+      }
+
+      function barAmplitude(position, currentPhase) {
+        var slowWave = Math.sin(position * 0.017 + currentPhase * 0.82);
+        var midWave = Math.sin(position * 0.051 - currentPhase * 1.16);
+        var fineWave = Math.sin(position * 0.18 + currentPhase * 2.3);
+        return 18 + Math.abs(slowWave) * 70 + Math.abs(midWave) * 38 + Math.abs(fineWave) * 17;
+      }
+
+      function drawWave() {
+        if (!width || !height) return;
+        var centerY = height * 0.52;
+        var barSpacing = Math.max(3, Math.round(width / 360));
+        var orangeStart = width * 0.31;
+        var orangeEnd = width * 0.68;
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = '#e5e4df';
+        context.fillRect(0, 0, width, height);
+
+        context.strokeStyle = 'rgba(32, 32, 30, 0.08)';
+        context.lineWidth = 1;
+        for (var gridX = 0; gridX <= width; gridX += Math.max(72, width / 12)) {
+          context.beginPath();
+          context.moveTo(gridX, 0);
+          context.lineTo(gridX, height);
+          context.stroke();
+        }
+        for (var gridY = 0; gridY <= height; gridY += Math.max(78, height / 7)) {
+          context.beginPath();
+          context.moveTo(0, gridY);
+          context.lineTo(width, gridY);
+          context.stroke();
+        }
+
+        context.fillStyle = 'rgba(239, 82, 43, 0.08)';
+        context.fillRect(orangeStart, 0, orangeEnd - orangeStart, height);
+        for (var position = 0; position <= width; position += barSpacing) {
+          var amplitude = Math.min(height * 0.43, barAmplitude(position, phase));
+          var inActiveRange = position >= orangeStart && position <= orangeEnd;
+          var orangePulse = Math.sin(position * 0.03 + phase * 1.4);
+          var orangePeak = inActiveRange && orangePulse > 0.1;
+          context.strokeStyle = orangePeak ? 'rgba(229, 69, 35, 0.68)' : 'rgba(43, 43, 41, 0.25)';
+          context.lineWidth = orangePeak ? 1.25 : 1;
+          context.beginPath();
+          context.moveTo(position, centerY - amplitude);
+          context.lineTo(position, centerY + amplitude);
+          context.stroke();
+        }
+
+        context.fillStyle = 'rgba(223, 60, 29, 0.82)';
+        var blockWidth = Math.max(26, width * 0.055);
+        var firstBlockX = width * 0.35 + Math.sin(phase * 0.45) * 6;
+        var secondBlockX = width * 0.59 + Math.cos(phase * 0.38) * 6;
+        context.fillRect(firstBlockX, centerY - height * 0.25, blockWidth, height * 0.5);
+        context.fillRect(secondBlockX, centerY - height * 0.22, blockWidth, height * 0.44);
+
+        context.strokeStyle = 'rgba(18, 18, 17, 0.86)';
+        context.lineWidth = 1.5;
+        context.beginPath();
+        for (var curveX = 0; curveX <= width; curveX += 5) {
+          var curveY = centerY + Math.sin(curveX * 0.015 + phase * 0.8) * 19 + Math.sin(curveX * 0.04 - phase * 0.45) * 8;
+          if (curveX === 0) context.moveTo(curveX, curveY);
+          else context.lineTo(curveX, curveY);
+        }
+        context.stroke();
+      }
+
+      function animateWave(timestamp) {
+        if (!previousTime) previousTime = timestamp;
+        var elapsed = timestamp - previousTime;
+        if (elapsed >= 42) {
+          phase += elapsed * 0.00022;
+          previousTime = timestamp;
+          drawWave();
+        }
+        frameId = window.requestAnimationFrame(animateWave);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      if (!reducedMotion) frameId = window.requestAnimationFrame(animateWave);
+      window.addEventListener('pagehide', function () {
+        if (frameId) window.cancelAnimationFrame(frameId);
+      }, { once: true });
     })();
 
     // 板块一卡片：随滚动旋转到固定定型
