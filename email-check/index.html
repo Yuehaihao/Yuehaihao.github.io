@@ -109,6 +109,22 @@
   }
   textarea { min-height: 240px; resize: vertical; line-height: 1.7; }
   .form-row { margin-bottom: 15px; }
+  .mail-list { display: grid; gap: 16px; }
+  .mail-entry {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.84);
+  }
+  .mail-entry-head { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+  .mail-entry-title { font-size: 15px; font-weight: 700; }
+  .mail-entry-meta { font-size: 12.5px; color: var(--muted); }
+  .mail-remove {
+    margin-left: auto; padding: 5px 11px; border: 1px solid rgba(229, 72, 77, 0.35);
+    border-radius: 999px; background: rgba(229, 72, 77, 0.08); color: var(--red);
+    font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  }
+  .mail-remove:hover { background: rgba(229, 72, 77, 0.16); }
   .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
   .btn {
     padding: 12px 30px; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer;
@@ -125,6 +141,11 @@
     box-shadow: 0 6px 14px rgba(31, 58, 105, 0.1);
   }
   .btn-ghost:hover { background: rgba(255, 255, 255, 0.85); box-shadow: 0 10px 20px rgba(31, 58, 105, 0.14); }
+  .batch-hint {
+    flex: 1 1 220px; padding: 8px 12px; border-radius: 12px; color: var(--blue);
+    background: rgba(10, 132, 255, 0.09); border: 1px solid rgba(10, 132, 255, 0.2);
+    font-size: 13px; font-weight: 600;
+  }
   .sop-toggle { font-size: 13.5px; color: var(--blue); cursor: pointer; user-select: none; font-weight: 600; padding: 8px 0; }
   .sop-panel { display: none; margin-top: 12px; background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 14px; padding: 15px 18px; }
   .sop-panel.show { display: block; }
@@ -153,9 +174,27 @@
   .initial-summary-line b { color: var(--ink); }
   .hit-yes { color: var(--red); font-weight: 700; }
   .hit-no { color: var(--green); font-weight: 700; }
+  .combined-summary {
+    margin-bottom: 16px; padding: 16px;
+    background: rgba(255, 255, 255, 0.46); border: 1px solid rgba(255, 255, 255, 0.88);
+    border-radius: 16px; box-shadow: 0 6px 16px rgba(31, 58, 105, 0.06);
+  }
+  .combined-summary-head { margin-bottom: 12px; }
+  .combined-summary-head h3 { font-size: 16px; margin-bottom: 2px; }
+  .combined-summary-head p { color: var(--muted); font-size: 13px; }
+  .combined-table-wrap { overflow-x: auto; }
+  .combined-table { width: 100%; min-width: 650px; border-collapse: separate; border-spacing: 0; overflow: hidden; border: 1px solid rgba(100, 116, 139, 0.25); border-radius: 12px; font-size: 13px; }
+  .combined-table th, .combined-table td { padding: 10px 12px; text-align: left; vertical-align: middle; border-right: 1px solid rgba(100, 116, 139, 0.18); border-bottom: 1px solid rgba(100, 116, 139, 0.18); }
+  .combined-table th:last-child, .combined-table td:last-child { border-right: none; }
+  .combined-table tr:last-child td { border-bottom: none; }
+  .combined-table th { background: rgba(10, 132, 255, 0.1); color: var(--ink); font-size: 13px; font-weight: 700; }
+  .combined-table .summary-cat { width: 92px; text-align: center; font-weight: 700; background: rgba(255, 255, 255, 0.52); }
+  .combined-table .summary-status { min-width: 260px; }
+  .summary-ok { color: var(--green); font-weight: 700; }
+  .summary-hit { color: var(--red); font-weight: 700; }
 
   .group-title { font-size: 15px; font-weight: 700; margin: 18px 0 10px; padding-left: 12px; border-left: 4px solid var(--blue); }
-  .item {
+  .item { 
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: 16px; padding: 15px 17px; margin-bottom: 12px;
@@ -175,6 +214,11 @@
   }
   .kv-advice { background: var(--green-bg); border-radius: 10px; padding: 9px 12px; font-size: 13.5px; color: #14532d; }
   .kv-advice .tip { color: #166534; font-weight: 600; }
+  .mail-report { margin-top: 26px; }
+  .mail-report:first-child { margin-top: 0; }
+  .mail-report-head { display: flex; align-items: baseline; gap: 10px; margin: 0 0 12px; padding: 0 0 10px; border-bottom: 1px solid rgba(100, 116, 139, 0.22); }
+  .mail-report-head h3 { font-size: 17px; }
+  .mail-report-head p { color: var(--muted); font-size: 12.5px; word-break: break-word; }
   .empty-tip { text-align: center; color: var(--muted); padding: 30px 0; font-size: 14px; }
   .footer { text-align: center; padding: 16px; font-size: 12.5px; color: var(--muted); }
 
@@ -208,8 +252,12 @@
     }
     input[type=text]:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(108, 185, 255, 0.18); }
     .btn-ghost { color: var(--blue); background: rgba(255, 255, 255, 0.08); border-color: rgba(108, 185, 255, 0.4); }
-    .sop-panel, .summary-item, .item { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.14); box-shadow: none; }
+    .sop-panel, .summary-item, .item, .mail-entry, .combined-summary { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.14); box-shadow: none; }
     .sop-panel li { color: #b7bcc8; }
+    .combined-table { border-color: rgba(255, 255, 255, 0.14); }
+    .combined-table th, .combined-table td { border-color: rgba(255, 255, 255, 0.14); }
+    .combined-table th { background: rgba(108, 185, 255, 0.12); }
+    .combined-table .summary-cat { background: rgba(255, 255, 255, 0.08); }
     .kv-original { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.16); color: #c9cedb; }
     .kv-advice { background: rgba(74, 222, 128, 0.12); color: #bbf7d0; }
     .kv-advice .tip { color: #d1fae5; }
@@ -240,18 +288,13 @@
   </header>
 
   <section class="card glass">
-    <div class="card-head"><span class="card-num">一</span><div><h2>输入开发信</h2><p class="subtitle">填写邮件主题（选填）和正文，点击「一键解析」</p></div></div>
-    <div class="form-row">
-      <label class="field" for="subject">邮件主题 Subject（选填）</label>
-      <input type="text" id="subject" placeholder="例如：Direct Supplier of LED Lights from China" />
-    </div>
-    <div class="form-row">
-      <label class="field" for="body">邮件正文 Body</label>
-      <textarea id="body" placeholder="在此粘贴你的开发信正文…"></textarea>
-    </div>
+    <div class="card-head"><span class="card-num">一</span><div><h2>输入开发信</h2><p class="subtitle">可连续添加多封邮件，完成后统一合并诊断</p></div></div>
+    <div class="mail-list" id="mailList"></div>
     <div class="btn-row">
       <button class="btn" id="runBtn">一键解析</button>
+      <button class="btn btn-ghost" id="continueBtn">继续输入下一封</button>
       <button class="btn btn-ghost" id="sampleBtn">载入示例</button>
+      <span class="batch-hint" id="batchHint">当前正在输入第 1 封邮件</span>
       <span class="sop-toggle" id="sopToggle" role="button" tabindex="0">▸ 查看 12 项诊断标准</span>
     </div>
     <div class="sop-panel" id="sopPanel">
@@ -271,13 +314,14 @@
       <li>邮件正文字数过多（超过 150 词）</li>
       <h4>输出</h4>
       <li>命中的问题逐条记录：问题点 · 原文 · 优化建议</li>
-      <li>报告顶部输出「初步总结」（标题 + 内容两行结论）</li>
+      <li>多封邮件会输出「合并汇总」：逐项展示涉及邮件数量与邮件编号</li>
     </div>
   </section>
 
   <section class="card glass" id="resultCard" style="display:none;">
     <div class="card-head"><span class="card-num">二</span><div><h2>诊断报告</h2><p class="subtitle" id="resultSubtitle"></p></div></div>
     <div class="initial-summary" id="initialSummary" style="display:none;"></div>
+    <div class="combined-summary" id="combinedSummary" style="display:none;"></div>
     <div class="summary" id="summary"></div>
     <div id="report"></div>
   </section>
@@ -449,103 +493,257 @@ function analyze(subject, body){
   return items;
 }
 
-function buildSummary(items){
-  const hit = k => items.some(i => i.key === k);
-  const y = v => v ? '<span class="hit-yes">有</span>' : '<span class="hit-no">无</span>';
-  const s = v => v ? '<span class="hit-yes">是</span>' : '<span class="hit-no">否</span>';
-  const titleLine = '<b>邮件标题：</b>' + y(hit('title-marketing')) + '营销特征词；标题' + s(hit('title-caps')) + '全大写；' +
-    y(hit('title-typo')) + '书写错误；' + y(hit('title-length')) + '字数过多问题；' +
-    y(hit('title-dup')) + '重复情况；' + y(hit('title-badvar')) + '错误变量；' +
-    y(hit('title-unreplaced')) + '变量替换问题';
-  const bodyLine = '<b>邮件内容：</b>' + y(hit('body-dear')) + '出现开头dear问题；' +
-    y(hit('body-unreplaced')) + '出现未替换变量名；' + y(hit('body-badvar')) + '错误变量名；' +
-    y(hit('body-url')) + '加黑URL；' + y(hit('body-length')) + '出现字数过多问题';
-  return '<div class="initial-summary-line">' + titleLine + '</div><div class="initial-summary-line">' + bodyLine + '</div>';
-}
 function escapeHtml(s){
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function run(){
-  const subject = $('subject').value;
-  const body = $('body').value;
-  if (!body.trim()){ alert('请先粘贴开发信正文'); return; }
+const standardRows = [
+  {key:'title-marketing', cat:'标题', label:'标题存在营销特征词'},
+  {key:'title-caps', cat:'标题', label:'标题全大写'},
+  {key:'title-typo', cat:'标题', label:'标题书写错误'},
+  {key:'title-length', cat:'标题', label:'标题词字数过多'},
+  {key:'title-dup', cat:'标题', label:'标题重复情况'},
+  {key:'title-badvar', cat:'标题', label:'标题有错误变量'},
+  {key:'title-unreplaced', cat:'标题', label:'标题变量替换有问题'},
+  {key:'body-dear', cat:'正文', label:'开头有 Dear'},
+  {key:'body-unreplaced', cat:'正文', label:'开头有未替换的变量名'},
+  {key:'body-badvar', cat:'正文', label:'开头有错误的变量名'},
+  {key:'body-url', cat:'正文', label:'邮件中有加黑的 URL'},
+  {key:'body-length', cat:'正文', label:'邮件正文字数过多'}
+];
 
-  const items = analyze(subject, body);
+function mailEntries(){
+  return Array.from($('mailList').querySelectorAll('.mail-entry'));
+}
 
-  // 跨提交的标题重复检查（记录在本机浏览器中）
-  const cur = subject.trim();
+function updateMailLabels(){
+  const entries = mailEntries();
+  entries.forEach(function(entry, index){
+    const no = index + 1;
+    entry.dataset.mailIndex = no;
+    entry.querySelector('.mail-entry-title').textContent = '第 ' + no + ' 封邮件';
+    entry.querySelector('.mail-entry-meta').textContent = '将作为第 ' + no + ' 封参与合并诊断';
+    entry.querySelector('.mail-remove').hidden = entries.length === 1;
+  });
+  const total = entries.length;
+  $('batchHint').textContent = total === 1 ? '当前正在输入第 1 封邮件' : '当前已添加 ' + total + ' 封邮件，完成后点击「一键解析」即可合并诊断';
+}
+
+function addMailEntry(data){
+  const entry = document.createElement('article');
+  entry.className = 'mail-entry';
+  entry.innerHTML =
+    '<div class="mail-entry-head"><span class="mail-entry-title"></span><span class="mail-entry-meta"></span><button class="mail-remove" type="button">删除此封</button></div>' +
+    '<div class="form-row"><label class="field">邮件主题 Subject（选填）</label><input class="mail-subject" type="text" placeholder="例如：Direct Supplier of LED Lights from China" /></div>' +
+    '<div class="form-row"><label class="field">邮件正文 Body</label><textarea class="mail-body" placeholder="在此粘贴这封开发信正文…"></textarea></div>';
+  entry.querySelector('.mail-subject').value = data && data.subject ? data.subject : '';
+  entry.querySelector('.mail-body').value = data && data.body ? data.body : '';
+  entry.querySelector('.mail-remove').addEventListener('click', function(){
+    entry.remove();
+    updateMailLabels();
+  });
+  $('mailList').appendChild(entry);
+  updateMailLabels();
+  return entry;
+}
+
+function continueNextMail(){
+  const entries = mailEntries();
+  const last = entries[entries.length - 1];
+  const body = last.querySelector('.mail-body');
+  if (!body.value.trim()){
+    $('batchHint').textContent = '请先粘贴第 ' + entries.length + ' 封邮件正文，再继续输入下一封';
+    body.focus();
+    return;
+  }
+  const next = addMailEntry();
+  $('batchHint').textContent = '已添加第 ' + mailEntries().length + ' 封邮件，请继续粘贴邮件内容';
+  next.scrollIntoView({behavior:'smooth', block:'center'});
+  next.querySelector('.mail-subject').focus();
+}
+
+function collectMails(){
+  const skipped = [];
+  const mails = mailEntries().map(function(entry, index){
+    return {
+      number: index + 1,
+      subject: entry.querySelector('.mail-subject').value.trim(),
+      body: entry.querySelector('.mail-body').value.trim()
+    };
+  }).filter(function(mail){
+    if (mail.body) return true;
+    skipped.push(mail.number);
+    return false;
+  });
+  return {mails:mails, skipped:skipped};
+}
+
+function addBatchDuplicateIssues(results){
+  const groups = {};
+  results.forEach(function(result){
+    const key = result.subject.trim().toLowerCase();
+    if (!key) return;
+    (groups[key] || (groups[key] = [])).push(result);
+  });
+  Object.keys(groups).forEach(function(key){
+    const group = groups[key];
+    if (group.length < 2) return;
+    const mailNos = group.map(function(r){ return '第 ' + r.number + ' 封'; }).join('、');
+    group.forEach(function(result){
+      result.items.push({
+        key:'title-dup', cat:'标题', sev:'中',
+        title:'标题与本次合并诊断中的其他邮件重复',
+        original:result.subject,
+        advice:'本次合并的邮件中，' + mailNos + ' 使用了相同标题。建议为不同客户或不同批次准备差异化标题，避免重复率过高。'
+      });
+    });
+  });
+}
+
+function addHistoryDuplicateIssues(results){
   try {
     const storeKey = 'emailCheckSubjects';
     let seen = [];
     try { seen = JSON.parse(localStorage.getItem(storeKey) || '[]'); } catch(e){ seen = []; }
-    if (cur){
-      const idx = seen.findIndex(x => String(x || '').trim().toLowerCase() === cur.toLowerCase());
+    const batchNew = [];
+    results.forEach(function(result){
+      const cur = result.subject.trim();
+      if (!cur) return;
+      const lower = cur.toLowerCase();
+      const idx = seen.findIndex(function(item){ return String(item || '').trim().toLowerCase() === lower; });
       if (idx >= 0){
-        items.push({key:'title-dup', cat:'标题', sev:'中', title:'标题与之前提交的第 ' + (idx + 1) + ' 条重复', original:cur, advice:'同一标题重复使用容易被判为高重复率邮件。建议更换标题（可替换产品名、客户名变量或价值点），同一标题使用约 2000 次后需更换。'});
-      } else {
+        result.items.push({
+          key:'title-dup', cat:'标题', sev:'中', title:'标题与之前提交的第 ' + (idx + 1) + ' 条重复', original:cur,
+          advice:'同一标题重复使用容易被判为高重复率邮件。建议更换标题（可替换产品名、客户名变量或价值点），同一标题使用约 2000 次后需更换。'
+        });
+      } else if (batchNew.indexOf(lower) < 0) {
+        batchNew.push(lower);
         seen.unshift(cur);
-        try { localStorage.setItem(storeKey, JSON.stringify(seen.slice(0, 200))); } catch(e){}
       }
-    }
+    });
+    try { localStorage.setItem(storeKey, JSON.stringify(seen.slice(0, 200))); } catch(e){}
   } catch(e){}
-
-  const resultCard = $('resultCard');
-  resultCard.style.display = 'block';
-
-  const high = items.filter(i=>i.sev==='高').length;
-  const mid = items.filter(i=>i.sev==='中').length;
-  const low = items.filter(i=>i.sev==='低').length;
-  $('summary').innerHTML =
-    '<div class="summary-item"><b class="b-high">'+high+'</b><span>高风险问题</span></div>' +
-    '<div class="summary-item"><b class="b-mid">'+mid+'</b><span>中等建议</span></div>' +
-    '<div class="summary-item"><b class="b-low">'+low+'</b><span>优化建议</span></div>';
-
-  const standardKeys = ['title-marketing','title-caps','title-typo','title-length','title-dup','title-badvar','title-unreplaced','body-dear','body-unreplaced','body-badvar','body-url','body-length'];
-  const hits = standardKeys.filter(k => items.some(i => i.key === k)).length;
-  $('resultSubtitle').textContent = '已按 12 项标准检查，命中 ' + hits + ' 项，共 ' + items.length + ' 条反馈';
-  $('initialSummary').innerHTML = buildSummary(items);
-  $('initialSummary').style.display = 'block';
-
-  const cats = ['标题','正文'];
-  let html = '';
-  if (items.length === 0){
-    html = '<div class="empty-tip">✅ 未发现明显问题，邮件已符合审核标准的基本要求。</div>';
-  } else {
-    for (const c of cats){
-      const list = items.filter(i=>i.cat===c);
-      if (!list.length) continue;
-      html += '<div class="group-title">' + c + '（' + list.length + ' 项）</div>';
-      const order = {高:0,中:1,低:2};
-      list.sort((a,b)=>order[a.sev]-order[b.sev]);
-      for (const it of list){
-        const badge = it.sev==='高'?'badge-high':it.sev==='中'?'badge-mid':'badge-low';
-        const sevName = it.sev==='高'?'高优先级':it.sev==='中'?'中优先级':'低优先级';
-        html += '<div class="item">' +
-          '<div class="item-head"><span class="badge '+badge+'">'+sevName+'</span><span class="item-title">'+escapeHtml(it.title)+'</span></div>' +
-          '<div class="kv"><span class="kv-label">原 文</span><div class="kv-original">'+escapeHtml(it.original)+'</div></div>' +
-          '<div class="kv"><span class="kv-label">优化建议</span><div class="kv-advice">'+it.advice+'</div></div>' +
-          '</div>';
-      }
-    }
-  }
-  $('report').innerHTML = html;
-  resultCard.scrollIntoView({behavior:'smooth'});
 }
+
+function countMailsWithIssue(results, key){
+  return results.filter(function(result){ return result.items.some(function(item){ return item.key === key; }); });
+}
+
+function buildBatchSummary(results){
+  const total = results.length;
+  const state = function(key){
+    const count = countMailsWithIssue(results, key).length;
+    return count ? '<span class="hit-yes">' + count + '/' + total + ' 封</span>' : '<span class="hit-no">0/' + total + ' 封</span>';
+  };
+  const titleLine = '<b>邮件标题：</b>' + state('title-marketing') + '存在营销特征词；' + state('title-caps') + '标题全大写；' +
+    state('title-typo') + '书写错误；' + state('title-length') + '字数过多；' + state('title-dup') + '重复情况；' +
+    state('title-badvar') + '错误变量；' + state('title-unreplaced') + '变量替换问题';
+  const bodyLine = '<b>邮件内容：</b>' + state('body-dear') + '开头 Dear；' + state('body-unreplaced') + '未替换变量名；' +
+    state('body-badvar') + '错误变量名；' + state('body-url') + '加黑 URL；' + state('body-length') + '字数过多';
+  return '<div class="initial-summary-line">' + titleLine + '</div><div class="initial-summary-line">' + bodyLine + '</div>';
+}
+
+function buildCombinedTable(results){
+  let html = '<div class="combined-summary-head"><h3>合并汇总</h3><p>共 ' + results.length + ' 封邮件，按 12 项诊断标准统计每项涉及的邮件数量。</p></div>' +
+    '<div class="combined-table-wrap"><table class="combined-table"><thead><tr><th>邮件内容</th><th>项目</th><th>任务情况</th></tr></thead><tbody>';
+  ['标题','正文'].forEach(function(cat){
+    const rows = standardRows.filter(function(row){ return row.cat === cat; });
+    rows.forEach(function(row, index){
+      const mails = countMailsWithIssue(results, row.key);
+      const status = mails.length
+        ? '<span class="summary-hit">共 ' + mails.length + ' 封邮件存在该问题</span><br><span>涉及：' + mails.map(function(mail){ return '第 ' + mail.number + ' 封'; }).join('、') + '</span>'
+        : '<span class="summary-ok">未发现问题</span>';
+      html += '<tr>' +
+        (index === 0 ? '<td class="summary-cat" rowspan="' + rows.length + '">' + cat + '</td>' : '') +
+        '<td>' + row.label + '</td><td class="summary-status">' + status + '</td></tr>';
+    });
+  });
+  return html + '</tbody></table></div>';
+}
+
+function renderIssueList(items){
+  const cats = ['标题','正文'];
+  const order = {高:0,中:1,低:2};
+  let html = '';
+  if (!items.length) return '<div class="empty-tip">✅ 未发现明显问题，邮件已符合审核标准的基本要求。</div>';
+  cats.forEach(function(cat){
+    const list = items.filter(function(item){ return item.cat === cat; }).sort(function(a,b){ return order[a.sev] - order[b.sev]; });
+    if (!list.length) return;
+    html += '<div class="group-title">' + cat + '（' + list.length + ' 项）</div>';
+    list.forEach(function(item){
+      const badge = item.sev === '高' ? 'badge-high' : item.sev === '中' ? 'badge-mid' : 'badge-low';
+      const sevName = item.sev === '高' ? '高优先级' : item.sev === '中' ? '中优先级' : '低优先级';
+      html += '<div class="item">' +
+        '<div class="item-head"><span class="badge ' + badge + '">' + sevName + '</span><span class="item-title">' + escapeHtml(item.title) + '</span></div>' +
+        '<div class="kv"><span class="kv-label">原 文</span><div class="kv-original">' + escapeHtml(item.original) + '</div></div>' +
+        '<div class="kv"><span class="kv-label">优化建议</span><div class="kv-advice">' + item.advice + '</div></div>' +
+        '</div>';
+    });
+  });
+  return html;
+}
+
+function renderDetails(results){
+  return results.map(function(result){
+    const title = result.subject ? result.subject : '（未填写主题）';
+    return '<section class="mail-report">' +
+      '<div class="mail-report-head"><h3>第 ' + result.number + ' 封邮件</h3><p>主题：' + escapeHtml(title) + ' · 共 ' + result.items.length + ' 条反馈</p></div>' +
+      renderIssueList(result.items) + '</section>';
+  }).join('');
+}
+
+function run(){
+  const collected = collectMails();
+  const mails = collected.mails;
+  if (!mails.length){ alert('请先粘贴至少一封开发信正文'); return; }
+
+  const results = mails.map(function(mail){
+    return {number:mail.number, subject:mail.subject, body:mail.body, items:analyze(mail.subject, mail.body)};
+  });
+  addBatchDuplicateIssues(results);
+  addHistoryDuplicateIssues(results);
+
+  const allItems = results.reduce(function(list, result){ return list.concat(result.items); }, []);
+  const high = allItems.filter(function(item){ return item.sev === '高'; }).length;
+  const mid = allItems.filter(function(item){ return item.sev === '中'; }).length;
+  const low = allItems.filter(function(item){ return item.sev === '低'; }).length;
+  const hitCount = standardRows.filter(function(row){ return countMailsWithIssue(results, row.key).length; }).length;
+
+  $('summary').innerHTML =
+    '<div class="summary-item"><b class="b-high">' + high + '</b><span>高风险问题</span></div>' +
+    '<div class="summary-item"><b class="b-mid">' + mid + '</b><span>中等建议</span></div>' +
+    '<div class="summary-item"><b class="b-low">' + low + '</b><span>优化建议</span></div>';
+  $('resultSubtitle').textContent = '已合并检查 ' + mails.length + ' 封邮件，12 项标准命中 ' + hitCount + ' 项，共 ' + allItems.length + ' 条反馈' + (collected.skipped.length ? '；已忽略空白的第 ' + collected.skipped.join('、') + ' 封输入框' : '');
+  $('initialSummary').innerHTML = buildBatchSummary(results);
+  $('initialSummary').style.display = 'block';
+  $('combinedSummary').innerHTML = buildCombinedTable(results);
+  $('combinedSummary').style.display = 'block';
+  $('report').innerHTML = renderDetails(results);
+  $('resultCard').style.display = 'block';
+  $('resultCard').scrollIntoView({behavior:'smooth'});
+}
+
 function loadSample(){
-  $('subject').value = 'FREE SALE!!! BEST PRICE LED LIGHTS!!! {客户名';
-  $('body').value = [
-    'Dear {{客户名}},',
-    '',
-    'This is Mike from {公司名, a manufacturer of LED lights in China.',
-    'We are offering FREE SALE and the best price for you.',
-    'Please visit our website: **http://www.abc-led.com** to see more products.',
-    'If you need anything, please contact us.',
-    '',
-    'Best regards,',
-    'Mike',
-    'ABC Lighting Co., Ltd.'
-  ].join('\n');
+  $('mailList').innerHTML = '';
+  [
+    {
+      subject:'FREE SALE!!! BEST PRICE LED LIGHTS!!! {客户名',
+      body:['Dear {{客户名}},', '', 'This is Mike from {公司名, a manufacturer of LED lights in China.', 'We are offering FREE SALE and the best price for you.', 'Please visit our website: **http://www.abc-led.com** to see more products.', '', 'Best regards,', 'Mike'].join('\n')
+    },
+    {
+      subject:'Direct Supplier of LED Lights from China',
+      body:['Hello {{FirstName}},', '', 'We manufacture indoor and outdoor LED lights for wholesalers.', 'Would you like to receive our catalog?', '', 'Best regards,', 'Mike'].join('\n')
+    },
+    {
+      subject:'Direct Supplier of LED Lights from China',
+      body:['Hi David,', '', 'Our LED lights are designed for distributors and project buyers.', 'We can share the latest pricing and MOQ on request.', '', 'Regards,', 'Mike'].join('\n')
+    },
+    {
+      subject:'NEW LED LIGHTS FOR YOUR MARKET',
+      body:['Dear Sir/Madam,', '', 'This is a very long email introduction for checking the body length rule. '.repeat(28), '', 'Thanks,', 'Mike'].join('\n')
+    }
+  ].forEach(addMailEntry);
+  $('batchHint').textContent = '已载入 4 封示例邮件，点击「一键解析」可查看合并汇总';
   run();
 }
 function toggleSop(){
@@ -556,11 +754,13 @@ function toggleSop(){
 }
 
 $('runBtn').addEventListener('click', run);
+$('continueBtn').addEventListener('click', continueNextMail);
 $('sampleBtn').addEventListener('click', loadSample);
 $('sopToggle').addEventListener('click', toggleSop);
 $('sopToggle').addEventListener('keydown', function(e){
   if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleSop(); }
 });
+addMailEntry();
 </script>
 </body>
 </html>
