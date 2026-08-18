@@ -570,7 +570,7 @@
     if (!resetArmed) {
       resetArmed = true;
       $('resetBtn').textContent = '再点一次确认恢复';
-      setTimeout(function(){ resetArmed = false; $('resetBtn').textContent = '恢复全部默认'; }, 3000);
+      setTimeout(function(){ resetArmed = false; $('resetBtn').textContent = '恢复全部默认'; }, 5000);
     } else {
       resetArmed = false;
       $('resetBtn').textContent = '恢复全部默认';
@@ -597,7 +597,7 @@
         setTimeout(function(){
           btn.setAttribute('data-pending', '0');
           btn.textContent = btn.getAttribute('data-orig') || ('确认' + label + '？');
-        }, 3000);
+        }, 5000);
       } else {
         removeEntry(k);
       }
