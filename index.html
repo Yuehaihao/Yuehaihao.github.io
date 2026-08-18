@@ -3,576 +3,526 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YEuhub.ME</title>
+  <title>YEuhub.ME · 工作点这</title>
   <meta name="description" content="Haihao Yue 的数字工具空间" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230a84ff'/%3E%3Ctext x='32' y='43' font-size='32' text-anchor='middle' fill='white' font-family='Arial'%3EY%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%23F8CB74'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23111111'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #1c1c1e;
-      --muted: #64646b;
-      --blue: #0a84ff;
-      --purple: #bf5af2;
-      --orange: #ff9f0a;
+      --mustard: #F8CB74;
+      --ink: #111111;
+      --card: #171717;
+      --line: #2a2a2a;
+      --muted: #a0a0a0;
+      --blue: #5fb3ff;
+      --purple: #cf8cff;
+      --teal: #55d6c2;
+      --orange: #ffbe5c;
     }
 
     * { box-sizing: border-box; }
-
-    html, body { min-height: 100%; }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
+      font-family: "Oswald", "PingFang SC", "Microsoft YaHei", sans-serif;
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(1100px 720px at 12% -8%, #eaf3ff 0%, transparent 55%),
-        radial-gradient(900px 640px at 100% 0%, #f3edff 0%, transparent 55%),
-        linear-gradient(180deg, #f6f8fc 0%, #e9eef7 100%);
-      background-attachment: fixed;
+      background: var(--mustard);
+      -webkit-font-smoothing: antialiased;
     }
+    a { color: inherit; }
 
-    .scene {
+    .topbar {
       position: fixed;
-      inset: 0;
-      z-index: -1;
-      overflow: hidden;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 6vw;
+      mix-blend-mode: difference;
+      color: #fff;
       pointer-events: none;
     }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(72px);
-      opacity: 0.8;
-      will-change: transform;
+    .topbar a { pointer-events: auto; text-decoration: none; }
+    .top-brand {
+      font-family: "Anton", sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
-
-    .orb-a { width: 380px; height: 380px; left: -90px; top: -70px; background: #7cc7ff; animation: drift 24s ease-in-out infinite alternate; }
-    .orb-b { width: 340px; height: 340px; right: -80px; top: 60px; background: #c5a8ff; animation: drift 28s ease-in-out infinite alternate-reverse; }
-    .orb-c { width: 300px; height: 300px; left: 32%; bottom: -120px; background: #ffb3d9; opacity: 0.65; animation: drift 32s ease-in-out infinite alternate; }
-    .orb-d { width: 260px; height: 260px; right: 22%; bottom: 4%; background: #ffd9a0; opacity: 0.6; animation: drift 26s ease-in-out infinite alternate-reverse; }
-
-    @keyframes drift {
-      from { transform: translate3d(0, 0, 0) scale(1); }
-      to { transform: translate3d(46px, 34px, 0) scale(1.08); }
-    }
-
-    .shell {
-      width: min(960px, 100%);
-      margin: 0 auto;
-      padding: clamp(28px, 6vw, 72px) 22px 44px;
-    }
-
-    .glass {
-      position: relative;
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.26));
-      -webkit-backdrop-filter: blur(28px) saturate(190%);
-      backdrop-filter: blur(28px) saturate(190%);
-      border: 1px solid rgba(255, 255, 255, 0.72);
-      border-radius: 32px;
-      box-shadow:
-        0 26px 60px rgba(31, 58, 105, 0.14),
-        0 6px 18px rgba(31, 58, 105, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.95),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.3);
-      overflow: hidden;
-    }
-
-    .glass::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 42%);
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      .glass { background: rgba(255, 255, 255, 0.86); }
+    .top-nav {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      padding: 8px 18px;
     }
 
     .hero {
-      text-align: center;
-      padding: 52px 28px 48px;
-      margin-bottom: 22px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: #0071e3;
-      background: rgba(255, 255, 255, 0.55);
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(31, 58, 105, 0.1);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-    }
-
-    .badge-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #30d158;
-      box-shadow: 0 0 0 4px rgba(48, 209, 88, 0.18);
-    }
-
-    .hero h1 {
-      margin: 18px 0 8px;
-      font-size: clamp(40px, 9vw, 68px);
-      font-weight: 700;
-      letter-spacing: -0.045em;
-      line-height: 1.05;
-    }
-
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 17px;
-      line-height: 1.6;
-    }
-
-    .grid {
-      display: grid;
-      gap: 18px;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      margin-bottom: 22px;
-    }
-
-    .tile {
-      position: relative;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      padding: 26px 24px;
-      border-radius: 28px;
-      color: inherit;
-      text-decoration: none;
-      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
-    }
-
-    a.tile:hover {
-      transform: translateY(-4px);
-      box-shadow:
-        0 34px 70px rgba(31, 58, 105, 0.2),
-        0 8px 22px rgba(31, 58, 105, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.95),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.3);
-    }
-
-    a.tile:active { transform: translateY(-1px) scale(0.995); }
-
-    .tile-icon {
-      flex: 0 0 56px;
-      width: 56px;
-      height: 56px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      color: var(--tint);
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: inset 0 1px 0 #fff, 0 10px 22px rgba(31, 58, 105, 0.14);
-    }
-
-    .tile-icon svg { width: 26px; height: 26px; }
-
-    .tile-body {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-width: 0;
-      flex: 1;
+      justify-content: center;
+      padding: 96px 6vw 60px;
+      overflow: hidden;
+      position: relative;
     }
 
-    .tile-title {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 18px;
-      font-weight: 650;
+    .hero-title {
+      font-family: "Anton", sans-serif;
+      font-size: clamp(72px, 17vw, 220px);
+      line-height: 0.92;
       letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .hero-line { display: block; white-space: nowrap; }
+    .char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(0.5em);
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+    .hero-dot {
+      display: inline-block;
+      width: 0.44em;
+      height: 0.44em;
+      border-radius: 50%;
+      background: #fff;
+      border: 0.035em solid var(--ink);
+      position: relative;
+      vertical-align: -0.04em;
+      margin-right: 0.02em;
+    }
+    .hero-dot .pupil {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0.21em;
+      height: 0.21em;
+      border-radius: 50%;
+      background: var(--ink);
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease-out;
     }
 
-    .chev {
-      margin-left: auto;
+    .marquee {
+      background: var(--ink);
+      color: var(--mustard);
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 16px 0;
+      margin: 22px -6vw;
+      transform: rotate(-1deg);
+    }
+    .marquee-track {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-item {
+      display: inline-block;
       font-size: 20px;
-      color: var(--tint);
-      transition: transform 0.25s ease;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 0 14px;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
     }
 
-    a.tile:hover .chev { transform: translateX(4px); }
-
-    .tile-desc {
-      color: var(--muted);
+    .hero-meta {
+      margin-top: 26px;
       font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .tile-status {
-      margin-top: 10px;
-      align-self: flex-start;
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 12px;
       font-weight: 600;
-      color: var(--tint);
-      background: var(--tint-soft);
-      border: 1px solid var(--tint-border);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(17, 17, 17, 0.6);
     }
 
-    .tile-mail { --tint: #0a84ff; --tint-soft: rgba(10, 132, 255, 0.13); --tint-border: rgba(10, 132, 255, 0.3); }
-    .tile-tools { --tint: #bf5af2; --tint-soft: rgba(191, 90, 242, 0.13); --tint-border: rgba(191, 90, 242, 0.3); }
-    .tile-kw { --tint: #0fb5a0; --tint-soft: rgba(15, 181, 160, 0.13); --tint-border: rgba(15, 181, 160, 0.32); }
-    .tile-notes { --tint: #ff9f0a; --tint-soft: rgba(255, 159, 10, 0.14); --tint-border: rgba(255, 159, 10, 0.32); }
-
-    .workgate {
-      margin-bottom: 22px;
-      padding: 30px 26px;
+    .scroll-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%);
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(17, 17, 17, 0.65);
+      animation: bob 1.8s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 8px); }
     }
 
+    .content {
+      background: var(--ink);
+      color: #f5f5f5;
+      padding: 90px 6vw 60px;
+    }
+    .sec {
+      max-width: 1180px;
+      margin: 0 auto 96px;
+    }
+    .sec:last-child { margin-bottom: 40px; }
+
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      margin-bottom: 34px;
+    }
+    .sec-index {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--mustard);
+    }
+    .sec-title {
+      font-family: "Anton", sans-serif;
+      font-size: clamp(46px, 9vw, 100px);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: #fff;
+      margin: 0;
+    }
+    .sec-title .accent { color: var(--mustard); }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(44px);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.in { opacity: 1; transform: none; }
+
+    .gate {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--card);
+      padding: clamp(30px, 5vw, 52px);
+    }
     .gate-locked {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 14px;
-      padding: 18px 0 8px;
+      padding: 20px 0 6px;
     }
-
     .gate-locked[hidden], .gate-open[hidden] { display: none; }
-
     .gate-icon {
       width: 64px;
       height: 64px;
       display: grid;
       place-items: center;
-      border-radius: 20px;
-      color: var(--blue);
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: inset 0 1px 0 #fff, 0 10px 22px rgba(31, 58, 105, 0.14);
+      border-radius: 50%;
+      color: var(--mustard);
+      background: var(--ink);
+      border: 1px solid var(--line);
     }
-
-    .gate-icon svg { width: 30px; height: 30px; }
-
+    .gate-icon svg { width: 28px; height: 28px; }
     .gate-title {
+      font-family: "Anton", sans-serif;
+      font-size: 30px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
       margin: 0;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
     }
-
-    .gate-desc {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .gate-form {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-      width: min(400px, 100%);
-    }
-
+    .gate-desc { margin: 0; color: var(--muted); font-size: 14px; letter-spacing: 0.5px; }
+    .gate-form { display: flex; gap: 10px; width: min(400px, 100%); margin-top: 6px; }
     .gate-input {
       flex: 1;
       min-width: 0;
       padding: 13px 18px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      background: rgba(255, 255, 255, 0.6);
-      color: var(--ink);
+      border: 1px solid var(--line);
+      background: var(--ink);
+      color: #fff;
       font-size: 15px;
       font-family: inherit;
-      box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(31, 58, 105, 0.08);
       outline: none;
     }
-
-    .gate-input:focus {
-      border-color: rgba(10, 132, 255, 0.5);
-      box-shadow: inset 0 1px 0 #fff, 0 0 0 4px rgba(10, 132, 255, 0.15);
-    }
-
+    .gate-input:focus { border-color: var(--mustard); }
     .gate-btn {
       padding: 0 26px;
       border-radius: 999px;
       border: none;
-      color: #fff;
+      color: var(--ink);
+      background: var(--mustard);
       font-size: 15px;
-      font-weight: 650;
+      font-weight: 700;
       font-family: inherit;
-      background: linear-gradient(180deg, #1a8fff, #0a84ff);
-      box-shadow: 0 10px 22px rgba(10, 132, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      letter-spacing: 1px;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease;
     }
-
-    .gate-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 26px rgba(10, 132, 255, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    }
-
-    .gate-btn:active { transform: translateY(0) scale(0.98); }
-
-    .gate-error {
-      margin: 0;
-      color: #ff3b30;
-      font-size: 13px;
-      font-weight: 600;
-    }
+    .gate-btn:hover { transform: translateY(-1px); }
+    .gate-error { margin: 0; color: #ff7a7a; font-size: 13px; font-weight: 600; }
 
     .gate-head {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 22px;
     }
-
-    .gate-remain {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
+    .gate-remain { color: var(--muted); font-size: 13px; letter-spacing: 0.5px; }
     .gate-lockbtn {
       margin-left: auto;
       width: 40px;
       height: 40px;
       display: grid;
       place-items: center;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      background: rgba(255, 255, 255, 0.55);
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--ink);
       color: var(--muted);
       cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease;
+      transition: color 0.2s ease, border-color 0.2s ease;
     }
-
-    .gate-lockbtn:hover { background: rgba(255, 255, 255, 0.85); color: var(--ink); }
+    .gate-lockbtn:hover { color: var(--mustard); border-color: var(--mustard); }
     .gate-lockbtn svg { width: 18px; height: 18px; }
-    .gate-grid { margin-bottom: 0; }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    }
+    .tile {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 26px 24px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--ink);
+      color: #fff;
+      text-decoration: none;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+    }
+    a.tile:hover { transform: translateY(-4px); border-color: var(--tint); }
+    .tile-icon {
+      flex: 0 0 52px;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: var(--tint);
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .tile-icon svg { width: 24px; height: 24px; }
+    .tile-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; }
+    .tile-title { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 700; letter-spacing: 0.02em; }
+    .chev { margin-left: auto; font-size: 20px; color: var(--tint); transition: transform 0.25s ease; }
+    a.tile:hover .chev { transform: translateX(4px); }
+    .tile-desc { color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .tile-status {
+      margin-top: 10px;
+      align-self: flex-start;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tint);
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .tile-mail { --tint: var(--blue); }
+    .tile-tools { --tint: var(--purple); }
+    .tile-kw { --tint: var(--teal); }
+    .tile-notes { --tint: var(--orange); }
 
     .footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding-top: 34px;
+      border-top: 1px solid var(--line);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 18px 22px;
-      border-radius: 24px;
+      gap: 14px;
       font-size: 13px;
       color: var(--muted);
     }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--mustard); text-decoration: none; letter-spacing: 1px; }
 
-    .footer-links { display: flex; gap: 8px; }
-
-    .footer-links a {
-      padding: 8px 14px;
-      border-radius: 999px;
-      color: var(--ink);
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      transition: background 0.2s ease;
-    }
-
-    .footer-links a:hover { background: rgba(255, 255, 255, 0.8); }
-
-    @media (prefers-color-scheme: dark) {
-      :root { --ink: #f5f5f7; --muted: #9da0aa; }
-      body {
-        background:
-          radial-gradient(1100px 720px at 12% -8%, #12223a 0%, transparent 55%),
-          radial-gradient(900px 640px at 100% 0%, #241b38 0%, transparent 55%),
-          linear-gradient(180deg, #13151b 0%, #0c0e12 100%);
-      }
-      .orb { opacity: 0.34; }
-      .glass {
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045));
-        border-color: rgba(255, 255, 255, 0.16);
-        box-shadow:
-          0 26px 60px rgba(0, 0, 0, 0.4),
-          inset 0 1px 0 rgba(255, 255, 255, 0.16),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.25);
-      }
-      .glass::after { background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 42%); opacity: 1; }
-      .badge {
-        color: #6cb9ff;
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.14);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-      }
-      .tile-icon {
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
-        border-color: rgba(255, 255, 255, 0.14);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-      }
-      .tile-mail { --tint: #6cb9ff; --tint-soft: rgba(108, 185, 255, 0.14); --tint-border: rgba(108, 185, 255, 0.3); }
-      .tile-tools { --tint: #d68cff; --tint-soft: rgba(214, 140, 255, 0.14); --tint-border: rgba(214, 140, 255, 0.3); }
-      .tile-kw { --tint: #4fd8c5; --tint-soft: rgba(79, 216, 197, 0.14); --tint-border: rgba(79, 216, 197, 0.3); }
-      .tile-notes { --tint: #ffc260; --tint-soft: rgba(255, 194, 96, 0.14); --tint-border: rgba(255, 194, 96, 0.3); }
-      .gate-icon {
-        color: #6cb9ff;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
-        border-color: rgba(255, 255, 255, 0.14);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-      }
-      .gate-input {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.16);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      }
-      .gate-input:focus {
-        border-color: rgba(108, 185, 255, 0.5);
-        box-shadow: 0 0 0 4px rgba(108, 185, 255, 0.15);
-      }
-      .gate-lockbtn {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.14);
-      }
-      .gate-lockbtn:hover { background: rgba(255, 255, 255, 0.16); }
-      .footer-links a {
-        color: var(--ink);
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.14);
-      }
-      .footer-links a:hover { background: rgba(255, 255, 255, 0.16); }
-      @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-        .glass { background: rgba(26, 29, 38, 0.9); }
-      }
+    @media (max-width: 640px) {
+      .hero { padding-top: 120px; }
+      .gate { padding: 26px 18px; }
+      .gate-form { flex-direction: column; }
+      .gate-btn { padding: 13px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .orb { animation: none; }
-      a.tile, .chev { transition: none; }
+      html { scroll-behavior: auto; }
+      .char, .marquee-track, .scroll-hint { animation: none !important; }
+      .char { opacity: 1; transform: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
     }
   </style>
 </head>
 <body>
-  <div class="scene" aria-hidden="true">
-    <span class="orb orb-a"></span>
-    <span class="orb orb-b"></span>
-    <span class="orb orb-c"></span>
-    <span class="orb orb-d"></span>
-  </div>
+  <header class="topbar">
+    <a class="top-brand" href="#top">YEuhub.ME</a>
+    <a class="top-nav" href="#works">工作点这 ↓</a>
+  </header>
 
-  <div class="shell">
-    <header class="hero glass">
-      <span class="badge"><span class="badge-dot"></span>YEuhub.ME</span>
-      <h1>Haihao Yue</h1>
-      <p>这里是我的数字工具空间，所有工具都在下面的板块里。</p>
-    </header>
+  <section class="hero" id="top" aria-label="首页">
+    <div class="hero-title">
+      <span class="hero-line" id="heroLine1">
+        <span class="char" style="animation-delay:0.05s">Y</span><span class="char" style="animation-delay:0.1s">E</span><span class="char" style="animation-delay:0.15s">u</span><span class="char" style="animation-delay:0.2s">h</span><span class="char" style="animation-delay:0.25s">u</span><span class="char" style="animation-delay:0.3s">b</span>
+      </span>
+    </div>
 
-    <section class="workgate glass" id="workpoint" aria-label="工作点这">
-      <div class="gate-locked" id="gateLocked">
-        <span class="gate-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="5" y="11" width="14" height="9" rx="3"></rect>
-            <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
-          </svg>
-        </span>
-        <h2 class="gate-title">工作点这</h2>
-        <p class="gate-desc">此板块需要密码才能进入。解锁后 30 分钟内无需再次输入密码。</p>
-        <form class="gate-form" id="gateForm" autocomplete="off">
-          <input class="gate-input" id="gateInput" type="password" placeholder="请输入密码" aria-label="密码" />
-          <button class="gate-btn" type="submit">解锁</button>
-        </form>
-        <p class="gate-error" id="gateError" role="alert" hidden>密码不正确，请重新输入</p>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marqueeTrack">
+        <span class="marquee-item">邮件内容诊断</span><span class="marquee-item">•</span><span class="marquee-item">目标国家查询</span><span class="marquee-item">•</span><span class="marquee-item">行业关键词速览</span><span class="marquee-item">•</span><span class="marquee-item">网易外贸通工作台</span><span class="marquee-item">•</span>
+        <span class="marquee-item">邮件内容诊断</span><span class="marquee-item">•</span><span class="marquee-item">目标国家查询</span><span class="marquee-item">•</span><span class="marquee-item">行业关键词速览</span><span class="marquee-item">•</span><span class="marquee-item">网易外贸通工作台</span><span class="marquee-item">•</span>
+      </div>
+    </div>
+
+    <div class="hero-title">
+      <span class="hero-line" id="heroLine2">
+        <span class="hero-dot" id="heroDot" style="animation-delay:0.45s"><span class="pupil" id="heroPupil"></span></span><span class="char" style="animation-delay:0.5s">M</span><span class="char" style="animation-delay:0.55s">E</span>
+      </span>
+    </div>
+
+    <div class="hero-meta">Haihao Yue · 数字工具空间</div>
+    <div class="scroll-hint">向下滚动 ↓</div>
+  </section>
+
+  <main class="content">
+    <section class="sec reveal" id="works">
+      <div class="sec-head">
+        <span class="sec-index">01</span>
+        <h2 class="sec-title">工作<span class="accent">点这</span></h2>
       </div>
 
-      <div class="gate-open" id="gateOpen" hidden>
-        <div class="gate-head">
-          <h2 class="gate-title">工作点这</h2>
-          <span class="gate-remain" id="gateRemain">已解锁</span>
-          <button class="gate-lockbtn" id="gateLockBtn" type="button" title="立即锁定" aria-label="立即锁定">
+      <div class="gate">
+        <div class="gate-locked" id="gateLocked">
+          <span class="gate-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="5" y="11" width="14" height="9" rx="3"></rect>
               <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
             </svg>
-          </button>
+          </span>
+          <h3 class="gate-title">工作点这</h3>
+          <p class="gate-desc">此板块需要密码才能进入，解锁后 30 分钟内无需再次输入密码。</p>
+          <form class="gate-form" id="gateForm" autocomplete="off">
+            <input class="gate-input" id="gateInput" type="password" placeholder="请输入密码" aria-label="密码" />
+            <button class="gate-btn" type="submit">解锁</button>
+          </form>
+          <p class="gate-error" id="gateError" role="alert" hidden>密码不正确，请重新输入</p>
         </div>
-        <div class="grid gate-grid">
-          <a class="tile tile-mail" href="email-check/index.html" id="email-diagnosis">
-            <span class="tile-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="5" width="18" height="14" rx="3"></rect>
-                <path d="m3.5 7 8.5 6 8.5-6"></path>
-                <path d="M12 13v7"></path>
-                <circle cx="18.5" cy="17.5" r="1.6"></circle>
-              </svg>
-            </span>
-            <span class="tile-body">
-              <span class="tile-title">邮件内容诊断 <span class="chev" aria-hidden="true">→</span></span>
-              <span class="tile-desc">分析邮件文案的清晰度、语气与风险点，让每一封邮件更有效。</span>
-              <span class="tile-status">点击进入</span>
-            </span>
-          </a>
 
-          <a class="tile tile-tools" href="country-query/index.html" id="country-query">
-            <span class="tile-icon" aria-hidden="true">
+        <div class="gate-open" id="gateOpen" hidden>
+          <div class="gate-head">
+            <h3 class="gate-title">工作点这</h3>
+            <span class="gate-remain" id="gateRemain">已解锁</span>
+            <button class="gate-lockbtn" id="gateLockBtn" type="button" title="立即锁定" aria-label="立即锁定">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M3 12h18"></path>
-                <path d="M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9Z"></path>
+                <rect x="5" y="11" width="14" height="9" rx="3"></rect>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
               </svg>
-            </span>
-            <span class="tile-body">
-              <span class="tile-title">目标国家查询 <span class="chev" aria-hidden="true">→</span></span>
-              <span class="tile-desc">输入中文目标地区，一键获取该地区所有国家的英文名单与数量。</span>
-              <span class="tile-status">点击进入</span>
-            </span>
-          </a>
+            </button>
+          </div>
+          <div class="grid">
+            <a class="tile tile-mail" href="email-check/index.html" id="email-diagnosis">
+              <span class="tile-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+                  <path d="m3.5 7 8.5 6 8.5-6"></path>
+                  <path d="M12 13v7"></path>
+                  <circle cx="18.5" cy="17.5" r="1.6"></circle>
+                </svg>
+              </span>
+              <span class="tile-body">
+                <span class="tile-title">邮件内容诊断 <span class="chev" aria-hidden="true">→</span></span>
+                <span class="tile-desc">分析邮件文案的清晰度、语气与风险点，让每一封邮件更有效。</span>
+                <span class="tile-status">点击进入</span>
+              </span>
+            </a>
 
-          <a class="tile tile-kw" href="industry-keyword/index.html" id="industry-keyword">
-            <span class="tile-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3.5 13.7 8.3 18.5 10 13.7 11.7 12 16.5 10.3 11.7 5.5 10 10.3 8.3 12 3.5Z"></path>
-                <path d="M18.5 15.5 19.3 17.7 21.5 18.5 19.3 19.3 18.5 21.5 17.7 19.3 15.5 18.5 17.7 17.7 18.5 15.5Z"></path>
-                <path d="M5 16.5 5.7 18 7.2 18.7 5.7 19.4 5 20.9 4.3 19.4 2.8 18.7 4.3 18 5 16.5Z"></path>
-              </svg>
-            </span>
-            <span class="tile-body">
-              <span class="tile-title">行业关键词速览 <span class="chev" aria-hidden="true">→</span></span>
-              <span class="tile-desc">输入客户主营业务的中文，一键翻译英文，并用大白话解释它的用途与关联产品。</span>
-              <span class="tile-status">点击进入</span>
-            </span>
-          </a>
+            <a class="tile tile-tools" href="country-query/index.html" id="country-query">
+              <span class="tile-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M3 12h18"></path>
+                  <path d="M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9Z"></path>
+                </svg>
+              </span>
+              <span class="tile-body">
+                <span class="tile-title">目标国家查询 <span class="chev" aria-hidden="true">→</span></span>
+                <span class="tile-desc">输入中文目标地区，一键获取该地区所有国家的英文名单与数量。</span>
+                <span class="tile-status">点击进入</span>
+              </span>
+            </a>
+
+            <a class="tile tile-kw" href="industry-keyword/index.html" id="industry-keyword">
+              <span class="tile-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3.5 13.7 8.3 18.5 10 13.7 11.7 12 16.5 10.3 11.7 5.5 10 10.3 8.3 12 3.5Z"></path>
+                  <path d="M18.5 15.5 19.3 17.7 21.5 18.5 19.3 19.3 18.5 21.5 17.7 19.3 15.5 18.5 17.7 17.7 18.5 15.5Z"></path>
+                  <path d="M5 16.5 5.7 18 7.2 18.7 5.7 19.4 5 20.9 4.3 19.4 2.8 18.7 4.3 18 5 16.5Z"></path>
+                </svg>
+              </span>
+              <span class="tile-body">
+                <span class="tile-title">行业关键词速览 <span class="chev" aria-hidden="true">→</span></span>
+                <span class="tile-desc">输入客户主营业务的中文，一键翻译英文，并用大白话解释它的用途与关联产品。</span>
+                <span class="tile-status">点击进入</span>
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </section>
 
-    <nav class="grid" aria-label="其他板块">
-      <div class="tile glass tile-notes" aria-disabled="true">
-        <span class="tile-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3c2.5 1.4 5.5 1.5 7.5 1.2.3 0 .5.3.5.6 0 5.8-2.4 10.4-8 13.2-5.6-2.8-8-7.4-8-13.2 0-.3.2-.6.5-.6 2 .3 5 .2 7.5-1.2Z"></path>
-            <path d="M12 7v6"></path>
-            <path d="M9.5 10h5"></path>
-          </svg>
-        </span>
-        <span class="tile-body">
-          <span class="tile-title">板块三 <span class="chev" aria-hidden="true">＋</span></span>
-          <span class="tile-desc">这里预留给另一个功能，也可以先当作你的灵感笔记区。</span>
-          <span class="tile-status">敬请期待</span>
-        </span>
+    <section class="sec reveal" id="more">
+      <div class="sec-head">
+        <span class="sec-index">02</span>
+        <h2 class="sec-title">更多<span class="accent">板块</span></h2>
       </div>
-    </nav>
+      <div class="grid">
+        <div class="tile tile-notes" aria-disabled="true">
+          <span class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3c2.5 1.4 5.5 1.5 7.5 1.2.3 0 .5.3.5.6 0 5.8-2.4 10.4-8 13.2-5.6-2.8-8-7.4-8-13.2 0-.3.2-.6.5-.6 2 .3 5 .2 7.5-1.2Z"></path>
+              <path d="M12 7v6"></path>
+              <path d="M9.5 10h5"></path>
+            </svg>
+          </span>
+          <span class="tile-body">
+            <span class="tile-title">板块三 <span class="chev" aria-hidden="true">＋</span></span>
+            <span class="tile-desc">这里预留给另一个功能，也可以先当作你的灵感笔记区。</span>
+            <span class="tile-status">敬请期待</span>
+          </span>
+        </div>
+      </div>
+    </section>
 
-    <footer class="footer glass">
-      <span>Powered by GitHub Pages · yeuhub.me</span>
+    <footer class="footer">
+      <span>© YEuhub.ME · Powered by GitHub Pages</span>
       <span class="footer-links">
         <a href="https://github.com/Yuehaihao" target="_blank" rel="noreferrer">GitHub</a>
-        <a href="mailto:yuehaihao@example.com">联系我</a>
+        <a href="#top">回到顶部</a>
       </span>
     </footer>
-  </div>
+  </main>
 
   <script>
     (function () {
@@ -697,6 +647,39 @@
       });
 
       render();
+    })();
+
+    // 滚动出现
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+
+    // 眼睛跟随鼠标
+    (function () {
+      var eye = document.getElementById('heroDot');
+      var pupil = document.getElementById('heroPupil');
+      if (!eye || !pupil) return;
+      document.addEventListener('mousemove', function (e) {
+        var r = eye.getBoundingClientRect();
+        var cx = r.left + r.width / 2;
+        var cy = r.top + r.height / 2;
+        var dx = e.clientX - cx;
+        var dy = e.clientY - cy;
+        var max = r.width * 0.26;
+        var dist = Math.min(max, Math.hypot(dx, dy) || 0);
+        var ang = Math.atan2(dy, dx);
+        pupil.style.transform = 'translate(calc(-50% + ' + (Math.cos(ang) * dist).toFixed(2) + 'px), calc(-50% + ' + (Math.sin(ang) * dist).toFixed(2) + 'px))';
+      });
     })();
   </script>
 </body>
