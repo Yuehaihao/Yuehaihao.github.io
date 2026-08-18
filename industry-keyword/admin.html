@@ -565,8 +565,15 @@
   $('importBtn').addEventListener('click', function(){ $('importBox').hidden = !$('importBox').hidden; });
   $('importCancelBtn').addEventListener('click', function(){ $('importBox').hidden = true; });
   $('importApplyBtn').addEventListener('click', applyImport);
+  var resetArmed = false;
   $('resetBtn').addEventListener('click', function(){
-    if (confirm('确定清空全部自定义修改，恢复内置词库吗？')) {
+    if (!resetArmed) {
+      resetArmed = true;
+      $('resetBtn').textContent = '再点一次确认恢复';
+      setTimeout(function(){ resetArmed = false; $('resetBtn').textContent = '恢复全部默认'; }, 3000);
+    } else {
+      resetArmed = false;
+      $('resetBtn').textContent = '恢复全部默认';
       localStorage.removeItem(CUSTOM_KEY);
       renderAll();
       toast('已恢复全部默认词库');
@@ -583,7 +590,17 @@
       openEdit(k, entry);
     } else if (act === 'remove'){
       var label = (builtinKeys && builtinKeys.indexOf(k) !== -1) ? '隐藏' : '删除';
-      if (confirm('确定' + label + '「' + k + '」吗？')) removeEntry(k);
+      if (btn.getAttribute('data-pending') !== '1') {
+        btn.setAttribute('data-orig', btn.textContent);
+        btn.setAttribute('data-pending', '1');
+        btn.textContent = '确认' + label + '？';
+        setTimeout(function(){
+          btn.setAttribute('data-pending', '0');
+          btn.textContent = btn.getAttribute('data-orig') || ('确认' + label + '？');
+        }, 3000);
+      } else {
+        removeEntry(k);
+      }
     } else if (act === 'restore'){
       restoreEntry(k);
     }
