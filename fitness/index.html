@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>健身 · YEuhub.ME</title>
+<meta name="description" content="记录每日训练、查看热力图，并获得近 7 天训练解读" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111111'/%3E%3Cpath d='M17 30h30v4H17z' fill='%23ff8575'/%3E%3Cpath d='M13 24h6v16h-6zM45 24h6v16h-6z' fill='%23ff8575'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://api.fontshare.com/v2/css?f[]=panchang@400,500,600,700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #151515;
+    --panel: #1c1c1c;
+    --panel-soft: #252525;
+    --line: #373737;
+    --muted: #a6a6a6;
+    --cream: #f2eee5;
+    --coral: #ff8575;
+    --coral-dark: #e15e4c;
+    --green-1: #263936;
+    --green-2: #316451;
+    --green-3: #44a476;
+    --green-4: #84e0a5;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(900px 620px at 100% -10%, rgba(255, 133, 117, 0.16), transparent 58%),
+      radial-gradient(700px 540px at 0% 16%, rgba(132, 224, 165, 0.1), transparent 58%),
+      var(--ink);
+    color: var(--cream);
+    font-family: "Oswald", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    min-height: 100vh;
+  }
+  button, input, textarea { font: inherit; }
+  button { cursor: pointer; }
+  .shell { width: min(1100px, 100%); margin: 0 auto; padding: clamp(22px, 5vw, 58px) 20px 46px; }
+
+  .hero { margin-bottom: 20px; }
+  .back {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px;
+    color: var(--cream); text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    border: 1px solid var(--line); background: rgba(255,255,255,0.04); transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .back:hover { border-color: var(--coral); color: var(--coral); }
+  .kicker { margin-top: 26px; color: var(--coral); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; }
+  h1, h2, h3, p { margin: 0; }
+  h1 {
+    margin-top: 10px; font-family: "Panchang", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: clamp(42px, 9vw, 94px); font-weight: 600; line-height: 0.96; letter-spacing: -0.06em;
+  }
+  .hero p { max-width: 540px; margin-top: 20px; color: var(--muted); line-height: 1.8; font-size: 15px; }
+
+  .card { border: 1px solid var(--line); border-radius: 24px; background: rgba(28,28,28,0.9); padding: clamp(20px, 3vw, 28px); margin-bottom: 18px; }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+  .card-head h2 { font-size: 21px; font-weight: 600; letter-spacing: 0.02em; }
+  .card-head p { margin-top: 3px; color: var(--muted); font-size: 13px; }
+  .card-tag { flex: 0 0 auto; padding: 5px 10px; border: 1px solid rgba(255,133,117,0.38); border-radius: 999px; color: var(--coral); background: rgba(255,133,117,0.08); font-size: 12px; font-weight: 600; }
+
+  .overview { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; align-items: start; }
+  .heatmap-scroll { overflow-x: auto; padding-bottom: 4px; }
+  .heatmap-grid { display: grid; grid-template-rows: repeat(7, 16px); grid-auto-flow: column; grid-auto-columns: 16px; gap: 5px; width: max-content; }
+  .heat-cell { width: 16px; height: 16px; border-radius: 4px; background: #292929; border: 1px solid rgba(255,255,255,0.03); }
+  .heat-cell.level-1 { background: var(--green-1); }
+  .heat-cell.level-2 { background: var(--green-2); }
+  .heat-cell.level-3 { background: var(--green-3); }
+  .heat-cell.level-4 { background: var(--green-4); }
+  .heat-legend { display: flex; align-items: center; gap: 6px; margin-top: 14px; color: var(--muted); font-size: 12px; }
+  .heat-legend .heat-cell { width: 12px; height: 12px; border-radius: 3px; }
+  .heat-stat { border-left: 1px solid var(--line); padding-left: 24px; }
+  .stat-value { font-family: "Panchang", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 44px; color: var(--coral); line-height: 1; letter-spacing: -0.06em; }
+  .stat-label { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .week-days { display: flex; gap: 5px; margin-top: 18px; }
+  .week-day { flex: 1; min-width: 0; padding: 7px 4px; border-radius: 9px; text-align: center; color: var(--muted); background: rgba(255,255,255,0.04); font-size: 12px; }
+  .week-day.active { color: var(--ink); background: var(--green-4); font-weight: 700; }
+
+  .record-layout { display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr); gap: 18px; }
+  .form-block { padding: 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,0.025); }
+  .form-row { margin-bottom: 14px; }
+  label { display: block; margin-bottom: 7px; color: #d4d4d4; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
+  input[type="date"], textarea {
+    width: 100%; border: 1px solid #484848; border-radius: 13px; outline: none;
+    color: var(--cream); background: #141414; padding: 11px 13px; font-size: 14px;
+  }
+  textarea { min-height: 138px; resize: vertical; line-height: 1.7; }
+  input:focus, textarea:focus { border-color: var(--coral); box-shadow: 0 0 0 3px rgba(255,133,117,0.12); }
+  .form-help { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+  .btn-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+  .btn { border: 0; border-radius: 12px; padding: 11px 17px; background: var(--coral); color: var(--ink); font-weight: 700; font-size: 14px; transition: transform 0.2s ease, background 0.2s ease; }
+  .btn:hover { transform: translateY(-1px); background: #ffa093; }
+  .btn-ghost { border: 1px solid var(--line); background: transparent; color: var(--cream); }
+  .btn-ghost:hover { background: rgba(255,255,255,0.07); }
+  .save-hint { color: var(--muted); font-size: 12px; }
+
+  .preview-empty { padding: 40px 14px; text-align: center; color: var(--muted); font-size: 14px; }
+  .exercise-list { display: grid; gap: 10px; }
+  .exercise-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 12px 13px; border-radius: 13px; background: #151515; border: 1px solid #333; }
+  .exercise-name { font-size: 15px; font-weight: 600; }
+  .exercise-meta { margin-top: 2px; color: var(--muted); font-size: 12px; }
+  .exercise-group { flex: 0 0 auto; padding: 4px 8px; color: var(--coral); border-radius: 999px; background: rgba(255,133,117,0.1); font-size: 11px; font-weight: 600; }
+  .preview-total { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  .preview-total b { color: var(--cream); }
+
+  .insight { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 14px; align-items: start; }
+  .insight-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: var(--coral); background: rgba(255,133,117,0.1); border: 1px solid rgba(255,133,117,0.25); }
+  .insight-icon svg { width: 22px; height: 22px; }
+  .insight-text { color: #dedede; line-height: 1.85; font-size: 14px; }
+  .insight-text p + p { margin-top: 10px; }
+  .insight-strong { color: var(--green-4); font-weight: 700; }
+
+  .history-list { display: grid; gap: 10px; }
+  .history-item { display: flex; align-items: center; gap: 14px; padding: 12px 13px; border-radius: 14px; border: 1px solid #343434; background: rgba(255,255,255,0.025); }
+  .history-date { flex: 0 0 74px; color: var(--coral); font-weight: 600; font-size: 13px; }
+  .history-content { min-width: 0; flex: 1; }
+  .history-content b { display: block; color: var(--cream); font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .history-content span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .delete-btn { flex: 0 0 auto; border: 1px solid rgba(255,133,117,0.3); background: transparent; border-radius: 9px; padding: 5px 8px; color: var(--coral); font-size: 12px; }
+  .delete-btn:hover { background: rgba(255,133,117,0.1); }
+  .empty { padding: 24px 0; text-align: center; color: var(--muted); font-size: 14px; }
+  .footer { margin-top: 26px; color: #737373; text-align: center; font-size: 12px; }
+
+  @media (max-width: 760px) {
+    .overview, .record-layout { grid-template-columns: 1fr; }
+    .heat-stat { border-left: 0; border-top: 1px solid var(--line); padding: 18px 0 0; }
+    .card-head { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="hero">
+    <a class="back" href="../index.html">← 返回首页</a>
+    <div class="kicker">Life Tracker</div>
+    <h1>健身</h1>
+    <p>把每次训练留在这里。自动整理动作内容、记录当日感受，并从近 7 天的节奏中给出训练解读。</p>
+  </header>
+
+  <section class="card">
+    <div class="card-head">
+      <div><h2>训练热力图</h2><p>最近 12 周内，每格代表当天完成的训练次数。</p></div>
+      <span class="card-tag" id="heatmapRange">最近 12 周</span>
+    </div>
+    <div class="overview">
+      <div>
+        <div class="heatmap-scroll"><div class="heatmap-grid" id="heatmapGrid" aria-label="健身热力图"></div></div>
+        <div class="heat-legend"><span>少</span><span class="heat-cell"></span><span class="heat-cell level-1"></span><span class="heat-cell level-2"></span><span class="heat-cell level-3"></span><span class="heat-cell level-4"></span><span>多</span></div>
+      </div>
+      <aside class="heat-stat">
+        <div class="stat-value" id="todayCount">0</div>
+        <div class="stat-label">今天已记录训练次数</div>
+        <div class="week-days" id="weekDays"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div><h2>记录训练</h2><p>输入训练动作后，会自动整理成今天的训练内容。</p></div>
+      <span class="card-tag" id="recordCountTag">0 条记录</span>
+    </div>
+    <div class="record-layout">
+      <div class="form-block">
+        <div class="form-row">
+          <label for="trainingDate">训练日期</label>
+          <input id="trainingDate" type="date" />
+        </div>
+        <div class="form-row">
+          <label for="trainingInput">健身动作</label>
+          <textarea id="trainingInput" placeholder="例如：&#10;深蹲 4x10 60kg&#10;卧推 3x8 45kg&#10;跑步 20分钟"></textarea>
+          <div class="form-help">建议一行一个动作；支持「4x10」「3×12」「60kg」「20分钟」等写法。</div>
+        </div>
+        <div class="form-row">
+          <label for="feelingInput">今天的训练感受</label>
+          <textarea id="feelingInput" placeholder="例如：腿部发力不错，但最后两组比较疲劳。" style="min-height:94px;"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="saveBtn" type="button">保存本次训练</button>
+          <button class="btn btn-ghost" id="sampleBtn" type="button">载入示例</button>
+          <span class="save-hint" id="saveHint">每次保存都会计入当天的训练次数。</span>
+        </div>
+      </div>
+      <div class="form-block">
+        <div class="card-head" style="margin-bottom:14px;"><div><h2 style="font-size:17px;">今日训练内容</h2><p>根据你输入的动作自动整理。</p></div></div>
+        <div id="trainingPreview"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div><h2>AI 训练解读</h2><p>基于近 7 天已记录的训练次数、动作分布和训练感受生成。</p></div>
+      <span class="card-tag">近 7 天</span>
+    </div>
+    <div class="insight">
+      <div class="insight-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3"></path><path d="M12 18v3"></path><path d="m5.6 5.6 2.1 2.1"></path><path d="m16.3 16.3 2.1 2.1"></path><path d="M3 12h3"></path><path d="M18 12h3"></path><path d="m5.6 18.4 2.1-2.1"></path><path d="m16.3 7.7 2.1-2.1"></path><circle cx="12" cy="12" r="4"></circle></svg></div>
+      <div class="insight-text" id="insightText"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><div><h2>最近训练</h2><p>最近保存的训练记录，可随时删除修正。</p></div></div>
+    <div class="history-list" id="historyList"></div>
+  </section>
+
+  <footer class="footer">训练数据仅保存在当前浏览器中 · YEuhub.ME</footer>
+</main>
+
+<script>
+  (function () {
+    var STORAGE_KEY = 'yeuhub_fitness_records_v1';
+    var actionRules = [
+      { pattern: /深蹲|squat/i, name: '深蹲', group: '下肢' },
+      { pattern: /硬拉|deadlift/i, name: '硬拉', group: '后链' },
+      { pattern: /卧推|bench/i, name: '卧推', group: '胸部' },
+      { pattern: /引体|pull[ -]?up/i, name: '引体向上', group: '背部' },
+      { pattern: /划船|row/i, name: '划船', group: '背部' },
+      { pattern: /肩推|推举|shoulder press/i, name: '肩推', group: '肩部' },
+      { pattern: /弓步|lunge/i, name: '弓步蹲', group: '下肢' },
+      { pattern: /腿举|leg press/i, name: '腿举', group: '下肢' },
+      { pattern: /臀桥|hip thrust/i, name: '臀桥', group: '臀部' },
+      { pattern: /卷腹|crunch/i, name: '卷腹', group: '核心' },
+      { pattern: /平板|plank/i, name: '平板支撑', group: '核心' },
+      { pattern: /跑步|跑步机|run/i, name: '跑步', group: '有氧' },
+      { pattern: /骑行|单车|bike/i, name: '骑行', group: '有氧' },
+      { pattern: /游泳|swim/i, name: '游泳', group: '有氧' },
+      { pattern: /跳绳|rope/i, name: '跳绳', group: '有氧' },
+      { pattern: /瑜伽|yoga/i, name: '瑜伽', group: '恢复' },
+      { pattern: /拉伸|stretch/i, name: '拉伸', group: '恢复' }
+    ];
+
+    function $(id) { return document.getElementById(id); }
+    function dateKey(date) {
+      var offset = date.getTimezoneOffset() * 60000;
+      return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+    }
+    function parseDate(key) { return new Date(key + 'T12:00:00'); }
+    function addDays(date, amount) { var copy = new Date(date); copy.setDate(copy.getDate() + amount); return copy; }
+    function formatDate(key) {
+      var date = parseDate(key);
+      return (date.getMonth() + 1) + '月' + date.getDate() + '日';
+    }
+    function escapeHtml(text) { return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function getRecords() {
+      try {
+        var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        return Array.isArray(data) ? data : [];
+      } catch (error) { return []; }
+    }
+    function saveRecords(records) { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
+    function splitActions(text) {
+      return String(text || '').split(/[\n；;]+/).map(function (item) { return item.trim(); }).filter(Boolean);
+    }
+    function detectAction(line) {
+      var matched = actionRules.find(function (rule) { return rule.pattern.test(line); });
+      return matched || { name: line.replace(/\d+(?:\.\d+)?\s*(?:kg|公斤)|\d+\s*[x×*]\s*\d+|\d+\s*(?:min|分钟)/gi, '').trim().slice(0, 18) || '自定义训练', group: '自定义' };
+    }
+    function parseExercises(text) {
+      return splitActions(text).map(function (line) {
+        var action = detectAction(line);
+        var setRepMatch = line.match(/(\d+)\s*[x×*]\s*(\d+)/i);
+        var weightMatch = line.match(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)/i);
+        var minutesMatch = line.match(/(\d+)\s*(?:min|分钟)/i);
+        return {
+          raw: line,
+          name: action.name,
+          group: action.group,
+          sets: setRepMatch ? Number(setRepMatch[1]) : 0,
+          reps: setRepMatch ? Number(setRepMatch[2]) : 0,
+          weight: weightMatch ? Number(weightMatch[1]) : 0,
+          minutes: minutesMatch ? Number(minutesMatch[1]) : 0
+        };
+      });
+    }
+    function totalSets(exercises) { return exercises.reduce(function (sum, exercise) { return sum + exercise.sets; }, 0); }
+    function totalMinutes(exercises) { return exercises.reduce(function (sum, exercise) { return sum + exercise.minutes; }, 0); }
+    function exerciseMeta(exercise) {
+      var parts = [];
+      if (exercise.sets && exercise.reps) parts.push(exercise.sets + ' 组 × ' + exercise.reps + ' 次');
+      if (exercise.weight) parts.push(exercise.weight + ' kg');
+      if (exercise.minutes) parts.push(exercise.minutes + ' 分钟');
+      return parts.length ? parts.join(' · ') : exercise.raw;
+    }
+    function renderPreview() {
+      var exercises = parseExercises($('trainingInput').value);
+      if (!exercises.length) {
+        $('trainingPreview').innerHTML = '<div class="preview-empty">输入动作后，这里会自动生成今天的训练内容。</div>';
+        return;
+      }
+      var rows = exercises.map(function (exercise) {
+        return '<div class="exercise-row"><div><div class="exercise-name">' + escapeHtml(exercise.name) + '</div><div class="exercise-meta">' + escapeHtml(exerciseMeta(exercise)) + '</div></div><span class="exercise-group">' + escapeHtml(exercise.group) + '</span></div>';
+      }).join('');
+      var sets = totalSets(exercises);
+      var minutes = totalMinutes(exercises);
+      var totalText = '已识别 <b>' + exercises.length + '</b> 个动作';
+      if (sets) totalText += ' · 力量训练 <b>' + sets + '</b> 组';
+      if (minutes) totalText += ' · 有氧/恢复 <b>' + minutes + '</b> 分钟';
+      $('trainingPreview').innerHTML = '<div class="exercise-list">' + rows + '</div><div class="preview-total">' + totalText + '</div>';
+    }
+    function recordsOnDate(records, key) { return records.filter(function (record) { return record.date === key; }); }
+    function renderHeatmap(records) {
+      var today = parseDate(dateKey(new Date()));
+      var start = addDays(today, -83);
+      while (start.getDay() !== 1) start = addDays(start, -1);
+      var countByDate = {};
+      records.forEach(function (record) { countByDate[record.date] = (countByDate[record.date] || 0) + 1; });
+      var cells = [];
+      for (var cursor = new Date(start); cursor <= today; cursor = addDays(cursor, 1)) {
+        var key = dateKey(cursor);
+        var count = countByDate[key] || 0;
+        var level = count ? Math.min(4, count) : 0;
+        cells.push('<span class="heat-cell' + (level ? ' level-' + level : '') + '" title="' + key + '：' + count + ' 次训练"></span>');
+      }
+      $('heatmapGrid').innerHTML = cells.join('');
+      var todayKey = dateKey(today);
+      $('todayCount').textContent = recordsOnDate(records, todayKey).length;
+      renderWeekDays(records, today);
+    }
+    function renderWeekDays(records, today) {
+      var labels = ['一', '二', '三', '四', '五', '六', '日'];
+      var mondayOffset = (today.getDay() + 6) % 7;
+      var monday = addDays(today, -mondayOffset);
+      $('weekDays').innerHTML = labels.map(function (label, index) {
+        var day = addDays(monday, index);
+        var active = recordsOnDate(records, dateKey(day)).length > 0;
+        return '<span class="week-day' + (active ? ' active' : '') + '">' + label + '</span>';
+      }).join('');
+    }
+    function groupCounts(records) {
+      var counts = {};
+      records.forEach(function (record) {
+        (record.exercises || []).forEach(function (exercise) { counts[exercise.group] = (counts[exercise.group] || 0) + 1; });
+      });
+      return counts;
+    }
+    function feelingSignal(records) {
+      var text = records.map(function (record) { return record.feeling || ''; }).join(' ');
+      var fatigue = /(累|疲劳|酸痛|疼|没精神|睡不好|压力大)/g;
+      var positive = /(轻松|状态好|有力|不错|舒服|进步|顺畅)/g;
+      return { fatigue: (text.match(fatigue) || []).length, positive: (text.match(positive) || []).length };
+    }
+    function longestStreak(records, today) {
+      var dates = {};
+      records.forEach(function (record) { dates[record.date] = true; });
+      var streak = 0;
+      var longest = 0;
+      for (var cursor = addDays(today, -27); cursor <= today; cursor = addDays(cursor, 1)) {
+        if (dates[dateKey(cursor)]) { streak++; longest = Math.max(longest, streak); }
+        else streak = 0;
+      }
+      return longest;
+    }
+    function buildInsight(records) {
+      var today = parseDate(dateKey(new Date()));
+      var currentStart = addDays(today, -6);
+      var previousStart = addDays(today, -13);
+      var previousEnd = addDays(today, -7);
+      var current = records.filter(function (record) { var date = parseDate(record.date); return date >= currentStart && date <= today; });
+      var previous = records.filter(function (record) { var date = parseDate(record.date); return date >= previousStart && date <= previousEnd; });
+      if (!current.length) {
+        return '<p>近 7 天还没有训练记录。完成第一条训练后，我会从训练频率、动作分布和训练感受三个维度开始解读。</p>';
+      }
+      var activeDays = new Set(current.map(function (record) { return record.date; })).size;
+      var currentSets = current.reduce(function (sum, record) { return sum + totalSets(record.exercises || []); }, 0);
+      var currentMinutes = current.reduce(function (sum, record) { return sum + totalMinutes(record.exercises || []); }, 0);
+      var groups = groupCounts(current);
+      var topGroup = Object.keys(groups).sort(function (left, right) { return groups[right] - groups[left]; })[0];
+      var signals = feelingSignal(current);
+      var streak = longestStreak(records, today);
+      var frequencyText = '近 7 天你完成了 <span class="insight-strong">' + current.length + ' 次训练</span>，覆盖 <span class="insight-strong">' + activeDays + ' 天</span>';
+      var volumeText = currentSets ? '力量训练累计 <span class="insight-strong">' + currentSets + ' 组</span>' : '本周以有氧或恢复训练为主';
+      if (currentMinutes) volumeText += '，记录有氧/恢复 <span class="insight-strong">' + currentMinutes + ' 分钟</span>';
+      var focusText = topGroup ? '当前动作最集中在 <span class="insight-strong">' + topGroup + '</span>。' : '';
+      var comparison = current.length - previous.length;
+      var trendText = previous.length ? (comparison > 0 ? '比前 7 天多 ' + comparison + ' 次，训练频率正在上升。' : comparison < 0 ? '比前 7 天少 ' + Math.abs(comparison) + ' 次，可根据精力逐步恢复节奏。' : '与前 7 天频率持平，节奏比较稳定。') : '继续积累记录后，可以更准确比较训练趋势。';
+      var recoveryText = streak >= 5 ? '你已连续训练 ' + streak + ' 天，建议安排一次低强度恢复或充分休息。' : signals.fatigue > signals.positive ? '训练感受中疲劳信号较多，建议优先关注睡眠、热身和训练量控制。' : signals.positive ? '你的训练感受整体积极，可以在动作稳定的前提下小幅增加训练量。' : '下次可多写一点训练感受，解读会更贴合你的恢复状态。';
+      return '<p>' + frequencyText + '，' + volumeText + '。' + focusText + '</p><p>' + trendText + ' ' + recoveryText + '</p>';
+    }
+    function renderHistory(records) {
+      var recent = records.slice().sort(function (left, right) { return String(right.createdAt).localeCompare(String(left.createdAt)); }).slice(0, 10);
+      $('recordCountTag').textContent = records.length + ' 条记录';
+      if (!recent.length) {
+        $('historyList').innerHTML = '<div class="empty">还没有保存训练记录。</div>';
+        return;
+      }
+      $('historyList').innerHTML = recent.map(function (record) {
+        var actions = (record.exercises || []).map(function (exercise) { return exercise.name; }).join('、') || '未识别动作';
+        return '<div class="history-item"><span class="history-date">' + formatDate(record.date) + '</span><div class="history-content"><b>' + escapeHtml(actions) + '</b><span>' + escapeHtml(record.feeling || '未填写训练感受') + '</span></div><button class="delete-btn" type="button" data-id="' + escapeHtml(record.id) + '">删除</button></div>';
+      }).join('');
+    }
+    function renderAll() {
+      var records = getRecords();
+      renderHeatmap(records);
+      $('insightText').innerHTML = buildInsight(records);
+      renderHistory(records);
+    }
+    function saveTraining() {
+      var date = $('trainingDate').value;
+      var raw = $('trainingInput').value.trim();
+      var feeling = $('feelingInput').value.trim();
+      var exercises = parseExercises(raw);
+      if (!date) { alert('请选择训练日期'); return; }
+      if (!raw || !exercises.length) { alert('请先输入至少一个训练动作'); return; }
+      var records = getRecords();
+      records.push({ id: String(Date.now()) + '-' + Math.random().toString(16).slice(2), date: date, raw: raw, feeling: feeling, exercises: exercises, createdAt: new Date().toISOString() });
+      saveRecords(records);
+      $('trainingInput').value = '';
+      $('feelingInput').value = '';
+      $('saveHint').textContent = '已保存本次训练，热力图和近 7 天解读已更新。';
+      renderPreview();
+      renderAll();
+    }
+    function loadSample() {
+      $('trainingInput').value = '深蹲 4x10 60kg\n卧推 3x8 45kg\n跑步 20分钟';
+      $('feelingInput').value = '腿部发力不错，最后两组有些疲劳。';
+      renderPreview();
+    }
+    function deleteRecord(id) {
+      var records = getRecords().filter(function (record) { return record.id !== id; });
+      saveRecords(records);
+      renderAll();
+    }
+
+    $('trainingDate').value = dateKey(new Date());
+    $('trainingInput').addEventListener('input', renderPreview);
+    $('saveBtn').addEventListener('click', saveTraining);
+    $('sampleBtn').addEventListener('click', loadSample);
+    $('historyList').addEventListener('click', function (event) {
+      var button = event.target.closest ? event.target.closest('button[data-id]') : null;
+      if (button) deleteRecord(button.getAttribute('data-id'));
+    });
+    renderPreview();
+    renderAll();
+  })();
+</script>
+</body>
+</html>
