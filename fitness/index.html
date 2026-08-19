@@ -106,6 +106,7 @@
   .image-preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .image-remove { position: absolute; right: 5px; top: 5px; width: 24px; height: 24px; border: 0; border-radius: 50%; background: rgba(21,21,21,0.85); color: var(--cream); font-size: 16px; line-height: 1; }
   .image-remove:hover { background: var(--coral); color: var(--ink); }
+  .image-status { margin-top: 9px; color: var(--coral); font-size: 12px; line-height: 1.6; }
   .btn-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
   .btn { border: 0; border-radius: 12px; padding: 11px 17px; background: var(--coral); color: var(--ink); font-weight: 700; font-size: 14px; transition: transform 0.2s ease, background 0.2s ease; }
   .btn:hover { transform: translateY(-1px); background: #ffa093; }
@@ -141,6 +142,13 @@
   .delete-btn:hover { background: rgba(255,133,117,0.1); }
   .empty { padding: 24px 0; text-align: center; color: var(--muted); font-size: 14px; }
   .footer { margin-top: 26px; color: #737373; text-align: center; font-size: 12px; }
+  .modal[hidden] { display: none; }
+  .modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 20px; background: rgba(0,0,0,0.68); }
+  .modal-card { width: min(620px, 100%); max-height: min(760px, calc(100vh - 40px)); overflow-y: auto; border: 1px solid #494949; border-radius: 22px; padding: 24px; background: #1b1b1b; box-shadow: 0 24px 70px rgba(0,0,0,0.42); }
+  .modal-card h3 { font-size: 22px; font-weight: 600; }
+  .modal-card p { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+  .modal-label { margin-top: 18px; }
+  .modal textarea { min-height: 158px; }
 
   @media (max-width: 760px) {
     .overview, .record-layout { grid-template-columns: 1fr; }
@@ -199,7 +207,8 @@
           </div>
           <input class="image-input" id="imageInput" type="file" accept="image/*" multiple />
           <div class="image-preview" id="imagePreview"></div>
-          <div class="form-help">每次训练最多保存 3 张图片，图片会压缩后保存在当前浏览器中。</div>
+          <div class="form-help">图片上传后会自动识别截图里的训练文字；每次训练最多保存 3 张图片。</div>
+          <div class="image-status" id="imageStatus" aria-live="polite"></div>
         </div>
         <div class="form-row">
           <label for="feelingInput">今天的训练感受</label>
@@ -237,12 +246,27 @@
   <footer class="footer">训练数据仅保存在当前浏览器中 · YEuhub.ME</footer>
 </main>
 
+<div class="modal" id="imageConfirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="imageConfirmTitle">
+  <div class="modal-card">
+    <h3 id="imageConfirmTitle">确认图片解析内容</h3>
+    <p id="imageConfirmHint">已从图片中识别到训练文字。请确认或修改后再写入今天的训练内容。</p>
+    <label class="modal-label" for="imageParsedInput">识别出的训练内容</label>
+    <textarea id="imageParsedInput" placeholder="识别结果会显示在这里，可直接修改。"></textarea>
+    <div class="btn-row">
+      <button class="btn" id="confirmImageParseBtn" type="button">确认写入训练内容</button>
+      <button class="btn btn-ghost" id="cancelImageParseBtn" type="button">暂不写入</button>
+    </div>
+  </div>
+</div>
+
 <script>
   (function () {
     var STORAGE_KEY = 'yeuhub_fitness_records_v1';
     var MAX_IMAGES_PER_RECORD = 3;
     var MAX_IMAGE_EDGE = 720;
     var pendingImages = [];
+    var ocrWorker = null;
+    var ocrScriptPromise = null;
     var actionRules = [
       { pattern: /深蹲|squat/i, name: '深蹲', group: '下肢' },
       { pattern: /硬拉|deadlift/i, name: '硬拉', group: '后链' },
@@ -344,6 +368,69 @@
         return '<div class="image-preview-item"><img src="' + image + '" alt="训练动作图片 ' + (index + 1) + '" /><button class="image-remove" type="button" data-image-index="' + index + '" aria-label="删除图片">×</button></div>';
       }).join('');
     }
+    function setImageStatus(message) { $('imageStatus').textContent = message || ''; }
+    function loadOcrScript() {
+      if (window.Tesseract) return Promise.resolve(window.Tesseract);
+      if (ocrScriptPromise) return ocrScriptPromise;
+      ocrScriptPromise = new Promise(function (resolve, reject) {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        script.onload = function () { resolve(window.Tesseract); };
+        script.onerror = function () { reject(new Error('ocr library load failed')); };
+        document.head.appendChild(script);
+      });
+      return ocrScriptPromise;
+    }
+    async function getOcrWorker() {
+      var Tesseract = await loadOcrScript();
+      if (!ocrWorker) {
+        setImageStatus('正在加载图片识别组件，首次使用可能需要一点时间…');
+        ocrWorker = await Tesseract.createWorker('eng+chi_sim');
+      }
+      return ocrWorker;
+    }
+    function normalizeOcrText(text) {
+      return String(text || '')
+        .replace(/[|｜]/g, ' ')
+        .replace(/[×xX]\s*/g, 'x')
+        .replace(/\s*(kg|KG)\b/g, ' $1')
+        .replace(/\r/g, '')
+        .split('\n')
+        .map(function (line) { return line.trim().replace(/\s{2,}/g, ' '); })
+        .filter(Boolean)
+        .join('\n');
+    }
+    function buildTrainingTextFromOcr(text) {
+      var cleaned = normalizeOcrText(text);
+      var exercises = parseExercises(cleaned);
+      var known = exercises.filter(function (exercise) { return exercise.group !== '自定义'; });
+      if (known.length) return known.map(function (exercise) { return exercise.raw; }).join('\n');
+      return cleaned;
+    }
+    function openImageConfirm(text) {
+      var parsedText = buildTrainingTextFromOcr(text);
+      $('imageParsedInput').value = parsedText;
+      $('imageConfirmHint').textContent = parsedText ? '已从图片中识别到训练文字。请确认或修改后再写入今天的训练内容。' : '没有从图片中识别到清晰的训练文字。你可以手动补充动作名称后再确认。';
+      $('imageConfirmModal').hidden = false;
+      $('imageParsedInput').focus();
+    }
+    function closeImageConfirm() { $('imageConfirmModal').hidden = true; }
+    async function recognizeTrainingImages(images) {
+      try {
+        var worker = await getOcrWorker();
+        var texts = [];
+        for (var index = 0; index < images.length; index++) {
+          setImageStatus('正在解析图片 ' + (index + 1) + '/' + images.length + '…');
+          var result = await worker.recognize(images[index]);
+          if (result && result.data && result.data.text) texts.push(result.data.text);
+        }
+        setImageStatus('图片解析完成，请确认训练内容。');
+        openImageConfirm(texts.join('\n'));
+      } catch (error) {
+        setImageStatus('图片文字识别暂不可用。你仍可以在确认窗口里手动填写动作。');
+        openImageConfirm('');
+      }
+    }
     function compressImage(file) {
       return new Promise(function (resolve, reject) {
         var reader = new FileReader();
@@ -375,9 +462,9 @@
       Promise.all(validFiles.slice(0, slots).map(compressImage)).then(function (images) {
         pendingImages = pendingImages.concat(images);
         renderImagePreview();
-        $('saveHint').textContent = '已添加 ' + pendingImages.length + ' 张动作图片，保存训练后会一并记录。';
+        recognizeTrainingImages(images);
       }).catch(function () {
-        $('saveHint').textContent = '图片读取失败，请尝试 JPG、PNG 或 WebP 格式。';
+        setImageStatus('图片读取失败，请尝试 JPG、PNG 或 WebP 格式。');
       });
     }
     function recordsOnDate(records, key) { return records.filter(function (record) { return record.date === key; }); }
@@ -501,6 +588,18 @@
       $('feelingInput').value = '腿部发力不错，最后两组有些疲劳。';
       renderPreview();
     }
+    function confirmImageParse() {
+      var parsedText = $('imageParsedInput').value.trim();
+      if (parsedText) {
+        var existingText = $('trainingInput').value.trim();
+        $('trainingInput').value = existingText ? existingText + '\n' + parsedText : parsedText;
+        renderPreview();
+        setImageStatus('已将图片解析内容写入训练动作。');
+      } else {
+        setImageStatus('暂未写入动作内容，图片仍会作为本次训练附件保存。');
+      }
+      closeImageConfirm();
+    }
     function deleteRecord(id) {
       var records = getRecords().filter(function (record) { return record.id !== id; });
       saveRecords(records);
@@ -533,6 +632,10 @@
       pendingImages.splice(Number(button.getAttribute('data-image-index')), 1);
       renderImagePreview();
     });
+    $('confirmImageParseBtn').addEventListener('click', confirmImageParse);
+    $('cancelImageParseBtn').addEventListener('click', closeImageConfirm);
+    $('imageConfirmModal').addEventListener('click', function (event) { if (event.target === $('imageConfirmModal')) closeImageConfirm(); });
+    window.addEventListener('pagehide', function () { if (ocrWorker) ocrWorker.terminate(); }, { once: true });
     $('historyList').addEventListener('click', function (event) {
       var button = event.target.closest ? event.target.closest('button[data-id]') : null;
       if (button) deleteRecord(button.getAttribute('data-id'));
