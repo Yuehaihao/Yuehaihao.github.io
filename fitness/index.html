@@ -264,6 +264,7 @@
     var STORAGE_KEY = 'yeuhub_fitness_records_v1';
     var MAX_IMAGES_PER_RECORD = 3;
     var MAX_IMAGE_EDGE = 720;
+    var OCR_IMAGE_EDGE = 1800;
     var pendingImages = [];
     var ocrWorker = null;
     var ocrScriptPromise = null;
@@ -273,6 +274,11 @@
       { pattern: /卧推|bench/i, name: '卧推', group: '胸部' },
       { pattern: /引体|pull[ -]?up/i, name: '引体向上', group: '背部' },
       { pattern: /划船|row/i, name: '划船', group: '背部' },
+      { pattern: /站姿杠铃推举|杠铃推举|overhead press/i, name: '站姿杠铃推举', group: '肩部' },
+      { pattern: /哑铃推肩|哑铃推举|dumbbell shoulder press/i, name: '哑铃推肩', group: '肩部' },
+      { pattern: /绳索侧平举|cable lateral/i, name: '绳索侧平举（单边）', group: '肩部' },
+      { pattern: /侧平举|lateral raise/i, name: '侧平举', group: '肩部' },
+      { pattern: /面拉|face pull/i, name: '面拉', group: '后肩' },
       { pattern: /肩推|推举|shoulder press/i, name: '肩推', group: '肩部' },
       { pattern: /弓步|lunge/i, name: '弓步蹲', group: '下肢' },
       { pattern: /腿举|leg press/i, name: '腿举', group: '下肢' },
@@ -324,17 +330,20 @@
     function parseExercises(text) {
       return splitActions(text).map(function (line) {
         var action = detectAction(line);
+        var weightRepMatches = Array.from(line.matchAll(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)\s*[x×*]\s*(\d+)/gi));
         var setRepMatch = line.match(/(\d+)\s*[x×*]\s*(\d+)/i);
         var weightMatch = line.match(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)/i);
         var minutesMatch = line.match(/(\d+)\s*(?:min|分钟)/i);
+        var series = weightRepMatches.map(function (match) { return { weight: Number(match[1]), reps: Number(match[2]) }; });
         return {
           raw: line,
           name: action.name,
           group: action.group,
-          sets: setRepMatch ? Number(setRepMatch[1]) : 0,
+          sets: series.length ? series.length : (setRepMatch ? Number(setRepMatch[1]) : 0),
           reps: setRepMatch ? Number(setRepMatch[2]) : 0,
           weight: weightMatch ? Number(weightMatch[1]) : 0,
-          minutes: minutesMatch ? Number(minutesMatch[1]) : 0
+          minutes: minutesMatch ? Number(minutesMatch[1]) : 0,
+          series: series
         };
       });
     }
@@ -342,8 +351,12 @@
     function totalMinutes(exercises) { return exercises.reduce(function (sum, exercise) { return sum + exercise.minutes; }, 0); }
     function exerciseMeta(exercise) {
       var parts = [];
-      if (exercise.sets && exercise.reps) parts.push(exercise.sets + ' 组 × ' + exercise.reps + ' 次');
-      if (exercise.weight) parts.push(exercise.weight + ' kg');
+      if (exercise.series && exercise.series.length) {
+        parts.push(exercise.series.length + ' 组 · ' + exercise.series.map(function (item) { return item.weight + 'kg×' + item.reps; }).join('；'));
+      } else {
+        if (exercise.sets && exercise.reps) parts.push(exercise.sets + ' 组 × ' + exercise.reps + ' 次');
+        if (exercise.weight) parts.push(exercise.weight + ' kg');
+      }
       if (exercise.minutes) parts.push(exercise.minutes + ' 分钟');
       return parts.length ? parts.join(' · ') : exercise.raw;
     }
@@ -385,7 +398,8 @@
       var Tesseract = await loadOcrScript();
       if (!ocrWorker) {
         setImageStatus('正在加载图片识别组件，首次使用可能需要一点时间…');
-        ocrWorker = await Tesseract.createWorker('eng+chi_sim');
+        ocrWorker = await Tesseract.createWorker(['eng', 'chi_sim']);
+        await ocrWorker.setParameters({ tessedit_pageseg_mode: '6', preserve_interword_spaces: '1' });
       }
       return ocrWorker;
     }
@@ -400,8 +414,39 @@
         .filter(Boolean)
         .join('\n');
     }
+    function parseWorkoutScreenshot(text) {
+      var screenshotRules = [
+        { pattern: /站姿.{0,6}(?:杠铃|铃).{0,6}(?:推举|举)|杠铃.{0,5}推举/, name: '站姿杠铃推举' },
+        { pattern: /哑铃.{0,5}(?:推肩|推举)|哑铃推肩/, name: '哑铃推肩' },
+        { pattern: /绳索.{0,5}侧平举|单边.{0,5}侧平举|cable.{0,8}lateral/i, name: '绳索侧平举（单边）' },
+        { pattern: /侧平举|侧平?举|侧平学/, name: '侧平举' },
+        { pattern: /面拉|脸拉|face\s*pull/i, name: '面拉' },
+        { pattern: /侧平举.{0,6}单边/, name: '绳索侧平举（单边）' }
+      ];
+      var lines = String(text || '').split('\n').map(function (line) {
+        return line.replace(/[xX＊*]/g, '×').replace(/k[9q]/gi, 'kg').replace(/\s+/g, ' ').trim();
+      }).filter(Boolean);
+      var entries = [];
+      var current = null;
+      lines.forEach(function (line) {
+        var action = screenshotRules.find(function (rule) { return rule.pattern.test(line); });
+        var setPairs = Array.from(line.matchAll(/(\d+(?:[.,]\d+)?)\s*(?:kg|公斤)?\s*[×x*]\s*(\d+)/gi)).map(function (match) {
+          return Number(String(match[1]).replace(',', '.')) + 'kg×' + Number(match[2]);
+        });
+        if (action) {
+          current = { name: action.name, sets: [] };
+          entries.push(current);
+        }
+        if (current && setPairs.length) current.sets = current.sets.concat(setPairs);
+      });
+      return entries.filter(function (entry) { return entry.sets.length; }).map(function (entry) {
+        return entry.name + '：' + entry.sets.join('，');
+      }).join('\n');
+    }
     function buildTrainingTextFromOcr(text) {
       var cleaned = normalizeOcrText(text);
+      var screenshotText = parseWorkoutScreenshot(cleaned);
+      if (screenshotText) return screenshotText;
       var exercises = parseExercises(cleaned);
       var known = exercises.filter(function (exercise) { return exercise.group !== '自定义'; });
       if (known.length) return known.map(function (exercise) { return exercise.raw; }).join('\n');
@@ -454,15 +499,58 @@
         reader.readAsDataURL(file);
       });
     }
+    function prepareWorkoutOcrImage(file) {
+      return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onerror = function () { reject(new Error('read failed')); };
+        reader.onload = function () {
+          var image = new Image();
+          image.onerror = function () { reject(new Error('image failed')); };
+          image.onload = function () {
+            var portrait = image.height > image.width * 1.35;
+            var cropLeft = portrait ? Math.round(image.width * 0.03) : 0;
+            var cropTop = portrait ? Math.round(image.height * 0.14) : 0;
+            var cropWidth = portrait ? Math.round(image.width * 0.94) : image.width;
+            var cropHeight = portrait ? Math.round(image.height * 0.64) : image.height;
+            var scale = Math.min(1, OCR_IMAGE_EDGE / Math.max(cropWidth, cropHeight));
+            var targetWidth = Math.max(1, Math.round(cropWidth * scale));
+            var targetHeight = Math.max(1, Math.round(cropHeight * scale));
+            var canvas = document.createElement('canvas');
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            var context = canvas.getContext('2d', { willReadFrequently: true });
+            context.drawImage(image, cropLeft, cropTop, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
+            var imageData = context.getImageData(0, 0, targetWidth, targetHeight);
+            for (var offset = 0; offset < imageData.data.length; offset += 4) {
+              var brightness = imageData.data[offset] * 0.299 + imageData.data[offset + 1] * 0.587 + imageData.data[offset + 2] * 0.114;
+              var value = brightness < 182 ? 0 : 255;
+              imageData.data[offset] = value;
+              imageData.data[offset + 1] = value;
+              imageData.data[offset + 2] = value;
+            }
+            context.putImageData(imageData, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
     function addImageFiles(files) {
       var validFiles = Array.from(files || []).filter(function (file) { return file && /^image\//i.test(file.type); });
       var slots = MAX_IMAGES_PER_RECORD - pendingImages.length;
       if (!validFiles.length) return;
       if (slots <= 0) { $('saveHint').textContent = '每次训练最多保存 ' + MAX_IMAGES_PER_RECORD + ' 张图片。'; return; }
-      Promise.all(validFiles.slice(0, slots).map(compressImage)).then(function (images) {
+      Promise.all(validFiles.slice(0, slots).map(function (file) {
+        return Promise.all([compressImage(file), prepareWorkoutOcrImage(file)]).then(function (assets) {
+          return { preview: assets[0], ocr: assets[1] };
+        });
+      })).then(function (assets) {
+        var images = assets.map(function (asset) { return asset.preview; });
+        var ocrImages = assets.map(function (asset) { return asset.ocr; });
         pendingImages = pendingImages.concat(images);
         renderImagePreview();
-        recognizeTrainingImages(images);
+        recognizeTrainingImages(ocrImages);
       }).catch(function () {
         setImageStatus('图片读取失败，请尝试 JPG、PNG 或 WebP 格式。');
       });
