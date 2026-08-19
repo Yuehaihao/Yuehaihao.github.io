@@ -142,6 +142,53 @@
   .delete-btn:hover { background: rgba(255,133,117,0.1); }
   .empty { padding: 24px 0; text-align: center; color: var(--muted); font-size: 14px; }
   .footer { margin-top: 26px; color: #737373; text-align: center; font-size: 12px; }
+  .avatar-layout { display: grid; grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr); gap: 22px; align-items: center; }
+  .avatar-stage { --shoulder-scale: 1; --torso-scale: 1; position: relative; min-height: 390px; overflow: hidden; border: 1px solid #3a3a3a; border-radius: 20px; background: radial-gradient(circle at 50% 12%, rgba(255,133,117,0.18), transparent 46%), #141414; }
+  .avatar-stage::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.045) 50%, transparent 50.5%), linear-gradient(0deg, transparent 49.5%, rgba(255,255,255,0.045) 50%, transparent 50.5%); background-size: 48px 48px; pointer-events: none; }
+  .avatar-status { position: absolute; top: 14px; left: 14px; z-index: 1; max-width: calc(100% - 28px); color: var(--cream); font-size: 12px; font-weight: 600; letter-spacing: 0.4px; }
+  .avatar-status span { color: var(--coral); }
+  .avatar-svg { position: absolute; inset: 28px 20px 14px; width: calc(100% - 40px); height: calc(100% - 42px); overflow: visible; }
+  .avatar-shadow { fill: rgba(0,0,0,0.5); }
+  .avatar-head, .avatar-neck, .avatar-leg, .avatar-arm { stroke: var(--cream); stroke-linecap: round; stroke-linejoin: round; }
+  .avatar-head { fill: #f0c6aa; stroke: #f0c6aa; }
+  .avatar-neck { stroke-width: 13; }
+  .avatar-torso { fill: var(--coral); transform-box: fill-box; transform-origin: center center; transform: scaleX(var(--torso-scale)); }
+  .avatar-shoulders { fill: #ffa093; transform-box: fill-box; transform-origin: center center; transform: scaleX(var(--shoulder-scale)); }
+  .avatar-leg { stroke-width: 17; }
+  .avatar-arm { stroke-width: 15; transform-box: fill-box; transform-origin: center top; }
+  .avatar-dumbbell { fill: var(--cream); transform-box: fill-box; transform-origin: center; }
+  .avatar-stage.is-active:not(.is-rest) .avatar-glow { animation: avatarGlow 2.8s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-arm-left { animation: shoulderLiftLeft 2.8s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-arm-right { animation: shoulderLiftRight 2.8s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-dumbbell { animation: dumbbellLift 2.8s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-lower .avatar-figure { animation: squatMove 2.6s ease-in-out infinite; transform-origin: center bottom; }
+  .avatar-stage.is-active:not(.is-rest).mode-push .avatar-arm-left { animation: pushLeft 2.6s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-push .avatar-arm-right { animation: pushRight 2.6s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-pull .avatar-arm-left { animation: pullLeft 2.2s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-pull .avatar-arm-right { animation: pullRight 2.2s ease-in-out infinite; }
+  .avatar-stage.is-active:not(.is-rest).mode-cardio .avatar-figure { animation: runMove 1.05s ease-in-out infinite; transform-origin: center bottom; }
+  .avatar-stage.is-rest .avatar-svg { opacity: 0.68; }
+  @keyframes avatarGlow { 0%,100% { filter: drop-shadow(0 0 0 rgba(255,133,117,0)); } 50% { filter: drop-shadow(0 0 17px rgba(255,133,117,0.45)); } }
+  @keyframes shoulderLiftLeft { 0%,100% { transform: rotate(0deg); } 48%,52% { transform: rotate(-63deg) translateY(-8px); } }
+  @keyframes shoulderLiftRight { 0%,100% { transform: rotate(0deg); } 48%,52% { transform: rotate(63deg) translateY(-8px); } }
+  @keyframes dumbbellLift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-17px); } }
+  @keyframes squatMove { 0%,100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(24px) scaleY(0.94); } }
+  @keyframes pushLeft { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(24deg) translateX(10px); } }
+  @keyframes pushRight { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-24deg) translateX(-10px); } }
+  @keyframes pullLeft { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-27deg) translateX(8px); } }
+  @keyframes pullRight { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(27deg) translateX(-8px); } }
+  @keyframes runMove { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-12px) rotate(-1.5deg); } }
+  .avatar-summary { display: grid; gap: 14px; }
+  .avatar-summary h3 { font-size: 24px; font-weight: 600; }
+  .avatar-summary > p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+  .avatar-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .avatar-metric { padding: 13px 11px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,0.025); }
+  .avatar-metric b { display: block; color: var(--cream); font-size: 18px; }
+  .avatar-metric span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+  .session-progress { overflow: hidden; height: 10px; border-radius: 999px; background: #2a2a2a; }
+  .session-progress span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--coral-dark), var(--coral), #ffd2ca); transition: width 0.65s linear; }
+  .session-details { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; }
+  .avatar-note { color: #8f8f8f; font-size: 12px; line-height: 1.65; }
   .modal[hidden] { display: none; }
   .modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 20px; background: rgba(0,0,0,0.68); }
   .modal-card { width: min(620px, 100%); max-height: min(760px, calc(100vh - 40px)); overflow-y: auto; border: 1px solid #494949; border-radius: 22px; padding: 24px; background: #1b1b1b; box-shadow: 0 24px 70px rgba(0,0,0,0.42); }
@@ -151,9 +198,10 @@
   .modal textarea { min-height: 158px; }
 
   @media (max-width: 760px) {
-    .overview, .record-layout { grid-template-columns: 1fr; }
+    .overview, .record-layout, .avatar-layout { grid-template-columns: 1fr; }
     .heat-stat { border-left: 0; border-top: 1px solid var(--line); padding: 18px 0 0; }
     .card-head { flex-direction: column; }
+    .avatar-stage { min-height: 350px; }
   }
 </style>
 </head>
@@ -181,6 +229,50 @@
         <div class="stat-label">今天已记录训练次数</div>
         <div class="week-days" id="weekDays"></div>
       </aside>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div><h2>训练小人</h2><p>起始设定为 88kg、18% 体脂；保存训练后，小人会按当天主要训练部位开始 30 分钟动作动画。</p></div>
+      <span class="card-tag" id="avatarTag">等待训练</span>
+    </div>
+    <div class="avatar-layout">
+      <div class="avatar-stage mode-idle" id="avatarStage">
+        <div class="avatar-status" id="avatarStatus">等待今天的训练记录</div>
+        <svg class="avatar-svg" viewBox="0 0 300 350" aria-label="训练小人">
+          <ellipse class="avatar-shadow" cx="150" cy="321" rx="82" ry="13"></ellipse>
+          <circle class="avatar-glow" cx="150" cy="164" r="106" fill="rgba(255,133,117,0.05)"></circle>
+          <g class="avatar-figure">
+            <circle class="avatar-head" cx="150" cy="67" r="27"></circle>
+            <path class="avatar-neck" d="M150 94 L150 112"></path>
+            <path class="avatar-shoulders" d="M107 119 Q150 99 193 119 L184 151 Q150 161 116 151 Z"></path>
+            <path class="avatar-torso" d="M119 144 Q150 160 181 144 L189 241 Q150 264 111 241 Z"></path>
+            <path class="avatar-arm avatar-arm-left" d="M117 128 L82 188 L67 236"></path>
+            <path class="avatar-arm avatar-arm-right" d="M183 128 L218 188 L233 236"></path>
+            <g class="avatar-dumbbell avatar-dumbbell-left">
+              <rect x="53" y="228" width="28" height="16" rx="4"></rect><rect x="62" y="220" width="10" height="32" rx="3"></rect>
+            </g>
+            <g class="avatar-dumbbell avatar-dumbbell-right">
+              <rect x="219" y="228" width="28" height="16" rx="4"></rect><rect x="228" y="220" width="10" height="32" rx="3"></rect>
+            </g>
+            <path class="avatar-leg avatar-leg-left" d="M130 239 L118 302 L102 319"></path>
+            <path class="avatar-leg avatar-leg-right" d="M170 239 L182 302 L198 319"></path>
+          </g>
+        </svg>
+      </div>
+      <div class="avatar-summary">
+        <h3 id="avatarTitle">准备开始</h3>
+        <p id="avatarDescription">保存一条训练记录后，小人会根据训练部位开始相应动作。肩部训练会进行举哑铃动画，并在训练周期内自动加入休息时间。</p>
+        <div class="avatar-metrics">
+          <div class="avatar-metric"><b>88 kg</b><span>起始体重</span></div>
+          <div class="avatar-metric"><b>18%</b><span>起始体脂率</span></div>
+          <div class="avatar-metric"><b id="avatarLevel">0%</b><span>视觉训练进度</span></div>
+        </div>
+        <div class="session-progress"><span id="avatarProgress"></span></div>
+        <div class="session-details"><span id="avatarPhase">尚未开始训练动画</span><span id="avatarTime">30:00</span></div>
+        <p class="avatar-note">这是基于训练记录的视觉激励模拟，不等同于真实体重、体脂或健康评估。</p>
+      </div>
     </div>
   </section>
 
@@ -265,9 +357,14 @@
     var MAX_IMAGES_PER_RECORD = 3;
     var MAX_IMAGE_EDGE = 720;
     var OCR_IMAGE_EDGE = 1800;
+    var AVATAR_SESSION_KEY = 'yeuhub_fitness_avatar_session_v1';
+    var AVATAR_SESSION_DURATION = 30 * 60 * 1000;
+    var AVATAR_WORK_DURATION = 2 * 60 * 1000;
+    var AVATAR_CYCLE_DURATION = AVATAR_WORK_DURATION + 30 * 1000;
     var pendingImages = [];
     var ocrWorker = null;
     var ocrScriptPromise = null;
+    var avatarTimer = null;
     var actionRules = [
       { pattern: /深蹲|squat/i, name: '深蹲', group: '下肢' },
       { pattern: /硬拉|deadlift/i, name: '硬拉', group: '后链' },
@@ -675,11 +772,106 @@
         return '<div class="history-item"><span class="history-date">' + formatDate(record.date) + '</span><div class="history-content"><b>' + escapeHtml(actions) + '</b><span>' + escapeHtml(record.feeling || '未填写训练感受') + '</span>' + (media ? '<div class="history-media">' + media + '</div>' : '') + '</div><button class="delete-btn" type="button" data-id="' + escapeHtml(record.id) + '">删除</button></div>';
       }).join('');
     }
+    function avatarModeFromExercises(exercises) {
+      var groupCounts = {};
+      exercises.forEach(function (exercise) { groupCounts[exercise.group] = (groupCounts[exercise.group] || 0) + 1; });
+      var topGroup = Object.keys(groupCounts).sort(function (left, right) { return groupCounts[right] - groupCounts[left]; })[0] || '';
+      if (/肩/.test(topGroup)) return 'shoulder';
+      if (/下肢|臀|后链/.test(topGroup)) return 'lower';
+      if (/胸/.test(topGroup)) return 'push';
+      if (/背/.test(topGroup)) return 'pull';
+      if (/有氧/.test(topGroup)) return 'cardio';
+      return 'full';
+    }
+    function avatarModeInfo(mode) {
+      var modes = {
+        shoulder: { title: '肩部训练进行中', action: '举哑铃', text: '小人正在进行肩部举哑铃动作，按训练与休息循环完成今天的肩部训练。' },
+        lower: { title: '下肢训练进行中', action: '深蹲', text: '小人正在进行下肢深蹲动作，按训练与休息循环完成今天的下肢训练。' },
+        push: { title: '推类训练进行中', action: '推举', text: '小人正在进行推类训练动作，按训练与休息循环完成今天的训练。' },
+        pull: { title: '拉类训练进行中', action: '划船', text: '小人正在进行拉类训练动作，按训练与休息循环完成今天的训练。' },
+        cardio: { title: '有氧训练进行中', action: '跑步', text: '小人正在进行有氧跑步动作，按训练与休息循环完成今天的训练。' },
+        full: { title: '全身训练进行中', action: '综合训练', text: '小人正在进行综合训练动作，按训练与休息循环完成今天的训练。' }
+      };
+      return modes[mode] || modes.full;
+    }
+    function loadAvatarSession() {
+      try {
+        var session = JSON.parse(localStorage.getItem(AVATAR_SESSION_KEY) || 'null');
+        return session && session.startedAt ? session : null;
+      } catch (error) { return null; }
+    }
+    function saveAvatarSession(session) {
+      try { localStorage.setItem(AVATAR_SESSION_KEY, JSON.stringify(session)); } catch (error) {}
+    }
+    function clearAvatarSession() {
+      try { localStorage.removeItem(AVATAR_SESSION_KEY); } catch (error) {}
+    }
+    function formatSessionTime(milliseconds) {
+      var totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
+      var minutes = Math.floor(totalSeconds / 60);
+      var seconds = totalSeconds % 60;
+      return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+    function startAvatarSession(exercises) {
+      var mode = avatarModeFromExercises(exercises);
+      saveAvatarSession({ startedAt: Date.now(), mode: mode, duration: AVATAR_SESSION_DURATION });
+    }
+    function renderAvatar(records) {
+      if (avatarTimer) { window.clearTimeout(avatarTimer); avatarTimer = null; }
+      var stage = $('avatarStage');
+      var totalSets = records.reduce(function (sum, record) { return sum + totalSetsForRecord(record); }, 0);
+      var shoulderCount = records.reduce(function (sum, record) {
+        return sum + (record.exercises || []).filter(function (exercise) { return /肩/.test(exercise.group); }).length;
+      }, 0);
+      var visualProgress = Math.min(100, Math.round(records.length * 1.4 + totalSets * 0.08));
+      stage.style.setProperty('--shoulder-scale', (1 + Math.min(0.12, shoulderCount * 0.008)).toFixed(3));
+      stage.style.setProperty('--torso-scale', (1 - Math.min(0.08, records.length * 0.003)).toFixed(3));
+      $('avatarLevel').textContent = visualProgress + '%';
+
+      var session = loadAvatarSession();
+      if (!session) {
+        stage.className = 'avatar-stage mode-idle';
+        $('avatarTag').textContent = records.length ? '累计 ' + records.length + ' 次训练' : '等待训练';
+        $('avatarStatus').innerHTML = records.length ? '累计训练 <span>' + records.length + ' 次</span> · 视觉进度 ' + visualProgress + '%' : '等待今天的训练记录';
+        $('avatarTitle').textContent = records.length ? '训练习惯正在累积' : '准备开始';
+        $('avatarDescription').textContent = records.length ? '小人会根据累计训练记录呈现渐进的体态变化。下一次保存当天训练后，会启动 30 分钟训练动画。' : '保存一条训练记录后，小人会根据训练部位开始相应动作。肩部训练会进行举哑铃动画，并在训练周期内自动加入休息时间。';
+        $('avatarProgress').style.width = '0%';
+        $('avatarPhase').textContent = '尚未开始训练动画';
+        $('avatarTime').textContent = '30:00';
+        return;
+      }
+
+      var now = Date.now();
+      var elapsed = now - Number(session.startedAt);
+      var duration = Number(session.duration) || AVATAR_SESSION_DURATION;
+      if (elapsed >= duration) {
+        clearAvatarSession();
+        renderAvatar(records);
+        return;
+      }
+      var remaining = duration - elapsed;
+      var progress = Math.min(100, elapsed / duration * 100);
+      var cyclePosition = elapsed % AVATAR_CYCLE_DURATION;
+      var isRest = cyclePosition >= AVATAR_WORK_DURATION;
+      var cycle = Math.min(Math.ceil(duration / AVATAR_CYCLE_DURATION), Math.floor(elapsed / AVATAR_CYCLE_DURATION) + 1);
+      var info = avatarModeInfo(session.mode);
+      stage.className = 'avatar-stage is-active mode-' + session.mode + (isRest ? ' is-rest' : '');
+      $('avatarTag').textContent = isRest ? '休息时间' : info.action + '中';
+      $('avatarStatus').innerHTML = isRest ? '第 ' + cycle + ' 轮 · <span>休息 30 秒</span>' : '第 ' + cycle + ' 轮 · <span>' + info.action + '</span>';
+      $('avatarTitle').textContent = isRest ? '休息与恢复中' : info.title;
+      $('avatarDescription').textContent = info.text;
+      $('avatarProgress').style.width = progress.toFixed(2) + '%';
+      $('avatarPhase').textContent = isRest ? '休息时间 · 下一轮即将开始' : '训练时间 · 2 分钟训练 / 30 秒休息';
+      $('avatarTime').textContent = formatSessionTime(remaining);
+      avatarTimer = window.setTimeout(function () { renderAvatar(getRecords()); }, 1000);
+    }
+    function totalSetsForRecord(record) { return totalSets(record.exercises || []); }
     function renderAll() {
       var records = getRecords();
       renderHeatmap(records);
       $('insightText').innerHTML = buildInsight(records);
       renderHistory(records);
+      renderAvatar(records);
     }
     function saveTraining() {
       var date = $('trainingDate').value;
@@ -691,6 +883,7 @@
       var records = getRecords();
       records.push({ id: String(Date.now()) + '-' + Math.random().toString(16).slice(2), date: date, raw: raw, feeling: feeling, exercises: exercises, images: pendingImages.slice(), createdAt: new Date().toISOString() });
       if (!saveRecords(records)) return;
+      startAvatarSession(exercises);
       $('trainingInput').value = '';
       $('feelingInput').value = '';
       pendingImages = [];
