@@ -92,6 +92,20 @@
   textarea { min-height: 138px; resize: vertical; line-height: 1.7; }
   input:focus, textarea:focus { border-color: var(--coral); box-shadow: 0 0 0 3px rgba(255,133,117,0.12); }
   .form-help { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+  .image-dropzone {
+    display: flex; align-items: center; justify-content: center; min-height: 112px; padding: 18px;
+    border: 1px dashed #5c5c5c; border-radius: 14px; color: var(--muted); background: #141414;
+    text-align: center; outline: none; transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .image-dropzone:hover, .image-dropzone:focus, .image-dropzone.dragging { border-color: var(--coral); background: rgba(255,133,117,0.06); }
+  .image-dropzone strong { display: block; color: var(--cream); font-size: 14px; margin-bottom: 4px; }
+  .image-dropzone span { display: block; font-size: 12px; line-height: 1.6; }
+  .image-input { display: none; }
+  .image-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; margin-top: 10px; }
+  .image-preview-item { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 12px; border: 1px solid #3e3e3e; background: #141414; }
+  .image-preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .image-remove { position: absolute; right: 5px; top: 5px; width: 24px; height: 24px; border: 0; border-radius: 50%; background: rgba(21,21,21,0.85); color: var(--cream); font-size: 16px; line-height: 1; }
+  .image-remove:hover { background: var(--coral); color: var(--ink); }
   .btn-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
   .btn { border: 0; border-radius: 12px; padding: 11px 17px; background: var(--coral); color: var(--ink); font-weight: 700; font-size: 14px; transition: transform 0.2s ease, background 0.2s ease; }
   .btn:hover { transform: translateY(-1px); background: #ffa093; }
@@ -121,6 +135,8 @@
   .history-content { min-width: 0; flex: 1; }
   .history-content b { display: block; color: var(--cream); font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .history-content span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .history-media { display: flex; gap: 5px; margin-top: 7px; }
+  .history-media img { width: 38px; height: 38px; object-fit: cover; border-radius: 7px; border: 1px solid #444; }
   .delete-btn { flex: 0 0 auto; border: 1px solid rgba(255,133,117,0.3); background: transparent; border-radius: 9px; padding: 5px 8px; color: var(--coral); font-size: 12px; }
   .delete-btn:hover { background: rgba(255,133,117,0.1); }
   .empty { padding: 24px 0; text-align: center; color: var(--muted); font-size: 14px; }
@@ -177,6 +193,15 @@
           <div class="form-help">建议一行一个动作；支持「4x10」「3×12」「60kg」「20分钟」等写法。</div>
         </div>
         <div class="form-row">
+          <label for="imageInput">训练动作图片（可选）</label>
+          <div class="image-dropzone" id="imageDropzone" tabindex="0" role="button" aria-label="上传或粘贴训练动作图片">
+            <div><strong>上传 / 粘贴训练动作图片</strong><span>点击选择、拖拽到此处，或直接按 Ctrl + V 粘贴图片</span></div>
+          </div>
+          <input class="image-input" id="imageInput" type="file" accept="image/*" multiple />
+          <div class="image-preview" id="imagePreview"></div>
+          <div class="form-help">每次训练最多保存 3 张图片，图片会压缩后保存在当前浏览器中。</div>
+        </div>
+        <div class="form-row">
           <label for="feelingInput">今天的训练感受</label>
           <textarea id="feelingInput" placeholder="例如：腿部发力不错，但最后两组比较疲劳。" style="min-height:94px;"></textarea>
         </div>
@@ -215,6 +240,9 @@
 <script>
   (function () {
     var STORAGE_KEY = 'yeuhub_fitness_records_v1';
+    var MAX_IMAGES_PER_RECORD = 3;
+    var MAX_IMAGE_EDGE = 720;
+    var pendingImages = [];
     var actionRules = [
       { pattern: /深蹲|squat/i, name: '深蹲', group: '下肢' },
       { pattern: /硬拉|deadlift/i, name: '硬拉', group: '后链' },
@@ -253,7 +281,15 @@
         return Array.isArray(data) ? data : [];
       } catch (error) { return []; }
     }
-    function saveRecords(records) { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
+    function saveRecords(records) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        return true;
+      } catch (error) {
+        alert('训练图片或历史记录占用空间过多，请先删除部分旧记录后再保存。');
+        return false;
+      }
+    }
     function splitActions(text) {
       return String(text || '').split(/[\n；;]+/).map(function (item) { return item.trim(); }).filter(Boolean);
     }
@@ -302,6 +338,47 @@
       if (sets) totalText += ' · 力量训练 <b>' + sets + '</b> 组';
       if (minutes) totalText += ' · 有氧/恢复 <b>' + minutes + '</b> 分钟';
       $('trainingPreview').innerHTML = '<div class="exercise-list">' + rows + '</div><div class="preview-total">' + totalText + '</div>';
+    }
+    function renderImagePreview() {
+      $('imagePreview').innerHTML = pendingImages.map(function (image, index) {
+        return '<div class="image-preview-item"><img src="' + image + '" alt="训练动作图片 ' + (index + 1) + '" /><button class="image-remove" type="button" data-image-index="' + index + '" aria-label="删除图片">×</button></div>';
+      }).join('');
+    }
+    function compressImage(file) {
+      return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onerror = function () { reject(new Error('read failed')); };
+        reader.onload = function () {
+          var image = new Image();
+          image.onerror = function () { reject(new Error('image failed')); };
+          image.onload = function () {
+            var scale = Math.min(1, MAX_IMAGE_EDGE / Math.max(image.width, image.height));
+            var targetWidth = Math.max(1, Math.round(image.width * scale));
+            var targetHeight = Math.max(1, Math.round(image.height * scale));
+            var canvas = document.createElement('canvas');
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            var context = canvas.getContext('2d');
+            context.drawImage(image, 0, 0, targetWidth, targetHeight);
+            resolve(canvas.toDataURL('image/jpeg', 0.76));
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    function addImageFiles(files) {
+      var validFiles = Array.from(files || []).filter(function (file) { return file && /^image\//i.test(file.type); });
+      var slots = MAX_IMAGES_PER_RECORD - pendingImages.length;
+      if (!validFiles.length) return;
+      if (slots <= 0) { $('saveHint').textContent = '每次训练最多保存 ' + MAX_IMAGES_PER_RECORD + ' 张图片。'; return; }
+      Promise.all(validFiles.slice(0, slots).map(compressImage)).then(function (images) {
+        pendingImages = pendingImages.concat(images);
+        renderImagePreview();
+        $('saveHint').textContent = '已添加 ' + pendingImages.length + ' 张动作图片，保存训练后会一并记录。';
+      }).catch(function () {
+        $('saveHint').textContent = '图片读取失败，请尝试 JPG、PNG 或 WebP 格式。';
+      });
     }
     function recordsOnDate(records, key) { return records.filter(function (record) { return record.date === key; }); }
     function renderHeatmap(records) {
@@ -391,7 +468,8 @@
       }
       $('historyList').innerHTML = recent.map(function (record) {
         var actions = (record.exercises || []).map(function (exercise) { return exercise.name; }).join('、') || '未识别动作';
-        return '<div class="history-item"><span class="history-date">' + formatDate(record.date) + '</span><div class="history-content"><b>' + escapeHtml(actions) + '</b><span>' + escapeHtml(record.feeling || '未填写训练感受') + '</span></div><button class="delete-btn" type="button" data-id="' + escapeHtml(record.id) + '">删除</button></div>';
+        var media = (record.images || []).slice(0, 3).map(function (image, index) { return '<img src="' + image + '" alt="训练图片 ' + (index + 1) + '" />'; }).join('');
+        return '<div class="history-item"><span class="history-date">' + formatDate(record.date) + '</span><div class="history-content"><b>' + escapeHtml(actions) + '</b><span>' + escapeHtml(record.feeling || '未填写训练感受') + '</span>' + (media ? '<div class="history-media">' + media + '</div>' : '') + '</div><button class="delete-btn" type="button" data-id="' + escapeHtml(record.id) + '">删除</button></div>';
       }).join('');
     }
     function renderAll() {
@@ -408,10 +486,12 @@
       if (!date) { alert('请选择训练日期'); return; }
       if (!raw || !exercises.length) { alert('请先输入至少一个训练动作'); return; }
       var records = getRecords();
-      records.push({ id: String(Date.now()) + '-' + Math.random().toString(16).slice(2), date: date, raw: raw, feeling: feeling, exercises: exercises, createdAt: new Date().toISOString() });
-      saveRecords(records);
+      records.push({ id: String(Date.now()) + '-' + Math.random().toString(16).slice(2), date: date, raw: raw, feeling: feeling, exercises: exercises, images: pendingImages.slice(), createdAt: new Date().toISOString() });
+      if (!saveRecords(records)) return;
       $('trainingInput').value = '';
       $('feelingInput').value = '';
+      pendingImages = [];
+      renderImagePreview();
       $('saveHint').textContent = '已保存本次训练，热力图和近 7 天解读已更新。';
       renderPreview();
       renderAll();
@@ -431,6 +511,28 @@
     $('trainingInput').addEventListener('input', renderPreview);
     $('saveBtn').addEventListener('click', saveTraining);
     $('sampleBtn').addEventListener('click', loadSample);
+    $('imageDropzone').addEventListener('click', function () { $('imageInput').click(); });
+    $('imageDropzone').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); $('imageInput').click(); }
+    });
+    $('imageInput').addEventListener('change', function (event) { addImageFiles(event.target.files); event.target.value = ''; });
+    ['dragenter', 'dragover'].forEach(function (type) {
+      $('imageDropzone').addEventListener(type, function (event) { event.preventDefault(); $('imageDropzone').classList.add('dragging'); });
+    });
+    ['dragleave', 'drop'].forEach(function (type) {
+      $('imageDropzone').addEventListener(type, function (event) { event.preventDefault(); $('imageDropzone').classList.remove('dragging'); });
+    });
+    $('imageDropzone').addEventListener('drop', function (event) { addImageFiles(event.dataTransfer.files); });
+    document.addEventListener('paste', function (event) {
+      var imageFiles = Array.from(event.clipboardData.items || []).filter(function (item) { return /^image\//i.test(item.type); }).map(function (item) { return item.getAsFile(); }).filter(Boolean);
+      if (imageFiles.length) { event.preventDefault(); addImageFiles(imageFiles); }
+    });
+    $('imagePreview').addEventListener('click', function (event) {
+      var button = event.target.closest ? event.target.closest('button[data-image-index]') : null;
+      if (!button) return;
+      pendingImages.splice(Number(button.getAttribute('data-image-index')), 1);
+      renderImagePreview();
+    });
     $('historyList').addEventListener('click', function (event) {
       var button = event.target.closest ? event.target.closest('button[data-id]') : null;
       if (button) deleteRecord(button.getAttribute('data-id'));
