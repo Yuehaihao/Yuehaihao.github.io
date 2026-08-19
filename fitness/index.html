@@ -335,15 +335,23 @@
         var weightMatch = line.match(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)/i);
         var minutesMatch = line.match(/(\d+)\s*(?:min|分钟)/i);
         var series = weightRepMatches.map(function (match) { return { weight: Number(match[1]), reps: Number(match[2]) }; });
+        var isDropSet = /递减组|drop\s*set/i.test(line);
+        var dropGroups = isDropSet ? line.split(/[|｜]/).map(function (groupText) {
+          return Array.from(groupText.matchAll(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)\s*[x×*]\s*(\d+)/gi)).map(function (match) {
+            return { weight: Number(match[1]), reps: Number(match[2]) };
+          });
+        }).filter(function (group) { return group.length; }) : [];
         return {
           raw: line,
           name: action.name,
           group: action.group,
-          sets: series.length ? series.length : (setRepMatch ? Number(setRepMatch[1]) : 0),
+          sets: dropGroups.length ? dropGroups.length : (series.length ? series.length : (setRepMatch ? Number(setRepMatch[1]) : 0)),
           reps: setRepMatch ? Number(setRepMatch[2]) : 0,
           weight: weightMatch ? Number(weightMatch[1]) : 0,
           minutes: minutesMatch ? Number(minutesMatch[1]) : 0,
-          series: series
+          series: series,
+          isDropSet: isDropSet,
+          dropGroups: dropGroups
         };
       });
     }
@@ -351,7 +359,11 @@
     function totalMinutes(exercises) { return exercises.reduce(function (sum, exercise) { return sum + exercise.minutes; }, 0); }
     function exerciseMeta(exercise) {
       var parts = [];
-      if (exercise.series && exercise.series.length) {
+      if (exercise.dropGroups && exercise.dropGroups.length) {
+        parts.push('递减组 · ' + exercise.dropGroups.map(function (group, index) {
+          return '第' + (index + 1) + '组 ' + group.map(function (item) { return item.weight + 'kg×' + item.reps; }).join(' ↓ ');
+        }).join(' ｜ '));
+      } else if (exercise.series && exercise.series.length) {
         parts.push(exercise.series.length + ' 组 · ' + exercise.series.map(function (item) { return item.weight + 'kg×' + item.reps; }).join('；'));
       } else {
         if (exercise.sets && exercise.reps) parts.push(exercise.sets + ' 组 × ' + exercise.reps + ' 次');
@@ -367,7 +379,7 @@
         return;
       }
       var rows = exercises.map(function (exercise) {
-        return '<div class="exercise-row"><div><div class="exercise-name">' + escapeHtml(exercise.name) + '</div><div class="exercise-meta">' + escapeHtml(exerciseMeta(exercise)) + '</div></div><span class="exercise-group">' + escapeHtml(exercise.group) + '</span></div>';
+        return '<div class="exercise-row"><div><div class="exercise-name">' + escapeHtml(exercise.name) + '</div><div class="exercise-meta">' + escapeHtml(exerciseMeta(exercise)) + '</div></div><span class="exercise-group">' + escapeHtml(exercise.group + (exercise.isDropSet ? ' · 递减组' : '')) + '</span></div>';
       }).join('');
       var sets = totalSets(exercises);
       var minutes = totalMinutes(exercises);
@@ -434,13 +446,29 @@
           return Number(String(match[1]).replace(',', '.')) + 'kg×' + Number(match[2]);
         });
         if (action) {
-          current = { name: action.name, sets: [] };
+          current = { name: action.name, sets: [], drops: {} };
           entries.push(current);
         }
-        if (current && setPairs.length) current.sets = current.sets.concat(setPairs);
+        if (current && setPairs.length) {
+          var dropMatch = line.match(/(?:^|\s)(d[12]|递减[12]?|drop\s*[12]?)(?:\s|$)/i);
+          if (dropMatch) {
+            var dropKey = /2/.test(dropMatch[1]) ? 'd2' : 'd1';
+            current.drops[dropKey] = (current.drops[dropKey] || []).concat(setPairs);
+          } else {
+            current.sets = current.sets.concat(setPairs);
+          }
+        }
       });
       return entries.filter(function (entry) { return entry.sets.length; }).map(function (entry) {
-        return entry.name + '：' + entry.sets.join('，');
+        var hasDropSets = entry.drops.d1 || entry.drops.d2;
+        if (!hasDropSets) return entry.name + '：' + entry.sets.join('，');
+        var groups = entry.sets.map(function (mainSet, index) {
+          var parts = [mainSet];
+          if (entry.drops.d1 && entry.drops.d1[index]) parts.push(entry.drops.d1[index]);
+          if (entry.drops.d2 && entry.drops.d2[index]) parts.push(entry.drops.d2[index]);
+          return '第' + (index + 1) + '组 ' + parts.join(' ↓ ');
+        });
+        return entry.name + '（递减组）：' + groups.join(' ｜ ');
       }).join('\n');
     }
     function buildTrainingTextFromOcr(text) {
