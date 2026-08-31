@@ -1,0 +1,7 @@
+Yeuhub 网站重新上传文件包
+
+上传规则：
+1. 将本文件夹中的 index.html 与 CNAME 上传到 GitHub 仓库根目录。
+2. 将 email-check、country-query、industry-keyword、fitness 四个文件夹整体上传到仓库根目录。
+3. 上传时选择覆盖同名文件。
+4. GitHub Pages 通常需要等待约 1 分钟生效。

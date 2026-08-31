@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yeuhub.me · 工作点这</title>
+  <meta name="description" content="Haihao Yue 的数字工具空间" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%23F8CB74'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23111111'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=panchang@400,500,600,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --mustard: #F8CB74;
+      --ink: #111111;
+      --card: #171717;
+      --line: #2a2a2a;
+      --muted: #a0a0a0;
+      --blue: #5fb3ff;
+      --purple: #cf8cff;
+      --teal: #55d6c2;
+      --orange: #ffbe5c;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Oswald", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: #e5e4df;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 6vw;
+      mix-blend-mode: difference;
+      color: #fff;
+      pointer-events: none;
+    }
+    .topbar a { pointer-events: auto; text-decoration: none; }
+    .top-brand {
+      font-family: "Panchang", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      flex: 0 0 auto;
+      text-transform: uppercase;
+    }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 96px 6vw 60px;
+      overflow: hidden;
+      position: relative;
+      background: #e5e4df;
+    }
+    .audio-wave {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .hero-title, .hero-meta { position: relative; z-index: 1; }
+    .scroll-hint { z-index: 1; }
+    }
+
+    .hero-title {
+      font-family: "Panchang", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: clamp(72px, 17vw, 220px);
+      font-weight: 500;
+      line-height: 0.92;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .hero-line { display: block; white-space: nowrap; }
+    .char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(0.5em);
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+    .hero-dot {
+      display: inline-block;
+      width: 0.44em;
+      height: 0.44em;
+      border-radius: 50%;
+      background: #fff;
+      border: 0.035em solid var(--ink);
+      position: relative;
+      vertical-align: -0.04em;
+      margin-right: 0.02em;
+    }
+    .hero-dot .pupil {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0.21em;
+      height: 0.21em;
+      border-radius: 50%;
+      background: var(--ink);
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease-out;
+    }
+
+    .hero-meta {
+      margin-top: 26px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(17, 17, 17, 0.6);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%);
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(17, 17, 17, 0.65);
+      animation: bob 1.8s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 8px); }
+    }
+
+    .content {
+      background: var(--ink);
+      color: #f5f5f5;
+      padding: 90px 6vw 60px;
+    }
+    .sec {
+      max-width: 1180px;
+      margin: 0 auto 96px;
+    }
+    .sec:last-child { margin-bottom: 40px; }
+
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      margin-bottom: 34px;
+    }
+    .sec-index {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--mustard);
+    }
+    .sec-title {
+      font-family: "Panchang", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: clamp(46px, 9vw, 100px);
+      font-weight: 600;
+      line-height: 0.95;
+      letter-spacing: -0.055em;
+      text-transform: uppercase;
+      color: #fff;
+      margin: 0;
+    }
+    .sec-title .accent { color: var(--mustard); }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(44px);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.in { opacity: 1; transform: none; }
+
+    .gate {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--card);
+      padding: clamp(30px, 5vw, 52px);
+    }
+    .gate-locked {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      padding: 20px 0 6px;
+    }
+    .gate-locked[hidden], .gate-open[hidden] { display: none; }
+    .gate-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--mustard);
+      background: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .gate-icon svg { width: 28px; height: 28px; }
+    .gate-title {
+      font-family: "Panchang", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .gate-desc { margin: 0; color: var(--muted); font-size: 14px; letter-spacing: 0.5px; }
+    .gate-form { display: flex; gap: 10px; width: min(400px, 100%); margin-top: 6px; }
+    .gate-input {
+      flex: 1;
+      min-width: 0;
+      padding: 13px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--ink);
+      color: #fff;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+    }
+    .gate-input:focus { border-color: var(--mustard); }
+    .gate-btn {
+      padding: 0 26px;
+      border-radius: 999px;
+      border: none;
+      color: var(--ink);
+      background: var(--mustard);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .gate-btn:hover { transform: translateY(-1px); }
+    .gate-error { margin: 0; color: #ff7a7a; font-size: 13px; font-weight: 600; }
+
+    .gate-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .gate-remain { color: var(--muted); font-size: 13px; letter-spacing: 0.5px; }
+    .gate-lockbtn {
+      margin-left: auto;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--ink);
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .gate-lockbtn:hover { color: var(--mustard); border-color: var(--mustard); }
+    .gate-lockbtn svg { width: 18px; height: 18px; }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    }
+    .tilt-wrap {
+      perspective: 1100px;
+      will-change: transform;
+    }
+    .tilt-wrap .tile {
+      height: 100%;
+    }
+    .tile {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 26px 24px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--ink);
+      color: #fff;
+      text-decoration: none;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+    }
+    a.tile:hover { transform: translateY(-4px); border-color: var(--tint); }
+    .tile-icon {
+      flex: 0 0 52px;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: var(--tint);
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .tile-icon svg { width: 24px; height: 24px; }
+    .tile-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; }
+    .tile-title { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 700; letter-spacing: 0.02em; }
+    .chev { margin-left: auto; font-size: 20px; color: var(--tint); transition: transform 0.25s ease; }
+    a.tile:hover .chev { transform: translateX(4px); }
+    .tile-desc { color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .tile-status {
+      margin-top: 10px;
+      align-self: flex-start;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tint);
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .tile-mail { --tint: var(--blue); }
+    .tile-tools { --tint: var(--purple); }
+    .tile-kw { --tint: var(--teal); }
+    .tile-life { --tint: #ff8575; }
+    .tile-notes { --tint: var(--orange); }
+
+    .footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding-top: 34px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--mustard); text-decoration: none; letter-spacing: 1px; }
+
+    @media (max-width: 640px) {
+      .hero { padding-top: 120px; }
+      .gate { padding: 26px 18px; }
+      .gate-form { flex-direction: column; }
+      .gate-btn { padding: 13px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .char, .scroll-hint { animation: none !important; }
+      .char { opacity: 1; transform: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="top-brand" href="#top">YEuhub.ME</a>
+  </header>
+
+  <section class="hero" id="top" aria-label="首页">
+    <canvas class="audio-wave" id="audioWave" aria-hidden="true"></canvas>
+    <div class="hero-title">
+      <span class="hero-line" id="heroLine1">
+        <span class="char" style="animation-delay:0.05s">Y</span><span class="char" style="animation-delay:0.1s">E</span><span class="char" style="animation-delay:0.15s">u</span><span class="char" style="animation-delay:0.2s">h</span><span class="char" style="animation-delay:0.25s">u</span><span class="char" style="animation-delay:0.3s">b</span>
+      </span>
+    </div>
+
+    <div class="hero-title">
+      <span class="hero-line" id="heroLine2">
+        <span class="hero-dot" id="heroDot" style="animation-delay:0.45s"><span class="pupil" id="heroPupil"></span></span><span class="char" style="animation-delay:0.5s">M</span><span class="char" style="animation-delay:0.55s">E</span>
+      </span>
+    </div>
+
+    <div class="hero-meta">Haihao Yue · 数字工具空间</div>
+    <div class="scroll-hint">向下滚动 ↓</div>
+  </section>
+
+  <main class="content">
+    <section class="sec reveal" id="works">
+      <div class="sec-head">
+        <span class="sec-index">01</span>
+        <h2 class="sec-title">工作<span class="accent">点这</span></h2>
+      </div>
+
+      <div class="gate">
+        <div class="gate-locked" id="gateLocked">
+          <span class="gate-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="11" width="14" height="9" rx="3"></rect>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+            </svg>
+          </span>
+          <h3 class="gate-title">工作点这</h3>
+          <p class="gate-desc">此板块需要密码才能进入，解锁后 30 分钟内无需再次输入密码。</p>
+          <form class="gate-form" id="gateForm" autocomplete="off">
+            <input class="gate-input" id="gateInput" type="password" placeholder="请输入密码" aria-label="密码" />
+            <button class="gate-btn" type="submit">解锁</button>
+          </form>
+          <p class="gate-error" id="gateError" role="alert" hidden>密码不正确，请重新输入</p>
+        </div>
+
+        <div class="gate-open" id="gateOpen" hidden>
+          <div class="gate-head">
+            <h3 class="gate-title">工作点这</h3>
+            <span class="gate-remain" id="gateRemain">已解锁</span>
+            <button class="gate-lockbtn" id="gateLockBtn" type="button" title="立即锁定" aria-label="立即锁定">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="11" width="14" height="9" rx="3"></rect>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="grid">
+            <div class="tilt-wrap" id="emailTiltWrap">
+            <a class="tile tile-mail" href="email-check/index.html" id="email-diagnosis">
+              <span class="tile-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+                  <path d="m3.5 7 8.5 6 8.5-6"></path>
+                  <path d="M12 13v7"></path>
+                  <circle cx="18.5" cy="17.5" r="1.6"></circle>
+                </svg>
+              </span>
+              <span class="tile-body">
+                <span class="tile-title">邮件内容诊断 <span class="chev" aria-hidden="true">→</span></span>
+                <span class="tile-desc">分析邮件文案的清晰度、语气与风险点，让每一封邮件更有效。</span>
+                <span class="tile-status">点击进入</span>
+              </span>
+            </a>
+            </div>
+
+            <a class="tile tile-tools" href="country-query/index.html" id="country-query">
+              <span class="tile-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M3 12h18"></path>
+                  <path d="M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9Z"></path>
+                </svg>
+              </span>
+              <span class="tile-body">
+                <span class="tile-title">目标国家查询 <span class="chev" aria-hidden="true">→</span></span>
+                <span class="tile-desc">输入中文目标地区，一键获取该地区所有国家的英文名单与数量。</span>
+                <span class="tile-status">点击进入</span>
+              </span>
+            </a>
+
+            <a class="tile tile-kw" href="industry-keyword/index.html" id="industry-keyword">
+              <span class="tile-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3.5 13.7 8.3 18.5 10 13.7 11.7 12 16.5 10.3 11.7 5.5 10 10.3 8.3 12 3.5Z"></path>
+                  <path d="M18.5 15.5 19.3 17.7 21.5 18.5 19.3 19.3 18.5 21.5 17.7 19.3 15.5 18.5 17.7 17.7 18.5 15.5Z"></path>
+                  <path d="M5 16.5 5.7 18 7.2 18.7 5.7 19.4 5 20.9 4.3 19.4 2.8 18.7 4.3 18 5 16.5Z"></path>
+                </svg>
+              </span>
+              <span class="tile-body">
+                <span class="tile-title">行业关键词速览 <span class="chev" aria-hidden="true">→</span></span>
+                <span class="tile-desc">输入客户主营业务的中文，一键翻译英文，并用大白话解释它的用途与关联产品。</span>
+                <span class="tile-status">点击进入</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec reveal" id="life">
+      <div class="sec-head">
+        <span class="sec-index">02</span>
+        <h2 class="sec-title">生活<span class="accent">点我</span></h2>
+      </div>
+      <div class="grid">
+        <a class="tile tile-life" href="fitness/index.html" id="fitness-entry">
+          <span class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 7v10"></path>
+              <path d="M18 7v10"></path>
+              <path d="M3 9v6"></path>
+              <path d="M21 9v6"></path>
+              <path d="M6 12h12"></path>
+              <path d="M3 10h3v4H3z"></path>
+              <path d="M18 10h3v4h-3z"></path>
+            </svg>
+          </span>
+          <span class="tile-body">
+            <span class="tile-title">健身 <span class="chev" aria-hidden="true">→</span></span>
+            <span class="tile-desc">记录每天训练、查看健身热力图，并从近 7 天的训练数据中获得智能解读。</span>
+            <span class="tile-status">记录训练</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="sec reveal" id="more">
+      <div class="sec-head">
+        <span class="sec-index">03</span>
+        <h2 class="sec-title">更多<span class="accent">板块</span></h2>
+      </div>
+      <div class="grid">
+        <div class="tile tile-notes" aria-disabled="true">
+          <span class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3c2.5 1.4 5.5 1.5 7.5 1.2.3 0 .5.3.5.6 0 5.8-2.4 10.4-8 13.2-5.6-2.8-8-7.4-8-13.2 0-.3.2-.6.5-.6 2 .3 5 .2 7.5-1.2Z"></path>
+              <path d="M12 7v6"></path>
+              <path d="M9.5 10h5"></path>
+            </svg>
+          </span>
+          <span class="tile-body">
+            <span class="tile-title">板块三 <span class="chev" aria-hidden="true">＋</span></span>
+            <span class="tile-desc">这里预留给另一个功能，也可以先当作你的灵感笔记区。</span>
+            <span class="tile-status">敬请期待</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>© YEuhub.ME · Powered by GitHub Pages</span>
+      <span class="footer-links">
+        <a href="https://github.com/Yuehaihao" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="#top">回到顶部</a>
+      </span>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      var GATE_KEY = 'yeuhub_gate_unlock_ts';
+      var GATE_MS = 30 * 60 * 1000;
+      var PASSWORD_HASH = '1fe00ee9a4a47a889df0f79d0fb52fb024670306ee9130e0dd6c000e3ef7ab78';
+
+      var lockedEl = document.getElementById('gateLocked');
+      var openEl = document.getElementById('gateOpen');
+      var formEl = document.getElementById('gateForm');
+      var inputEl = document.getElementById('gateInput');
+      var errorEl = document.getElementById('gateError');
+      var lockBtn = document.getElementById('gateLockBtn');
+      var remainEl = document.getElementById('gateRemain');
+      var gateTimer = null;
+
+      function utf8(s) {
+        try { return unescape(encodeURIComponent(s)); } catch (e) { return s; }
+      }
+
+      function sha256(ascii) {
+        function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+        var mathPow = Math.pow;
+        var maxWord = mathPow(2, 32);
+        var lengthProperty = 'length';
+        var i, j;
+        var result = '';
+        var words = [];
+        var asciiBitLength = ascii[lengthProperty] * 8;
+        var hash = sha256.h = sha256.h || [];
+        var k = sha256.k = sha256.k || [];
+        var primeCounter = k[lengthProperty];
+        var isComposite = {};
+        for (var candidate = 2; primeCounter < 64; candidate++) {
+          if (!isComposite[candidate]) {
+            for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+            hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+            k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+          }
+        }
+        ascii += '\x80';
+        while ((ascii[lengthProperty] % 64) - 56) ascii += '\x00';
+        for (i = 0; i < ascii[lengthProperty]; i++) {
+          j = ascii.charCodeAt(i);
+          if (j >> 8) return '';
+          words[i >> 2] |= j << (((3 - i) % 4) * 8);
+        }
+        words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+        words[words[lengthProperty]] = (asciiBitLength);
+        for (j = 0; j < words[lengthProperty];) {
+          var w = words.slice(j, (j += 16));
+          var oldHash = hash;
+          hash = hash.slice(0, 8);
+          for (i = 0; i < 64; i++) {
+            var w15 = w[i - 15], w2 = w[i - 2];
+            var a = hash[0], e = hash[4];
+            var temp1 = hash[7]
+              + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+              + ((e & hash[5]) ^ (~e & hash[6]))
+              + k[i]
+              + (w[i] = (i < 16) ? w[i] : (
+                w[i - 16]
+                + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+                + w[i - 7]
+                + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+              ) | 0);
+            var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+              + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+            hash = [(temp1 + temp2) | 0].concat(hash);
+            hash[4] = (hash[4] + temp1) | 0;
+          }
+          for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+        }
+        for (i = 0; i < 8; i++) {
+          for (j = 3; j + 1; j--) {
+            var b = (hash[i] >> (j * 8)) & 255;
+            result += ((b < 16) ? 0 : '') + b.toString(16);
+          }
+        }
+        return result;
+      }
+
+      function remainingMs() {
+        var ts = parseInt(localStorage.getItem(GATE_KEY) || '0', 10);
+        if (!ts) return 0;
+        var left = GATE_MS - (Date.now() - ts);
+        return left > 0 ? left : 0;
+      }
+
+      function render() {
+        var left = remainingMs();
+        if (left > 0) {
+          lockedEl.hidden = true;
+          openEl.hidden = false;
+          remainEl.textContent = '已解锁 · ' + Math.ceil(left / 60000) + ' 分钟内免密进入';
+          clearTimeout(gateTimer);
+          gateTimer = setTimeout(render, left + 1000);
+        } else {
+          if (localStorage.getItem(GATE_KEY)) localStorage.removeItem(GATE_KEY);
+          lockedEl.hidden = false;
+          openEl.hidden = true;
+        }
+      }
+
+      formEl.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var pw = inputEl.value || '';
+        if (sha256(utf8(pw)) === PASSWORD_HASH) {
+          localStorage.setItem(GATE_KEY, String(Date.now()));
+          errorEl.hidden = true;
+          inputEl.value = '';
+          render();
+        } else {
+          errorEl.hidden = false;
+          inputEl.select();
+        }
+      });
+
+      lockBtn.addEventListener('click', function () {
+        localStorage.removeItem(GATE_KEY);
+        render();
+      });
+
+      render();
+    })();
+
+    // 滚动出现
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+
+    (function () {
+      var canvas = document.getElementById('audioWave');
+      if (!canvas) return;
+      var hero = canvas.parentElement;
+      var context = canvas.getContext('2d');
+      var width = 0;
+      var height = 0;
+      var pixelRatio = 1;
+      var phase = 0;
+      var previousTime = 0;
+      var frameId = null;
+      var selectionCenter = 0;
+      var targetSelectionCenter = null;
+      var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function resizeCanvas() {
+        var bounds = hero.getBoundingClientRect();
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        width = Math.max(1, Math.round(bounds.width));
+        height = Math.max(1, Math.round(bounds.height));
+        canvas.width = Math.round(width * pixelRatio);
+        canvas.height = Math.round(height * pixelRatio);
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        if (targetSelectionCenter === null) targetSelectionCenter = width * 0.5;
+        selectionCenter = Math.max(0, Math.min(width, targetSelectionCenter));
+        drawWave();
+      }
+
+      function barAmplitude(position, currentPhase) {
+        var slowWave = Math.sin(position * 0.017 + currentPhase * 0.82);
+        var midWave = Math.sin(position * 0.051 - currentPhase * 1.16);
+        var fineWave = Math.sin(position * 0.18 + currentPhase * 2.3);
+        return 18 + Math.abs(slowWave) * 70 + Math.abs(midWave) * 38 + Math.abs(fineWave) * 17;
+      }
+
+      function drawWave() {
+        if (!width || !height) return;
+        var centerY = height * 0.52;
+        var barSpacing = Math.max(3, Math.round(width / 360));
+        var selectionWidth = Math.max(72, width / 6);
+        var orangeStart = Math.max(0, selectionCenter - selectionWidth * 0.5);
+        var orangeEnd = Math.min(width, selectionCenter + selectionWidth * 0.5);
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = '#e5e4df';
+        context.fillRect(0, 0, width, height);
+
+        context.strokeStyle = 'rgba(32, 32, 30, 0.08)';
+        context.lineWidth = 1;
+        for (var gridX = 0; gridX <= width; gridX += Math.max(72, width / 12)) {
+          context.beginPath();
+          context.moveTo(gridX, 0);
+          context.lineTo(gridX, height);
+          context.stroke();
+        }
+        for (var gridY = 0; gridY <= height; gridY += Math.max(78, height / 7)) {
+          context.beginPath();
+          context.moveTo(0, gridY);
+          context.lineTo(width, gridY);
+          context.stroke();
+        }
+
+        context.fillStyle = 'rgba(239, 82, 43, 0.08)';
+        context.fillRect(orangeStart, 0, orangeEnd - orangeStart, height);
+        for (var position = 0; position <= width; position += barSpacing) {
+          var amplitude = Math.min(height * 0.43, barAmplitude(position, phase));
+          var inActiveRange = position >= orangeStart && position <= orangeEnd;
+          var orangePulse = Math.sin(position * 0.03 + phase * 1.4);
+          var orangePeak = inActiveRange && orangePulse > 0.1;
+          context.strokeStyle = orangePeak ? 'rgba(229, 69, 35, 0.68)' : 'rgba(43, 43, 41, 0.25)';
+          context.lineWidth = orangePeak ? 1.25 : 1;
+          context.beginPath();
+          context.moveTo(position, centerY - amplitude);
+          context.lineTo(position, centerY + amplitude);
+          context.stroke();
+        }
+
+        context.fillStyle = 'rgba(223, 60, 29, 0.82)';
+        var blockWidth = Math.max(48, selectionWidth * 0.72);
+        var blockHeight = height * (0.42 + Math.sin(phase * 0.55) * 0.035);
+        context.fillRect(selectionCenter - blockWidth * 0.5, centerY - blockHeight * 0.5, blockWidth, blockHeight);
+
+        context.strokeStyle = 'rgba(18, 18, 17, 0.86)';
+        context.lineWidth = 1.5;
+        context.beginPath();
+        for (var curveX = 0; curveX <= width; curveX += 5) {
+          var curveY = centerY + Math.sin(curveX * 0.015 + phase * 0.8) * 19 + Math.sin(curveX * 0.04 - phase * 0.45) * 8;
+          if (curveX === 0) context.moveTo(curveX, curveY);
+          else context.lineTo(curveX, curveY);
+        }
+        context.stroke();
+      }
+
+      function animateWave(timestamp) {
+        if (!previousTime) previousTime = timestamp;
+        var elapsed = timestamp - previousTime;
+        if (elapsed >= 42) {
+          phase += elapsed * 0.00022;
+          selectionCenter += (targetSelectionCenter - selectionCenter) * 0.18;
+          previousTime = timestamp;
+          drawWave();
+        }
+        frameId = window.requestAnimationFrame(animateWave);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      hero.addEventListener('pointermove', function(event) {
+        var bounds = canvas.getBoundingClientRect();
+        targetSelectionCenter = Math.max(0, Math.min(width, event.clientX - bounds.left));
+        if (reducedMotion) {
+          selectionCenter = targetSelectionCenter;
+          drawWave();
+        }
+      });
+      resizeCanvas();
+      if (!reducedMotion) frameId = window.requestAnimationFrame(animateWave);
+      window.addEventListener('pagehide', function () {
+        if (frameId) window.cancelAnimationFrame(frameId);
+      }, { once: true });
+    })();
+
+    // 板块一卡片：随滚动旋转到固定定型
+    (function () {
+      var wrap = document.getElementById('emailTiltWrap');
+      if (!wrap) return;
+      var startRX = 5, endRX = 0;
+      var startRY = -22, endRY = 0;
+      var startTX = -4, endTX = 0;
+      var ticking = false;
+
+      function updateTilt() {
+        ticking = false;
+        var rect = wrap.getBoundingClientRect();
+        var vh = window.innerHeight || 1;
+        var p = (vh - rect.top) / (vh * 0.7);
+        p = Math.max(0, Math.min(1, p));
+        var eased = 1 - Math.pow(1 - p, 3);
+        var rx = startRX + (endRX - startRX) * eased;
+        var ry = startRY + (endRY - startRY) * eased;
+        var tx = startTX + (endTX - startTX) * eased;
+        wrap.style.transform = 'rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) translateX(' + tx.toFixed(2) + '%)';
+      }
+
+      function requestTilt() {
+        if (!ticking) {
+          ticking = true;
+          window.requestAnimationFrame(updateTilt);
+        }
+      }
+
+      window.addEventListener('scroll', requestTilt, { passive: true });
+      window.addEventListener('resize', requestTilt);
+      updateTilt();
+    })();
+
+    // 眼睛跟随鼠标
+    (function () {
+      var eye = document.getElementById('heroDot');
+      var pupil = document.getElementById('heroPupil');
+      if (!eye || !pupil) return;
+      document.addEventListener('mousemove', function (e) {
+        var r = eye.getBoundingClientRect();
+        var cx = r.left + r.width / 2;
+        var cy = r.top + r.height / 2;
+        var dx = e.clientX - cx;
+        var dy = e.clientY - cy;
+        var max = r.width * 0.26;
+        var dist = Math.min(max, Math.hypot(dx, dy) || 0);
+        var ang = Math.atan2(dy, dx);
+        pupil.style.transform = 'translate(calc(-50% + ' + (Math.cos(ang) * dist).toFixed(2) + 'px), calc(-50% + ' + (Math.sin(ang) * dist).toFixed(2) + 'px))';
+      });
+    })();
+  </script>
+</body>
+</html>
