@@ -149,18 +149,27 @@
   .avatar-status span { color: var(--coral); }
   .avatar-svg { position: absolute; inset: 28px 20px 14px; width: calc(100% - 40px); height: calc(100% - 42px); overflow: visible; }
   .avatar-shadow { fill: rgba(0,0,0,0.5); }
-  .avatar-head, .avatar-neck, .avatar-leg, .avatar-arm { stroke: var(--cream); stroke-linecap: round; stroke-linejoin: round; }
-  .avatar-head { fill: #f0c6aa; stroke: #f0c6aa; }
-  .avatar-neck { stroke-width: 13; }
-  .avatar-torso { fill: var(--coral); transform-box: fill-box; transform-origin: center center; transform: scaleX(var(--torso-scale)); }
-  .avatar-shoulders { fill: #ffa093; transform-box: fill-box; transform-origin: center center; transform: scaleX(var(--shoulder-scale)); }
-  .avatar-leg { stroke-width: 17; }
-  .avatar-arm { stroke-width: 15; transform-box: fill-box; transform-origin: center top; }
-  .avatar-dumbbell { fill: var(--cream); transform-box: fill-box; transform-origin: center; }
-  .avatar-stage.is-active:not(.is-rest) .avatar-glow { animation: avatarGlow 2.8s ease-in-out infinite; }
-  .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-arm-left { animation: shoulderLiftLeft 2.8s ease-in-out infinite; }
-  .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-arm-right { animation: shoulderLiftRight 2.8s ease-in-out infinite; }
-  .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-dumbbell { animation: dumbbellLift 2.8s ease-in-out infinite; }
+  .avatar-hair { fill: #4b3020; }
+  .avatar-head, .avatar-ear, .avatar-neck, .avatar-leg, .avatar-arm-skin { fill: #d99772; stroke: #b87454; stroke-linecap: round; stroke-linejoin: round; }
+  .avatar-head { stroke-width: 2; }
+  .avatar-eye-white { fill: #f4f2e9; stroke: #6f543d; stroke-width: 2; }
+  .avatar-eye-iris { fill: #79a867; stroke: #2e4228; stroke-width: 2; }
+  .avatar-eye-pupil { fill: #171717; }
+  .avatar-mouth { fill: none; stroke: #7a4432; stroke-width: 2.5; stroke-linecap: round; }
+  .avatar-nose { fill: #c98262; stroke: #a65e46; stroke-width: 1.5; }
+  .avatar-neck { stroke-width: 15; }
+  .avatar-torso { fill: #d99772; stroke: #b87454; stroke-width: 2; transform-box: fill-box; transform-origin: center center; transform: scaleX(var(--torso-scale)); }
+  .avatar-fur { fill: #718340; stroke: #536329; stroke-width: 2; }
+  .avatar-shoulders { fill: #d99772; transform-box: fill-box; transform-origin: center center; transform: scaleX(var(--shoulder-scale)); }
+  .avatar-leg { stroke-width: 20; }
+  .avatar-arm { transform-box: view-box; }
+  .avatar-arm-left { transform-origin: 116px 142px; }
+  .avatar-arm-right { transform-origin: 184px 142px; }
+  .avatar-arm-skin { stroke-width: 17; }
+  .avatar-dumbbell { fill: #54616d; stroke: #e2e6e9; stroke-width: 2; }
+  .avatar-stage.is-demo .avatar-glow, .avatar-stage.is-active:not(.is-rest) .avatar-glow { animation: avatarGlow 2.8s ease-in-out infinite; }
+  .avatar-stage.is-demo.mode-shoulder .avatar-arm-left, .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-arm-left { animation: lateralRaiseLeft 2.8s ease-in-out infinite; }
+  .avatar-stage.is-demo.mode-shoulder .avatar-arm-right, .avatar-stage.is-active:not(.is-rest).mode-shoulder .avatar-arm-right { animation: lateralRaiseRight 2.8s ease-in-out infinite; }
   .avatar-stage.is-active:not(.is-rest).mode-lower .avatar-figure { animation: squatMove 2.6s ease-in-out infinite; transform-origin: center bottom; }
   .avatar-stage.is-active:not(.is-rest).mode-push .avatar-arm-left { animation: pushLeft 2.6s ease-in-out infinite; }
   .avatar-stage.is-active:not(.is-rest).mode-push .avatar-arm-right { animation: pushRight 2.6s ease-in-out infinite; }
@@ -169,9 +178,8 @@
   .avatar-stage.is-active:not(.is-rest).mode-cardio .avatar-figure { animation: runMove 1.05s ease-in-out infinite; transform-origin: center bottom; }
   .avatar-stage.is-rest .avatar-svg { opacity: 0.68; }
   @keyframes avatarGlow { 0%,100% { filter: drop-shadow(0 0 0 rgba(255,133,117,0)); } 50% { filter: drop-shadow(0 0 17px rgba(255,133,117,0.45)); } }
-  @keyframes shoulderLiftLeft { 0%,100% { transform: rotate(0deg); } 48%,52% { transform: rotate(-63deg) translateY(-8px); } }
-  @keyframes shoulderLiftRight { 0%,100% { transform: rotate(0deg); } 48%,52% { transform: rotate(63deg) translateY(-8px); } }
-  @keyframes dumbbellLift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-17px); } }
+  @keyframes lateralRaiseLeft { 0%,100% { transform: rotate(0deg); } 46%,54% { transform: rotate(-77deg) translate(-5px, -2px); } }
+  @keyframes lateralRaiseRight { 0%,100% { transform: rotate(0deg); } 46%,54% { transform: rotate(77deg) translate(5px, -2px); } }
   @keyframes squatMove { 0%,100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(24px) scaleY(0.94); } }
   @keyframes pushLeft { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(24deg) translateX(10px); } }
   @keyframes pushRight { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-24deg) translateX(-10px); } }
@@ -203,9 +211,39 @@
     .card-head { flex-direction: column; }
     .avatar-stage { min-height: 350px; }
   }
+
+  /* Prioritize recording, readable inputs and touch/keyboard access. */
+  :root { color-scheme: dark; }
+  body { font-size: 16px; }
+  :focus-visible { outline: 3px solid var(--coral); outline-offset: 4px; }
+  .skip-link { position: fixed; top: -100px; left: 16px; z-index: 50; background: var(--coral); color: var(--ink); padding: 12px 18px; }
+  .skip-link:focus { top: 12px; }
+  .shell { padding-top: 24px; }
+  .kicker { margin-top: 16px; }
+  h1 { font-size: clamp(36px, 6vw, 56px); line-height: 1.15; letter-spacing: 0; }
+  .hero p { margin-top: 12px; font-size: 16px; }
+  input[type="date"], textarea { font-size: 16px; }
+  label, .back, .card-head p, .form-help, .image-dropzone span, .image-status, .save-hint, .exercise-meta, .preview-total, .stat-label, .modal-card p { font-size: 14px; line-height: 1.65; }
+  .exercise-group, .avatar-metric span { font-size: 12px; }
+  .btn, .back, .delete-btn, .image-remove { min-height: 44px; min-width: 44px; }
+  .form-block, .history-content, .exercise-row { min-width: 0; overflow-wrap: anywhere; }
+  .modal-card { max-height: calc(100dvh - 40px); }
+  @media (max-width: 760px) {
+    .shell { padding: 18px 14px 32px; }
+    .card { padding: 18px; border-radius: 18px; }
+    .form-block { padding: 14px; }
+    .card-head { gap: 8px; }
+    .btn-row .btn { flex: 1; }
+    .history-item { gap: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#trainingInput">跳到训练输入</a>
 <main class="shell">
   <header class="hero">
     <a class="back" href="../index.html">← 返回首页</a>
@@ -214,71 +252,9 @@
     <p>把每次训练留在这里。自动整理动作内容、记录当日感受，并从近 7 天的节奏中给出训练解读。</p>
   </header>
 
-  <section class="card">
+  <section class="card" id="record-training">
     <div class="card-head">
-      <div><h2>训练热力图</h2><p>最近 12 周内，每格代表当天完成的训练次数。</p></div>
-      <span class="card-tag" id="heatmapRange">最近 12 周</span>
-    </div>
-    <div class="overview">
-      <div>
-        <div class="heatmap-scroll"><div class="heatmap-grid" id="heatmapGrid" aria-label="健身热力图"></div></div>
-        <div class="heat-legend"><span>少</span><span class="heat-cell"></span><span class="heat-cell level-1"></span><span class="heat-cell level-2"></span><span class="heat-cell level-3"></span><span class="heat-cell level-4"></span><span>多</span></div>
-      </div>
-      <aside class="heat-stat">
-        <div class="stat-value" id="todayCount">0</div>
-        <div class="stat-label">今天已记录训练次数</div>
-        <div class="week-days" id="weekDays"></div>
-      </aside>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="card-head">
-      <div><h2>训练小人</h2><p>起始设定为 88kg、18% 体脂；保存训练后，小人会按当天主要训练部位开始 30 分钟动作动画。</p></div>
-      <span class="card-tag" id="avatarTag">等待训练</span>
-    </div>
-    <div class="avatar-layout">
-      <div class="avatar-stage mode-idle" id="avatarStage">
-        <div class="avatar-status" id="avatarStatus">等待今天的训练记录</div>
-        <svg class="avatar-svg" viewBox="0 0 300 350" aria-label="训练小人">
-          <ellipse class="avatar-shadow" cx="150" cy="321" rx="82" ry="13"></ellipse>
-          <circle class="avatar-glow" cx="150" cy="164" r="106" fill="rgba(255,133,117,0.05)"></circle>
-          <g class="avatar-figure">
-            <circle class="avatar-head" cx="150" cy="67" r="27"></circle>
-            <path class="avatar-neck" d="M150 94 L150 112"></path>
-            <path class="avatar-shoulders" d="M107 119 Q150 99 193 119 L184 151 Q150 161 116 151 Z"></path>
-            <path class="avatar-torso" d="M119 144 Q150 160 181 144 L189 241 Q150 264 111 241 Z"></path>
-            <path class="avatar-arm avatar-arm-left" d="M117 128 L82 188 L67 236"></path>
-            <path class="avatar-arm avatar-arm-right" d="M183 128 L218 188 L233 236"></path>
-            <g class="avatar-dumbbell avatar-dumbbell-left">
-              <rect x="53" y="228" width="28" height="16" rx="4"></rect><rect x="62" y="220" width="10" height="32" rx="3"></rect>
-            </g>
-            <g class="avatar-dumbbell avatar-dumbbell-right">
-              <rect x="219" y="228" width="28" height="16" rx="4"></rect><rect x="228" y="220" width="10" height="32" rx="3"></rect>
-            </g>
-            <path class="avatar-leg avatar-leg-left" d="M130 239 L118 302 L102 319"></path>
-            <path class="avatar-leg avatar-leg-right" d="M170 239 L182 302 L198 319"></path>
-          </g>
-        </svg>
-      </div>
-      <div class="avatar-summary">
-        <h3 id="avatarTitle">准备开始</h3>
-        <p id="avatarDescription">保存一条训练记录后，小人会根据训练部位开始相应动作。肩部训练会进行举哑铃动画，并在训练周期内自动加入休息时间。</p>
-        <div class="avatar-metrics">
-          <div class="avatar-metric"><b>88 kg</b><span>起始体重</span></div>
-          <div class="avatar-metric"><b>18%</b><span>起始体脂率</span></div>
-          <div class="avatar-metric"><b id="avatarLevel">0%</b><span>视觉训练进度</span></div>
-        </div>
-        <div class="session-progress"><span id="avatarProgress"></span></div>
-        <div class="session-details"><span id="avatarPhase">尚未开始训练动画</span><span id="avatarTime">30:00</span></div>
-        <p class="avatar-note">这是基于训练记录的视觉激励模拟，不等同于真实体重、体脂或健康评估。</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="card-head">
-      <div><h2>记录训练</h2><p>输入训练动作后，会自动整理成今天的训练内容。</p></div>
+      <div><h2>记录训练</h2><p>输入训练动作后，会自动整理成本次训练内容。</p></div>
       <span class="card-tag" id="recordCountTag">0 条记录</span>
     </div>
     <div class="record-layout">
@@ -309,11 +285,11 @@
         <div class="btn-row">
           <button class="btn" id="saveBtn" type="button">保存本次训练</button>
           <button class="btn btn-ghost" id="sampleBtn" type="button">载入示例</button>
-          <span class="save-hint" id="saveHint">每次保存都会计入当天的训练次数。</span>
+          <span class="save-hint" id="saveHint" role="status" aria-live="polite">每次保存都会计入当天的训练次数。</span>
         </div>
       </div>
       <div class="form-block">
-        <div class="card-head" style="margin-bottom:14px;"><div><h2 style="font-size:17px;">今日训练内容</h2><p>根据你输入的动作自动整理。</p></div></div>
+        <div class="card-head" style="margin-bottom:14px;"><div><h2 style="font-size:17px;">本次训练内容</h2><p>根据你输入的动作自动整理。</p></div></div>
         <div id="trainingPreview"></div>
       </div>
     </div>
@@ -321,7 +297,83 @@
 
   <section class="card">
     <div class="card-head">
-      <div><h2>AI 训练解读</h2><p>基于近 7 天已记录的训练次数、动作分布和训练感受生成。</p></div>
+      <div><h2>训练热力图</h2><p>最近 12 周内，每格代表当天完成的训练次数。</p></div>
+      <span class="card-tag" id="heatmapRange">最近 12 周</span>
+    </div>
+    <div class="overview">
+      <div>
+        <div class="heatmap-scroll"><div class="heatmap-grid" id="heatmapGrid" aria-label="健身热力图"></div></div>
+        <div class="heat-legend"><span>少</span><span class="heat-cell"></span><span class="heat-cell level-1"></span><span class="heat-cell level-2"></span><span class="heat-cell level-3"></span><span class="heat-cell level-4"></span><span>多</span></div>
+      </div>
+      <aside class="heat-stat">
+        <div class="stat-value" id="todayCount">0</div>
+        <div class="stat-label">今天已记录训练次数</div>
+        <div class="week-days" id="weekDays"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div><h2>训练小人</h2><p>起始设定为 88kg、18% 体脂；保存训练后，小人会按当天主要训练部位开始 30 分钟动作动画。</p></div>
+      <span class="card-tag" id="avatarTag">等待训练</span>
+    </div>
+    <div class="avatar-layout">
+      <div class="avatar-stage is-demo mode-shoulder" id="avatarStage">
+        <div class="avatar-status" id="avatarStatus">侧平举动作演示</div>
+        <svg class="avatar-svg" viewBox="0 0 300 350" aria-label="训练小人">
+          <ellipse class="avatar-shadow" cx="150" cy="321" rx="82" ry="13"></ellipse>
+          <circle class="avatar-glow" cx="150" cy="164" r="106" fill="rgba(255,133,117,0.05)"></circle>
+          <g class="avatar-figure">
+            <path class="avatar-hair" d="M109 83 Q100 47 120 31 Q135 14 151 31 Q166 10 180 34 Q204 26 205 57 Q220 71 199 99 L109 100 Q91 90 109 83 Z"></path>
+            <ellipse class="avatar-ear" cx="108" cy="82" rx="12" ry="16"></ellipse>
+            <ellipse class="avatar-ear" cx="192" cy="82" rx="12" ry="16"></ellipse>
+            <ellipse class="avatar-head" cx="150" cy="80" rx="43" ry="45"></ellipse>
+            <path class="avatar-hair" d="M111 57 Q124 34 144 40 Q152 25 167 43 Q188 36 197 62 Q184 49 171 59 Q156 45 143 61 Q128 49 111 70 Z"></path>
+            <ellipse class="avatar-eye-white" cx="133" cy="80" rx="13" ry="15"></ellipse>
+            <ellipse class="avatar-eye-white" cx="168" cy="80" rx="13" ry="15"></ellipse>
+            <circle class="avatar-eye-iris" cx="134" cy="81" r="8"></circle><circle class="avatar-eye-iris" cx="167" cy="81" r="8"></circle>
+            <circle class="avatar-eye-pupil" cx="134" cy="81" r="3.5"></circle><circle class="avatar-eye-pupil" cx="167" cy="81" r="3.5"></circle>
+            <ellipse class="avatar-nose" cx="151" cy="99" rx="10" ry="7"></ellipse>
+            <path class="avatar-mouth" d="M133 111 Q151 123 170 110"></path>
+            <path class="avatar-neck" d="M150 121 L150 139"></path>
+            <path class="avatar-shoulders" d="M112 143 Q150 126 188 143 L182 171 Q150 180 118 171 Z"></path>
+            <path class="avatar-torso" d="M121 161 Q150 177 179 161 L187 240 Q150 257 113 240 Z"></path>
+            <path class="avatar-fur" d="M113 230 Q150 244 187 230 L182 263 L169 254 L156 268 L144 255 L128 266 L117 252 Z"></path>
+            <g class="avatar-arm avatar-arm-left">
+              <path class="avatar-arm-skin" d="M116 143 L78 196 L66 242"></path>
+              <circle class="avatar-arm-skin" cx="64" cy="247" r="10"></circle>
+              <g class="avatar-dumbbell"><rect x="43" y="237" width="19" height="20" rx="4"></rect><rect x="66" y="237" width="19" height="20" rx="4"></rect><rect x="58" y="243" width="11" height="8" rx="3"></rect></g>
+            </g>
+            <g class="avatar-arm avatar-arm-right">
+              <path class="avatar-arm-skin" d="M184 143 L222 196 L234 242"></path>
+              <circle class="avatar-arm-skin" cx="236" cy="247" r="10"></circle>
+              <g class="avatar-dumbbell"><rect x="215" y="237" width="19" height="20" rx="4"></rect><rect x="238" y="237" width="19" height="20" rx="4"></rect><rect x="231" y="243" width="11" height="8" rx="3"></rect></g>
+            </g>
+            <path class="avatar-leg avatar-leg-left" d="M132 256 L120 299 L101 317"></path>
+            <path class="avatar-leg avatar-leg-right" d="M168 256 L180 299 L199 317"></path>
+          </g>
+        </svg>
+      </div>
+      <div class="avatar-summary">
+        <h3 id="avatarTitle">准备开始</h3>
+        <p id="avatarDescription">保存一条训练记录后，小人会根据训练部位开始相应动作。肩部训练会进行举哑铃动画，并在训练周期内自动加入休息时间。</p>
+        <div class="avatar-metrics">
+          <div class="avatar-metric"><b>88 kg</b><span>起始体重</span></div>
+          <div class="avatar-metric"><b>18%</b><span>起始体脂率</span></div>
+          <div class="avatar-metric"><b id="avatarLevel">0%</b><span>视觉训练进度</span></div>
+        </div>
+        <div class="session-progress"><span id="avatarProgress"></span></div>
+        <div class="session-details"><span id="avatarPhase">尚未开始训练动画</span><span id="avatarTime">30:00</span></div>
+        <p class="avatar-note">这是基于训练记录的视觉激励模拟，不等同于真实体重、体脂或健康评估。</p>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="card">
+    <div class="card-head">
+      <div><h2>近 7 天训练回顾</h2><p>根据已记录的数据汇总训练频率、动作分布和感受。</p></div>
       <span class="card-tag">近 7 天</span>
     </div>
     <div class="insight">
@@ -366,6 +418,12 @@
     var ocrScriptPromise = null;
     var avatarTimer = null;
     var actionRules = [
+      { pattern: /高位下拉|lat[ -]?pulldown/i, name: '高位下拉', group: '背部' },
+      { pattern: /分腿蹲|弓箭步|split squat/i, name: '分腿蹲', group: '下肢' },
+      { pattern: /腿屈伸|leg extension/i, name: '腿屈伸', group: '下肢' },
+      { pattern: /腿弯举|leg curl/i, name: '腿弯举', group: '后链' },
+      { pattern: /弯举|biceps? curl/i, name: '二头弯举', group: '二头' },
+      { pattern: /下压|臂屈伸|triceps?|pushdown/i, name: '三头训练', group: '三头' },
       { pattern: /深蹲|squat/i, name: '深蹲', group: '下肢' },
       { pattern: /硬拉|deadlift/i, name: '硬拉', group: '后链' },
       { pattern: /卧推|bench/i, name: '卧推', group: '胸部' },
@@ -401,7 +459,7 @@
       var date = parseDate(key);
       return (date.getMonth() + 1) + '月' + date.getDate() + '日';
     }
-    function escapeHtml(text) { return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function escapeHtml(text) { return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
     function getRecords() {
       try {
         var data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -428,9 +486,12 @@
       return splitActions(text).map(function (line) {
         var action = detectAction(line);
         var weightRepMatches = Array.from(line.matchAll(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)\s*[x×*]\s*(\d+)/gi));
-        var setRepMatch = line.match(/(\d+)\s*[x×*]\s*(\d+)/i);
+        // Remove weight×rep pairs before looking for set×rep notation.
+        var setText = line.replace(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)\s*[x×*]\s*(\d+)/gi, '');
+        var setRepMatch = setText.match(/(\d+)\s*组\s*(?:[x×*]\s*)?(\d+)\s*次/i)
+          || setText.match(/(\d+)\s*[x×*]\s*(\d+)/i);
         var weightMatch = line.match(/(\d+(?:\.\d+)?)\s*(?:kg|公斤)/i);
-        var minutesMatch = line.match(/(\d+)\s*(?:min|分钟)/i);
+        var minutesMatch = line.match(/(\d+(?:\.\d+)?)\s*(?:min|分钟)/i);
         var series = weightRepMatches.map(function (match) { return { weight: Number(match[1]), reps: Number(match[2]) }; });
         var isDropSet = /递减组|drop\s*set/i.test(line);
         var dropGroups = isDropSet ? line.split(/[|｜]/).map(function (groupText) {
@@ -442,7 +503,7 @@
           raw: line,
           name: action.name,
           group: action.group,
-          sets: dropGroups.length ? dropGroups.length : (series.length ? series.length : (setRepMatch ? Number(setRepMatch[1]) : 0)),
+          sets: dropGroups.length ? dropGroups.length : (series.length ? series.length : (setRepMatch ? Number(setRepMatch[1]) : Number((line.match(/(\d+)\s*组/) || [0, 0])[1]))),
           reps: setRepMatch ? Number(setRepMatch[2]) : 0,
           weight: weightMatch ? Number(weightMatch[1]) : 0,
           minutes: minutesMatch ? Number(minutesMatch[1]) : 0,
@@ -464,6 +525,7 @@
         parts.push(exercise.series.length + ' 组 · ' + exercise.series.map(function (item) { return item.weight + 'kg×' + item.reps; }).join('；'));
       } else {
         if (exercise.sets && exercise.reps) parts.push(exercise.sets + ' 组 × ' + exercise.reps + ' 次');
+        else if (exercise.sets) parts.push(exercise.sets + ' 组');
         if (exercise.weight) parts.push(exercise.weight + ' kg');
       }
       if (exercise.minutes) parts.push(exercise.minutes + ' 分钟');
@@ -577,14 +639,19 @@
       if (known.length) return known.map(function (exercise) { return exercise.raw; }).join('\n');
       return cleaned;
     }
+    var imageConfirmTrigger = null;
     function openImageConfirm(text) {
+      imageConfirmTrigger = document.activeElement;
       var parsedText = buildTrainingTextFromOcr(text);
       $('imageParsedInput').value = parsedText;
       $('imageConfirmHint').textContent = parsedText ? '已从图片中识别到训练文字。请确认或修改后再写入今天的训练内容。' : '没有从图片中识别到清晰的训练文字。你可以手动补充动作名称后再确认。';
       $('imageConfirmModal').hidden = false;
       $('imageParsedInput').focus();
     }
-    function closeImageConfirm() { $('imageConfirmModal').hidden = true; }
+    function closeImageConfirm() {
+      $('imageConfirmModal').hidden = true;
+      if (imageConfirmTrigger && imageConfirmTrigger.focus) imageConfirmTrigger.focus();
+    }
     async function recognizeTrainingImages(images) {
       try {
         var worker = await getOcrWorker();
@@ -722,16 +789,16 @@
       var positive = /(轻松|状态好|有力|不错|舒服|进步|顺畅)/g;
       return { fatigue: (text.match(fatigue) || []).length, positive: (text.match(positive) || []).length };
     }
-    function longestStreak(records, today) {
-      var dates = {};
-      records.forEach(function (record) { dates[record.date] = true; });
+    function currentStreak(records, today) {
+      var dates = new Set(records.map(function (record) { return record.date; }));
+      var cursor = new Date(today);
+      if (!dates.has(dateKey(cursor))) cursor = addDays(cursor, -1);
       var streak = 0;
-      var longest = 0;
-      for (var cursor = addDays(today, -27); cursor <= today; cursor = addDays(cursor, 1)) {
-        if (dates[dateKey(cursor)]) { streak++; longest = Math.max(longest, streak); }
-        else streak = 0;
+      while (dates.has(dateKey(cursor))) {
+        streak++;
+        cursor = addDays(cursor, -1);
       }
-      return longest;
+      return streak;
     }
     function buildInsight(records) {
       var today = parseDate(dateKey(new Date()));
@@ -749,9 +816,9 @@
       var groups = groupCounts(current);
       var topGroup = Object.keys(groups).sort(function (left, right) { return groups[right] - groups[left]; })[0];
       var signals = feelingSignal(current);
-      var streak = longestStreak(records, today);
+      var streak = currentStreak(records, today);
       var frequencyText = '近 7 天你完成了 <span class="insight-strong">' + current.length + ' 次训练</span>，覆盖 <span class="insight-strong">' + activeDays + ' 天</span>';
-      var volumeText = currentSets ? '力量训练累计 <span class="insight-strong">' + currentSets + ' 组</span>' : '本周以有氧或恢复训练为主';
+      var volumeText = currentSets ? '已记录的训练累计 <span class="insight-strong">' + currentSets + ' 组</span>' : '本周尚未记录组数';
       if (currentMinutes) volumeText += '，记录有氧/恢复 <span class="insight-strong">' + currentMinutes + ' 分钟</span>';
       var focusText = topGroup ? '当前动作最集中在 <span class="insight-strong">' + topGroup + '</span>。' : '';
       var comparison = current.length - previous.length;
@@ -830,13 +897,13 @@
 
       var session = loadAvatarSession();
       if (!session) {
-        stage.className = 'avatar-stage mode-idle';
-        $('avatarTag').textContent = records.length ? '累计 ' + records.length + ' 次训练' : '等待训练';
-        $('avatarStatus').innerHTML = records.length ? '累计训练 <span>' + records.length + ' 次</span> · 视觉进度 ' + visualProgress + '%' : '等待今天的训练记录';
-        $('avatarTitle').textContent = records.length ? '训练习惯正在累积' : '准备开始';
-        $('avatarDescription').textContent = records.length ? '小人会根据累计训练记录呈现渐进的体态变化。下一次保存当天训练后，会启动 30 分钟训练动画。' : '保存一条训练记录后，小人会根据训练部位开始相应动作。肩部训练会进行举哑铃动画，并在训练周期内自动加入休息时间。';
+        stage.className = 'avatar-stage is-demo mode-shoulder';
+        $('avatarTag').textContent = records.length ? '累计 ' + records.length + ' 次训练' : '侧平举演示';
+        $('avatarStatus').innerHTML = records.length ? '累计训练 <span>' + records.length + ' 次</span> · 侧平举演示中' : '默认动作 · <span>哑铃侧平举</span>';
+        $('avatarTitle').textContent = records.length ? '训练习惯正在累积' : '哑铃侧平举演示';
+        $('avatarDescription').textContent = records.length ? '小人会根据累计训练记录呈现渐进的体态变化。下一次保存当天训练后，会切换为对应部位的 30 分钟训练动画。' : '小人正在持续进行哑铃侧平举动作。保存训练后，会根据当天训练部位切换动作，并加入 30 秒休息时间。';
         $('avatarProgress').style.width = '0%';
-        $('avatarPhase').textContent = '尚未开始训练动画';
+        $('avatarPhase').textContent = '动作演示 · 保存训练后开始 30 分钟训练';
         $('avatarTime').textContent = '30:00';
         return;
       }
@@ -878,12 +945,13 @@
       var raw = $('trainingInput').value.trim();
       var feeling = $('feelingInput').value.trim();
       var exercises = parseExercises(raw);
-      if (!date) { alert('请选择训练日期'); return; }
+      if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(parseDate(date).getTime()) || dateKey(parseDate(date)) !== date) { alert('请选择有效的训练日期'); return; }
+      if (date > dateKey(new Date())) { alert('训练记录不能晚于今天，请选择实际训练日期。'); return; }
       if (!raw || !exercises.length) { alert('请先输入至少一个训练动作'); return; }
       var records = getRecords();
       records.push({ id: String(Date.now()) + '-' + Math.random().toString(16).slice(2), date: date, raw: raw, feeling: feeling, exercises: exercises, images: pendingImages.slice(), createdAt: new Date().toISOString() });
       if (!saveRecords(records)) return;
-      startAvatarSession(exercises);
+      if (date === dateKey(new Date())) startAvatarSession(exercises);
       $('trainingInput').value = '';
       $('feelingInput').value = '';
       pendingImages = [];
@@ -910,12 +978,15 @@
       closeImageConfirm();
     }
     function deleteRecord(id) {
-      var records = getRecords().filter(function (record) { return record.id !== id; });
-      saveRecords(records);
+      var records = getRecords();
+      var record = records.find(function (item) { return item.id === id; });
+      if (!record || !window.confirm('删除 ' + formatDate(record.date) + ' 的这条训练记录？删除后无法恢复。')) return;
+      if (!saveRecords(records.filter(function (item) { return item.id !== id; }))) return;
       renderAll();
     }
 
     $('trainingDate').value = dateKey(new Date());
+    $('trainingDate').max = dateKey(new Date());
     $('trainingInput').addEventListener('input', renderPreview);
     $('saveBtn').addEventListener('click', saveTraining);
     $('sampleBtn').addEventListener('click', loadSample);
@@ -940,6 +1011,14 @@
       if (!button) return;
       pendingImages.splice(Number(button.getAttribute('data-image-index')), 1);
       renderImagePreview();
+    });
+    $('imageConfirmModal').addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') { event.preventDefault(); closeImageConfirm(); return; }
+      if (event.key !== 'Tab') return;
+      var first = $('imageParsedInput');
+      var last = $('cancelImageParseBtn');
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     });
     $('confirmImageParseBtn').addEventListener('click', confirmImageParse);
     $('cancelImageParseBtn').addEventListener('click', closeImageConfirm);
