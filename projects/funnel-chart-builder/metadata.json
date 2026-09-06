@@ -1,0 +1,6 @@
+{
+  "name": "Funnel Chart Builder",
+  "description": "Generate and customize dynamic funnel charts with actionable insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

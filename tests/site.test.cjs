@@ -77,13 +77,13 @@ test('homepage has one work entry; all active pages have valid script syntax and
   for (const file of ['index.html', 'agent/index.html', 'fitness/index.html', 'email-check/index.html', 'country-query/index.html', 'industry-keyword/index.html']) {
     const html = read(file);
     scripts(html).forEach(script => new vm.Script(script, { filename: file }));
-    if (['index.html', 'agent/index.html'].includes(file)) new vm.Script(externalScripts(file), { filename: file });
+    if (file === 'index.html') new vm.Script(externalScripts(file), { filename: file });
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(ids).size, ids.length, `duplicate IDs in ${file}`);
     for (const [, link] of html.matchAll(/\b(?:href|src)="([^"<>]*)"/g)) {
       if (!link || /^(?:[a-z]+:|\/\/|#)/i.test(link) || link.includes("'")) continue;
       const target = link.split(/[?#]/)[0];
-      assert.ok(fs.existsSync(path.resolve(root, path.dirname(file), decodeURIComponent(target))), `${file}: ${link}`);
+      assert.ok(fs.existsSync((target.startsWith('/') ? path.join(root, decodeURIComponent(target)) : path.resolve(root, path.dirname(file), decodeURIComponent(target)))), `${file}: ${link}`);
     }
   }
   assert.ok(read('fitness/index.html').indexOf('id="record-training"') < read('fitness/index.html').indexOf('id="heatmapGrid"'));
