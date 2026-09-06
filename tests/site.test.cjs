@@ -6,12 +6,14 @@ const { test } = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
+const externalScripts = file => [...read(file).matchAll(/<script\s[^>]*src="([^"]+)"[^>]*>/g)].map(match => read(path.join(path.dirname(file), match[1]))).join('\n');
 const scripts = html => [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 const key = 'yeuhub_fitness_records_v1';
 
 // Exercise the inline application with storage and control stubs; no browser required.
-function app(file = 'fitness/index.html', records = []) {
+function app(file = 'fitness/index.html', records = [], options = {}) {
   const data = new Map([[key, JSON.stringify(records)]]);
+  if (options.unlockedAt) data.set('yeuhub_gate_unlock_ts', String(options.unlockedAt));
   const nodes = new Map();
   const alerts = [];
   const state = { confirmed: false, failWrite: false };
@@ -35,6 +37,7 @@ function app(file = 'fitness/index.html', records = []) {
   };
   const sandbox = {
     document,
+    location: { assign(url) { this.destination = url; } },
     localStorage: {
       getItem: item => data.get(item) ?? null,
       setItem(item, value) {
@@ -51,7 +54,8 @@ function app(file = 'fitness/index.html', records = []) {
   };
   sandbox.window = sandbox;
   vm.createContext(sandbox);
-  let code = scripts(read(file)).join('\n');
+  let code = (file === 'index.html' ? externalScripts(file) : '') + '\n' + scripts(read(file)).join('\n');
+  if (options.passwordFixture) code = code.replace(/var PASSWORD_HASH = '[^']+';/, `var PASSWORD_HASH = '${require('node:crypto').createHash('sha256').update(options.passwordFixture).digest('hex')}';`);
   if (file.startsWith('fitness/')) {
     code = code.replace(/\}\)\(\);\s*$/, `globalThis.api = {
       parseExercises, totalSets, totalMinutes, exerciseMeta, dateKey, parseDate,
@@ -60,18 +64,20 @@ function app(file = 'fitness/index.html', records = []) {
     }; })();`);
   }
   vm.runInContext(code, sandbox);
-  return { ...sandbox.api, data, state, alerts, document, node: id => document.getElementById(id) };
+  return { ...sandbox.api, access: sandbox.YeuhubAccess, location: sandbox.location, data, state, alerts, document, node: id => document.getElementById(id) };
 }
 
-test('homepage exposes existing tools; all active pages have valid script syntax and local links', () => {
+test('homepage has one work entry; all active pages have valid script syntax and local links', () => {
   const homepage = read('index.html');
-  for (const route of ['email-check', 'country-query', 'industry-keyword', 'fitness']) {
+  for (const route of ['agent', 'fitness']) {
     assert.ok(homepage.includes(`href="${route}/index.html"`), route);
   }
   assert.match(homepage, /<h1\b/);
-  for (const file of ['index.html', 'fitness/index.html', 'email-check/index.html', 'country-query/index.html', 'industry-keyword/index.html']) {
+  for (const oldRoute of ['email-check/', 'country-query/', 'industry-keyword/']) assert.equal(homepage.includes(oldRoute), false);
+  for (const file of ['index.html', 'agent/index.html', 'fitness/index.html', 'email-check/index.html', 'country-query/index.html', 'industry-keyword/index.html']) {
     const html = read(file);
     scripts(html).forEach(script => new vm.Script(script, { filename: file }));
+    if (['index.html', 'agent/index.html'].includes(file)) new vm.Script(externalScripts(file), { filename: file });
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(ids).size, ids.length, `duplicate IDs in ${file}`);
     for (const [, link] of html.matchAll(/\b(?:href|src)="([^"<>]*)"/g)) {
@@ -187,4 +193,30 @@ test('image confirmation supports keyboard escape, focus return and tab wrapping
   handler({ key: 'Escape', preventDefault() {} });
   assert.equal(a.node('imageConfirmModal').hidden, true);
   assert.equal(a.document.activeElement, a.node('imageDropzone'));
+});
+
+
+test('correct gate password navigates directly to agent, with storage failures handled', () => {
+  const a = app('index.html', [], { passwordFixture: 'test-only-unlock' });
+  a.node('gateInput').value = 'test-only-unlock';
+  a.state.failWrite = true;
+  a.node('gateForm').events.submit({ preventDefault() {} });
+  assert.equal(a.location.destination, undefined);
+  assert.equal(a.node('gateError').hidden, false);
+  a.state.failWrite = false;
+  a.node('gateForm').events.submit({ preventDefault() {} });
+  assert.equal(a.location.destination, 'agent/index.html');
+  assert.ok(a.access.remainingMs() > 0);
+});
+
+test('gate expiry, invalid future timestamp and relocking work consistently', () => {
+  const valid = app('index.html', [], { unlockedAt: Date.now() - 1000 });
+  assert.equal(valid.node('gateOpen').hidden, false);
+  valid.node('gateLockBtn').events.click();
+  assert.equal(valid.node('gateOpen').hidden, true);
+  for (const unlockedAt of [Date.now() - 31 * 60000, Date.now() + 60000]) {
+    const a = app('index.html', [], { unlockedAt });
+    assert.equal(a.node('gateOpen').hidden, true);
+    assert.equal(a.access.remainingMs(), 0);
+  }
 });
