@@ -2,6 +2,8 @@ import { ArrowDown, Download, Image as ImageIcon, Settings } from 'lucide-react'
 import React, { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FunnelLevel } from './types';
+import FunnelChart from './FunnelChart';
+import { HISTORY_KEY, readHistory, saveSnapshot, type Snapshot } from './history';
 
 const defaultColors = [
   '#3b82f6', // blue-500
@@ -21,8 +23,29 @@ const initialData: FunnelLevel[] = [
 ];
 
 export default function App() {
-  const [levels, setLevels] = useState<FunnelLevel[]>(initialData);
-  const [editing, setEditing] = useState<{ id: string; field: keyof FunnelLevel } | null>(null);
+  const [loaded] = useState(() => { try { return { records: readHistory(localStorage), error: '' }; } catch { return { records: [] as Snapshot[], error: '历史记录暂时无法读取，原数据未修改。' }; } });
+  const [history, setHistory] = useState<Snapshot[]>(loaded.records);
+  const [notice, setNotice] = useState(loaded.error);
+  const [title, setTitle] = useState(loaded.records[0]?.title || '我的增长漏斗');
+  const [levels, setLevels] = useState<FunnelLevel[]>(loaded.records[0]?.levels || initialData);
+  const [baseline, setBaseline] = useState(JSON.stringify({ title: loaded.records[0]?.title || '我的增长漏斗', levels: loaded.records[0]?.levels || initialData }));
+  const retain = () => {
+    try {
+      const name = title.trim() || '未命名漏斗';
+      const next = saveSnapshot(localStorage, { id: uuidv4(), title: name, savedAt: new Date().toISOString(), levels });
+      setHistory(next); setTitle(name); setBaseline(JSON.stringify({ title: name, levels })); setNotice('已保留，历史记录中可以重新打开。');
+    } catch { setNotice('保留失败，浏览器存储不可用或空间不足。当前内容仍保留在页面中，请先导出。'); }
+  };
+  const openSnapshot = (record: Snapshot) => {
+    if (JSON.stringify({ title, levels }) !== baseline && !window.confirm('当前有未保留的修改，打开历史记录会替换当前图表。确定继续吗？')) return;
+    const copy = JSON.parse(JSON.stringify(record)); setLevels(copy.levels); setTitle(copy.title);
+    setBaseline(JSON.stringify({ title: copy.title, levels: copy.levels })); setNotice('已打开历史版本，编辑后点击保留会生成一条新记录。');
+  };
+  const deleteSnapshot = (id: string) => {
+    if (!window.confirm('确定删除这条历史记录吗？当前图表不会被清空。')) return;
+    try { const next = readHistory(localStorage).filter(r => r.id !== id); localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); setHistory(next); setNotice('历史记录已删除。'); }
+    catch { setNotice('删除失败，历史记录未更改。'); }
+  };
   const chartRef = useRef<HTMLDivElement>(null);
 
   const maxVal = Math.max(...levels.map((l) => l.value), 1);
@@ -80,10 +103,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 lg:p-6 flex justify-center overflow-x-hidden">
-      <div className="w-full max-w-[1600px] grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="w-full max-w-[1920px] grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         
         {/* Config Panel */}
-        <div className="lg:col-span-3 xl:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6 lg:sticky lg:top-6 z-30">
+        <div className="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6 xl:sticky xl:top-6 z-30">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
               <Settings className="w-5 h-5" />
@@ -137,23 +160,36 @@ export default function App() {
                     显示下周待办事项
                   </label>
                 </div>
+                {level.hasActionItem && <textarea aria-label={`${level.label} 待办内容`} className="w-full text-sm leading-relaxed bg-white border border-slate-200 rounded-lg p-2" rows={3} placeholder="填写待办事项；留空时右侧不显示卡片" value={level.actionItem} onChange={e => handleLevelChange(level.id, 'actionItem', e.target.value)}/>}
               </div>
             ))}
           </div>
           
+          <section className="pt-4 border-t border-slate-100" aria-label="历史记录">
+            <h3 className="text-base font-semibold mb-2">历史记录 · {history.length}</h3>
+            <p className="text-xs text-slate-500 mb-4">点击保留生成一个版本，仅保存在当前浏览器。</p>
+            <div className="history-list">{history.map(record => <article className="history-item" key={record.id}>
+              <p className="text-sm font-semibold">{record.title}</p>
+              <p className="text-xs text-slate-500 mt-1">{new Date(record.savedAt).toLocaleString('zh-CN')} · {record.levels.length} 个环节</p>
+              <div className="flex justify-between mt-2"><button className="text-sm text-indigo-600" onClick={() => openSnapshot(record)}>打开</button><button className="text-sm text-slate-500" onClick={() => deleteSnapshot(record.id)}>删除</button></div>
+            </article>)}</div>
+            {!history.length && <p className="text-sm text-slate-500">还没有保留的版本。</p>}
+          </section>
           <div className="pt-4 border-t border-slate-100">
              <p className="text-xs text-slate-500 text-center flex items-center justify-center space-x-1">
                 <span className="font-medium text-indigo-500">提示：</span> 
-                <span>双击图表上的任意文本即可进行编辑。</span>
+                <span>点击图表文字即可编辑；待办留空则不显示。</span>
              </p>
           </div>
         </div>
 
         {/* Visualization & Action Items */}
-        <div className="lg:col-span-9 xl:col-span-9 space-y-4">
+        <div className="xl:col-span-10 space-y-4">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-wrap gap-4 justify-between items-center">
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">增长漏斗图</h1>
-            <div className="flex space-x-3">
+            <div className="flex flex-wrap gap-3 items-center">
+              <input aria-label="历史记录名称" className="border border-slate-300 rounded-xl px-3 py-2 text-sm w-44" value={title} maxLength={100} onChange={e => setTitle(e.target.value)}/>
+              <button onClick={retain} className="px-5 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium">保留</button>
               <button
                 onClick={() => exportChart('png')}
                 disabled={exporting}
@@ -173,134 +209,16 @@ export default function App() {
             </div>
           </div>
 
+          {notice && <p role="status" className="text-sm text-indigo-700">{notice}</p>}
           {exporting && <p role="status" className="text-sm text-indigo-600">正在导出…</p>}
           {exportError && <p role="alert" className="text-sm text-red-600">{exportError}</p>}
           <div 
             className="overflow-x-auto">
           <div ref={chartRef}
-            className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 pt-12 pb-12 min-w-[760px]"
+            className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 pt-12 pb-12 "
           >
-            <div className="flex flex-col w-full relative">
-              {levels.map((level, i) => {
-                const isLast = i === levels.length - 1;
-                const nextLevel = isLast ? null : levels[i + 1];
-                
-                const wTop = (level.value / maxVal) * 100;
-                let wBottom = nextLevel ? (nextLevel.value / maxVal) * 100 : wTop * 0.5;
-                
-                const conversionRate = nextLevel 
-                  ? (level.value > 0 ? ((nextLevel.value / level.value) * 100).toFixed(1) + '%' : '—')
-                  : null;
+            <FunnelChart levels={levels} onChange={handleLevelChange}/>
 
-                return (
-                  <div key={level.id} className={`relative flex h-[100px] items-stretch ${!isLast ? 'mb-5' : ''}`}>
-                    
-                    {/* Left: Label & Value Segment */}
-                    <div className="w-[15%] shrink-0 flex flex-col justify-center items-end pr-4 relative z-10">
-                      {editing?.id === level.id && editing?.field === 'label' ? (
-                        <input
-                          autoFocus
-                          className="text-slate-800 font-bold text-lg text-right bg-white rounded px-2 py-0.5 w-full outline-none focus:ring-2 focus:ring-indigo-500 border border-indigo-200 shadow-sm"
-                          value={level.label}
-                          onChange={(e) => handleLevelChange(level.id, 'label', e.target.value)}
-                          onBlur={() => setEditing(null)}
-                          onKeyDown={(e) => e.key === 'Enter' && setEditing(null)}
-                        />
-                      ) : (
-                        <span 
-                          className="text-slate-800 font-bold text-lg cursor-text px-2 py-0.5 hover:bg-slate-100 rounded transition-colors text-right"
-                          onDoubleClick={() => setEditing({ id: level.id, field: 'label' })}
-                          title="双击编辑标签"
-                        >
-                          {level.label}
-                        </span>
-                      )}
-
-                      {editing?.id === level.id && editing?.field === 'value' ? (
-                        <input
-                          type="number"
-                          autoFocus
-                          className="text-slate-600 font-bold text-right bg-white rounded px-2 py-0.5 w-3/4 outline-none focus:ring-2 focus:ring-indigo-500 mt-1 border border-indigo-200 shadow-sm"
-                          value={level.value}
-                          onChange={(e) => handleLevelChange(level.id, 'value', Math.max(0, Number(e.target.value) || 0))}
-                          onBlur={() => setEditing(null)}
-                          onKeyDown={(e) => e.key === 'Enter' && setEditing(null)}
-                        />
-                      ) : (
-                        <span 
-                          className="text-slate-600 font-bold cursor-text px-2 py-0.5 hover:bg-slate-100 rounded transition-colors text-right mt-1"
-                          onDoubleClick={() => setEditing({ id: level.id, field: 'value' })}
-                          title="双击编辑数值"
-                        >
-                          {level.value.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Middle: SVG Funnel Segment */}
-                    <div className="w-[60%] shrink-0 relative">
-                      <svg
-                        viewBox="0 0 100 100"
-                        preserveAspectRatio="none"
-                        className="w-full h-full drop-shadow-sm"
-                      >
-                        <polygon
-                          points={`
-                            ${(100 - wTop) / 2},0 
-                            ${(100 + wTop) / 2},0 
-                            ${(100 + wBottom) / 2},100 
-                            ${(100 - wBottom) / 2},100
-                          `}
-                          fill={level.color}
-                          opacity={0.9}
-                          className="transition-all duration-500 ease-out"
-                        />
-                      </svg>
-                    </div>
-
-                    {/* Right: Action Items Segment */}
-                    <div className="w-[25%] pl-4 py-1 relative flex flex-col justify-center">
-                      {level.hasActionItem && (
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-sm transition-all hover:border-indigo-200 h-full flex flex-col justify-center relative z-10 overflow-hidden">
-                          <label className="text-xs font-semibold tracking-wider text-slate-500 uppercase mb-1 flex items-center shrink-0">
-                             下周待办事项
-                          </label>
-                          
-                          {editing?.id === level.id && editing?.field === 'actionItem' ? (
-                            <textarea
-                              autoFocus
-                              value={level.actionItem}
-                              onChange={(e) => handleLevelChange(level.id, 'actionItem', e.target.value)}
-                              onBlur={() => setEditing(null)}
-                              placeholder="需要做些什么来提升这个指标？"
-                              className="w-full bg-white border border-indigo-300 p-2 rounded-lg text-slate-700 text-sm focus:ring-2 focus:ring-indigo-500 resize-none outline-none leading-snug shadow-sm flex-1"
-                            />
-                          ) : (
-                            <div 
-                              className="w-full text-slate-700 text-sm leading-snug cursor-text p-1 -m-1 hover:bg-slate-100 rounded transition-colors flex-1 overflow-y-auto"
-                              onDoubleClick={() => setEditing({ id: level.id, field: 'actionItem' })}
-                              title="双击编辑待办事项"
-                            >
-                              {level.actionItem || <span className="text-slate-400 italic">双击添加待办事项...</span>}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Connection Line & Conversion Rate */}
-                    {!isLast && (
-                      <div className="absolute top-full mt-2.5 -translate-y-1/2 left-[15%] w-[60%] flex items-center justify-center z-20 pointer-events-none">
-                        <div className="flex items-center space-x-1.5 bg-white px-2.5 py-1 rounded-full shadow-md border border-slate-200">
-                           <ArrowDown className="w-3 h-3 text-indigo-500" />
-                           <span className="text-[11px] font-bold text-indigo-600">转化率 {conversionRate}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
           </div>
           </div>
         </div>
