@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FunnelLevel } from './types';
 import FunnelChart from './FunnelChart';
+import { createDefaultLevels } from './defaults';
 import { HISTORY_KEY, readHistory, saveSnapshot, type Snapshot } from './history';
 
 const defaultColors = [
@@ -15,12 +16,7 @@ const defaultColors = [
   '#f97316', // orange-500
 ];
 
-const initialData: FunnelLevel[] = [
-  { id: uuidv4(), label: '网站访客', value: 10000, color: defaultColors[0], actionItem: '增加社交媒体广告投放并优化搜索引擎排名。', hasActionItem: true },
-  { id: uuidv4(), label: '注册用户', value: 4000, color: defaultColors[1], actionItem: '对落地页标题和行动号召按钮进行 A/B 测试。', hasActionItem: true },
-  { id: uuidv4(), label: '活跃用户', value: 2000, color: defaultColors[2], actionItem: '启动入职邮件序列以提升活跃度。', hasActionItem: true },
-  { id: uuidv4(), label: '付费客户', value: 500, color: defaultColors[3], actionItem: '为首次升级提供限时折扣优惠。', hasActionItem: true },
-];
+const initialData = createDefaultLevels();
 
 export default function App() {
   const [loaded] = useState(() => { try { return { records: readHistory(localStorage), error: '' }; } catch { return { records: [] as Snapshot[], error: '历史记录暂时无法读取，原数据未修改。' }; } });
@@ -46,6 +42,10 @@ export default function App() {
     try { const next = readHistory(localStorage).filter(r => r.id !== id); localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); setHistory(next); setNotice('历史记录已删除。'); }
     catch { setNotice('删除失败，历史记录未更改。'); }
   };
+  const resetTemplate = () => {
+    if (JSON.stringify({ title, levels }) !== baseline && !window.confirm('使用默认六层会替换当前未保留的修改，是否继续？')) return;
+    setLevels(createDefaultLevels()); setTitle('客户转化漏斗'); setNotice('已载入图片中的默认六层，历史记录未改动。点击保留可生成新版本。');
+  };
   const chartRef = useRef<HTMLDivElement>(null);
 
   const maxVal = Math.max(...levels.map((l) => l.value), 1);
@@ -68,6 +68,8 @@ export default function App() {
           color: defaultColors[i % defaultColors.length],
           actionItem: '',
           hasActionItem: true,
+          valueNote: '',
+          percentNote: '',
         });
       }
       setLevels(newLevels);
@@ -186,9 +188,10 @@ export default function App() {
         {/* Visualization & Action Items */}
         <div className="xl:col-span-10 space-y-4">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-wrap gap-4 justify-between items-center">
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">增长漏斗图</h1>
+<div><h1 className="text-2xl font-bold text-slate-800 tracking-tight">增长漏斗图</h1><p className="text-xs text-slate-500 mt-2">占比 = 当前层数量 ÷ 首层数量；括号备注可直接编辑。</p></div>
             <div className="flex flex-wrap gap-3 items-center">
               <input aria-label="历史记录名称" className="border border-slate-300 rounded-xl px-3 py-2 text-sm w-44" value={title} maxLength={100} onChange={e => setTitle(e.target.value)}/>
+<button onClick={resetTemplate} className="px-3 py-2 rounded-xl border border-slate-300 text-sm">使用默认六层</button>
               <button onClick={retain} className="px-5 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium">保留</button>
               <button
                 onClick={() => exportChart('png')}

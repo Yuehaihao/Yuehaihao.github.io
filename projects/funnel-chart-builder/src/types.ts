@@ -5,4 +5,6 @@ export interface FunnelLevel {
   color: string;
   actionItem: string;
   hasActionItem: boolean;
+  valueNote?: string;
+  percentNote?: string;
 }

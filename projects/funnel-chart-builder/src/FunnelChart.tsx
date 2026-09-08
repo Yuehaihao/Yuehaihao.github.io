@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import type { FunnelLevel } from './types';
+import { topPercentage } from './defaults';
 type Props = { levels: FunnelLevel[]; onChange: (id: string, field: keyof FunnelLevel, value: string | number | boolean) => void };
 export default function FunnelChart({ levels, onChange }: Props) {
   const container = useRef<HTMLDivElement>(null);
@@ -42,11 +43,16 @@ export default function FunnelChart({ levels, onChange }: Props) {
         return <React.Fragment key={level.id}>
           <div className="stage-label">
             <input aria-label={`环节 ${i + 1} 名称`} value={level.label} onChange={e => onChange(level.id, 'label', e.target.value)} style={{ width: `${Math.max(8, Array.from(level.label).reduce((n, c) => n + (/[^\x00-\xff]/.test(c) ? 1 : .6), 0)) + 1.5}em` }}/>
-            <input aria-label={`${level.label} 数值`} type="number" min="0" value={level.value} onChange={e => onChange(level.id, 'value', Math.max(0, Number(e.target.value) || 0))}/>
+
           </div>
           <div className="stage-shape" data-stage={i}>
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label={`${level.label}：${level.value}`}><polygon points={`${(100-top)/2},0 ${(100+top)/2},0 ${(100+bottom)/2},100 ${(100-bottom)/2},100`} fill={level.color} opacity=".9"/></svg>
-            {i < levels.length - 1 && <span className="conversion-rate">↓ 转化率 {level.value > 0 ? `${(levels[i+1].value / level.value * 100).toFixed(1)}%` : '—'}</span>}
+            <div className="stage-metrics">
+              <input className="metric-value" aria-label={`${level.label} 数值`} type="number" min="0" value={level.value} style={{ width: `${Math.max(3, String(level.value).length) + .5}ch` }} onChange={e => onChange(level.id, 'value', Math.max(0, Number(e.target.value) || 0))}/>
+              <span className="metric-note">（<input aria-label={`${level.label} 数量增减备注`} placeholder="±xx" maxLength={20} value={level.valueNote ?? ''} style={{ width: `${Math.max(3, (level.valueNote || '').length) + .5}ch` }} onChange={e => onChange(level.id, 'valueNote', e.target.value)}/>）</span>
+              <span className="metric-percent" aria-label={`${level.label} 占首层比例`}>{topPercentage(level.value, levels[0].value)}</span>
+              <span className="metric-note">（<input aria-label={`${level.label} 百分比增减备注`} placeholder="±xxpp" maxLength={20} value={level.percentNote ?? ''} style={{ width: `${Math.max(5, (level.percentNote || '').length) + .5}ch` }} onChange={e => onChange(level.id, 'percentNote', e.target.value)}/>）</span>
+            </div>
           </div>
         </React.Fragment>;
       })}
