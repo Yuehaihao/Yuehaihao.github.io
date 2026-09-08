@@ -80,27 +80,76 @@ export default function App() {
 
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState('');
+
+  const createExportCopy = () => {
+    if (!chartRef.current) throw new Error('图表尚未准备好');
+    const source = chartRef.current;
+    const copy = source.cloneNode(true) as HTMLElement;
+    const sourceControls = source.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
+    const copiedControls = copy.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
+    sourceControls.forEach((control, index) => {
+      const copied = copiedControls[index];
+      if (!copied) return;
+      const text = document.createElement(control.tagName === 'TEXTAREA' ? 'div' : 'span');
+      text.textContent = control.value || control.placeholder || '';
+      text.className = control.className;
+      const computed = window.getComputedStyle(control);
+      for (const property of computed) text.style.setProperty(property, computed.getPropertyValue(property), computed.getPropertyPriority(property));
+      text.style.display = control.tagName === 'TEXTAREA' ? 'block' : 'inline-flex';
+      text.style.alignItems = 'center';
+      text.style.justifyContent = computed.textAlign === 'right' ? 'flex-end' : computed.textAlign === 'center' ? 'center' : 'flex-start';
+      text.style.whiteSpace = control.tagName === 'TEXTAREA' ? 'pre-wrap' : 'nowrap';
+      text.style.height = control.tagName === 'TEXTAREA' ? 'auto' : computed.height;
+      text.style.minHeight = control.tagName === 'TEXTAREA' ? computed.minHeight : computed.height;
+      copied.replaceWith(text);
+    });
+    const width = Math.ceil(source.scrollWidth);
+    copy.style.width = `${width}px`;
+    copy.style.maxWidth = 'none';
+    copy.style.position = 'fixed';
+    copy.style.left = '-100000px';
+    copy.style.top = '0';
+    copy.style.zIndex = '-1';
+    copy.setAttribute('aria-hidden', 'true');
+    document.body.append(copy);
+    return { copy, width, height: Math.ceil(copy.scrollHeight) };
+  };
+
   const exportChart = async (format: 'png' | 'pdf') => {
     if (!chartRef.current || exporting) return;
     setExporting(true);
     setExportError('');
+    let prepared: ReturnType<typeof createExportCopy> | null = null;
     try {
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import('html2canvas-pro'), import('jspdf')]);
-      const canvas = await html2canvas(chartRef.current, { scale: 2, backgroundColor: '#ffffff' });
-      const image = canvas.toDataURL('image/png');
+      if (document.fonts?.ready) await document.fonts.ready;
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      prepared = createExportCopy();
+      const [{ toPng }, { jsPDF }] = await Promise.all([import('html-to-image'), import('jspdf')]);
+      const image = await toPng(prepared.copy, {
+        backgroundColor: '#ffffff',
+        cacheBust: true,
+        pixelRatio: 2,
+        width: prepared.width,
+        height: prepared.height,
+        style: { margin: '0', transform: 'none', position: 'static', left: 'auto', top: 'auto', zIndex: 'auto' },
+      });
       if (format === 'png') {
         const link = document.createElement('a');
         link.href = image;
-        link.download = '漏斗图.png';
+        link.download = `${title.trim() || '漏斗图'}.png`;
         link.click();
       } else {
-        const pdf = new jsPDF({ orientation: canvas.width >= canvas.height ? 'landscape' : 'portrait', unit: 'px', format: [canvas.width, canvas.height] });
-        pdf.addImage(image, 'PNG', 0, 0, canvas.width, canvas.height);
-        pdf.save('漏斗图.pdf');
+        const pdf = new jsPDF({ orientation: prepared.width >= prepared.height ? 'landscape' : 'portrait', unit: 'px', format: [prepared.width, prepared.height] });
+        pdf.addImage(image, 'PNG', 0, 0, prepared.width, prepared.height);
+        pdf.save(`${title.trim() || '漏斗图'}.pdf`);
       }
     } catch (error) {
-      setExportError('导出失败，请稍后重试；图表中的内容仍然保留。');
-    } finally { setExporting(false); }
+      console.error(error);
+      setExportError('导出失败，请刷新页面后重试。图表内容仍然保留。');
+    } finally {
+      prepared?.copy.remove();
+      setExporting(false);
+    }
   };
 
   return (
