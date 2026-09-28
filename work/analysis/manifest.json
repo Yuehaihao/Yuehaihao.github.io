@@ -1,4 +1,12 @@
 {
-  "updatedAt": "",
-  "items": []
+  "updatedAt": "2026-09-28",
+  "items": [
+    {
+      "title": "EP 客户需求季度洞察",
+      "date": "2026-09-28",
+      "summary": "从季度维度梳理客户关注重点、需求变化与实际上线情况，并可下钻查看五大核心板块的详细主题和原始诉求。",
+      "href": "reports/ep_quarterly_insight.html",
+      "tags": ["EP建议", "季度趋势", "客户关注"]
+    }
+  ]
 }

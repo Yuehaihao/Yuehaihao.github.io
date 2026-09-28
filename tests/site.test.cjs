@@ -78,20 +78,24 @@ test('homepage links to separate work and life areas; all active pages have vali
   assert.ok(read('work/index.html').includes('href="analysis/"'));
   assert.match(homepage, /<h1\b/);
   for (const oldRoute of ['email-check/', 'country-query/', 'industry-keyword/']) assert.equal(homepage.includes(oldRoute), false);
-  for (const file of ['index.html', 'work/index.html', 'work/analysis/index.html', 'agent/index.html', 'fitness/index.html', 'email-check/index.html', 'country-query/index.html', 'industry-keyword/index.html']) {
+  for (const file of ['index.html', 'work/index.html', 'work/analysis/index.html', 'work/analysis/reports/ep_quarterly_insight.html', 'work/analysis/reports/ep_module_topic_explorer.html', 'agent/index.html', 'fitness/index.html', 'email-check/index.html', 'country-query/index.html', 'industry-keyword/index.html']) {
     const html = read(file);
     scripts(html).forEach(script => new vm.Script(script, { filename: file }));
     if (file === 'index.html') new vm.Script(externalScripts(file), { filename: file });
     const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
     assert.equal(new Set(ids).size, ids.length, `duplicate IDs in ${file}`);
     for (const [, link] of html.matchAll(/\b(?:href|src)="([^"<>]*)"/g)) {
-      if (!link || /^(?:[a-z]+:|\/\/|#)/i.test(link) || link.includes("'")) continue;
+      if (!link || /^(?:[a-z]+:|\/\/|#)/i.test(link) || link.includes("'") || link.includes('${')) continue;
       const target = link.split(/[?#]/)[0];
       assert.ok(fs.existsSync((target.startsWith('/') ? path.join(root, decodeURIComponent(target)) : path.resolve(root, path.dirname(file), decodeURIComponent(target)))), `${file}: ${link}`);
     }
   }
   for (const file of ['assets/access.js', 'assets/home.js', 'assets/guard.js', 'assets/work.js', 'work/analysis/analysis.js']) new vm.Script(read(file), { filename: file });
-  assert.deepEqual(JSON.parse(read('work/analysis/manifest.json')).items, []);
+  const reports = JSON.parse(read('work/analysis/manifest.json')).items;
+  assert.equal(reports.length, 1);
+  assert.equal(reports[0].href, 'reports/ep_quarterly_insight.html');
+  assert.ok(read('work/analysis/reports/ep_quarterly_insight.html').includes('href="./ep_module_topic_explorer.html"'));
+  assert.match(read('work/analysis/reports/ep_module_topic_explorer.html'), /counter-reset:quarter-point/);
   assert.match(read('fitness/index.html'), /data-scope="life"/);
   assert.match(read('work/index.html'), /data-scope="work"/);
   assert.match(read('work/analysis/index.html'), /data-scope="work"/);

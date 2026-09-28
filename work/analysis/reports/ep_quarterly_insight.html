@@ -1,0 +1,1234 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EP 客户需求季度洞察</title>
+  <script src="../../../assets/access.js"></script>
+  <script src="../../../assets/guard.js" data-scope="work" data-return="../../../index.html#work"></script>
+  <style>
+    :root {
+      --ink: #101828;
+      --muted: #667085;
+      --subtle: #98a2b3;
+      --line: #e4e7ec;
+      --surface: #ffffff;
+      --surface-soft: #f7f8fa;
+      --navy: #173b57;
+      --teal: #0f766e;
+      --blue: #2563eb;
+      --violet: #7c3aed;
+      --amber: #d97706;
+      --rose: #db2777;
+      --cyan: #0891b2;
+      --red: #b42318;
+      --green: #027a48;
+      --shadow: 0 16px 38px rgba(16, 24, 40, .08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--surface);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1220px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .topbar-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.02em; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--navy);
+      font-size: 13px;
+      letter-spacing: -.04em;
+    }
+    .topnav { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .topnav a:hover { color: var(--ink); }
+
+    .hero {
+      padding: 72px 0 54px;
+      border-bottom: 1px solid var(--line);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr);
+      gap: 72px;
+      align-items: end;
+    }
+    .hero h1 {
+      margin: 0;
+      max-width: 920px;
+      font-size: clamp(40px, 5.7vw, 76px);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+      font-weight: 850;
+    }
+    .hero h1 span { color: var(--teal); }
+    .hero-lede {
+      max-width: 820px;
+      margin: 26px 0 0;
+      color: #344054;
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.65;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .hero-signal {
+      border-left: 3px solid var(--teal);
+      padding: 4px 0 4px 24px;
+    }
+    .hero-signal strong { display: block; font-size: 28px; letter-spacing: -.035em; }
+    .hero-signal p { margin: 4px 0 22px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .hero-signal p:last-child { margin-bottom: 0; }
+
+    .quarter-rail {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+    .quarter-controls { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .quarter-label { font-size: 13px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    .quarter-buttons { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+    .quarter-button {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      padding: 7px 11px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .quarter-button:hover { border-color: #d0d5dd; color: var(--ink); }
+    .quarter-button.active { background: var(--ink); color: #fff; }
+    .chart-quarter-filter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0 14px;
+      margin: -6px 0 18px;
+      border-bottom: 1px solid #eef0f3;
+    }
+    .chart-quarter-filter > span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .chart-quarter-filter .quarter-buttons {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 3px;
+    }
+    .chart-quarter-filter .quarter-button { padding: 5px 7px; font-size: 10px; }
+
+    .section { padding: 76px 0; border-bottom: 1px solid var(--line); }
+    .section.soft { background: var(--surface-soft); }
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(420px, 1.2fr);
+      gap: 64px;
+      align-items: start;
+      margin-bottom: 38px;
+    }
+    .section-index { color: var(--teal); font-size: 12px; font-weight: 900; letter-spacing: .12em; }
+    .section h2 { margin: 7px 0 0; font-size: clamp(30px, 4vw, 48px); line-height: 1.14; letter-spacing: -.045em; }
+    .section-intro { margin: 4px 0 0; color: #475467; font-size: 17px; }
+    .section-intro strong { color: var(--ink); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #fff; }
+    .kpi { padding: 26px 24px 22px; border-right: 1px solid var(--line); }
+    .kpi:last-child { border-right: 0; }
+    .kpi-label { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+    .kpi-value { display: block; margin-top: 8px; font-size: 38px; font-weight: 850; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+    .kpi-note { margin-top: 10px; color: var(--muted); font-size: 12px; }
+
+    .panel-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(320px, .55fr); gap: 22px; margin-top: 22px; }
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: 0 1px 1px rgba(16,24,40,.02); }
+    .panel-header { display: flex; align-items: start; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
+    .panel-title { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+    .panel-caption { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+    .trend-lanes { display: grid; gap: 14px; }
+    .trend-lane { display: grid; grid-template-columns: 96px minmax(0, 1fr) 64px; gap: 14px; align-items: center; }
+    .lane-name { font-size: 13px; font-weight: 800; }
+    .lane-total { text-align: right; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .spark { width: 100%; height: 54px; display: block; overflow: visible; }
+
+    .big-note { background: var(--navy); color: #fff; padding: 24px; border-radius: var(--radius); }
+    .big-note strong { display: block; font-size: 44px; line-height: 1; letter-spacing: -.05em; }
+    .big-note h3 { margin: 16px 0 8px; font-size: 20px; }
+    .big-note p { margin: 0; color: rgba(255,255,255,.76); font-size: 13px; }
+    .micro-list { margin: 20px 0 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+    .micro-list li { padding-top: 12px; border-top: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.82); font-size: 12px; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .data-table th { text-align: right; color: var(--muted); font-weight: 800; border-bottom: 1px solid var(--line); padding: 9px 8px; white-space: nowrap; }
+    .data-table th:first-child, .data-table td:first-child { text-align: left; }
+    .data-table td { text-align: right; padding: 10px 8px; border-bottom: 1px solid #eef0f3; }
+    .data-table tr:last-child td { border-bottom: 0; }
+    .data-table tr.selected-row td { background: #ecfdf3; color: #05603a; font-weight: 800; }
+
+    .finding-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-bottom: 24px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .finding { background: #fff; padding: 22px; min-height: 168px; }
+    .finding .value { font-size: 32px; font-weight: 850; letter-spacing: -.04em; }
+    .finding h3 { margin: 12px 0 8px; font-size: 16px; }
+    .finding p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    .chart-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(330px, .55fr); gap: 22px; }
+    .chart-canvas { min-height: 360px; position: relative; }
+    .chart-canvas svg { width: 100%; height: 360px; display: block; }
+    .chart-toolbar { display: flex; align-items: center; gap: 8px; }
+    .metric-toggle { border: 1px solid var(--line); border-radius: 10px; padding: 3px; display: flex; background: var(--surface-soft); }
+    .metric-toggle button { border: 0; background: transparent; padding: 5px 9px; border-radius: 7px; color: var(--muted); font-size: 11px; font-weight: 800; cursor: pointer; }
+    .metric-toggle button.active { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(16,24,40,.12); }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 10px; }
+    .legend-button { border: 0; background: transparent; padding: 0; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .legend-button.off { opacity: .35; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    .quarter-focus { border-top: 5px solid var(--teal); }
+    .focus-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .focus-quarter { font-size: 30px; font-weight: 850; letter-spacing: -.04em; }
+    .partial { color: var(--amber); font-size: 11px; font-weight: 800; }
+    .rank-list { margin-top: 18px; display: grid; gap: 15px; }
+    .rank-item { display: grid; grid-template-columns: 24px minmax(0, 1fr) 52px; gap: 10px; align-items: center; }
+    .rank-no { color: var(--subtle); font-size: 11px; font-weight: 900; }
+    .rank-main { min-width: 0; }
+    .rank-name { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; font-weight: 800; }
+    .rank-name span:last-child { color: var(--muted); font-weight: 700; }
+    .rank-track { height: 6px; margin-top: 6px; background: #eef2f6; border-radius: 99px; overflow: hidden; }
+    .rank-fill { height: 100%; background: var(--teal); border-radius: inherit; }
+    .rank-value { text-align: right; font-size: 13px; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .focus-foot { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+
+    .heatmap-wrap { margin-top: 22px; overflow-x: auto; }
+    .heatmap { min-width: 760px; border-collapse: separate; border-spacing: 4px; width: 100%; font-size: 11px; }
+    .heatmap th { color: var(--muted); padding: 7px 6px; text-align: center; font-weight: 800; }
+    .heatmap th:first-child { text-align: left; }
+    .heatmap td { text-align: center; padding: 10px 6px; border-radius: 7px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .heatmap td:first-child { text-align: left; background: transparent !important; color: var(--ink) !important; padding-left: 0; white-space: nowrap; }
+
+    .story-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 22px; }
+    .story { padding: 24px 0 0; border-top: 3px solid var(--line); }
+    .story.emerging { border-color: var(--teal); }
+    .story.stable { border-color: var(--blue); }
+    .story.spike { border-color: var(--amber); }
+    .story h3 { margin: 0 0 10px; font-size: 18px; }
+    .story p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .launch-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(360px, .7fr); gap: 22px; }
+    .stack-chart { min-height: 330px; display: flex; align-items: stretch; gap: 14px; padding: 18px 8px 0; border-bottom: 1px solid var(--line); }
+    .stack-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: end; align-items: stretch; position: relative; }
+    .stack-value { text-align: center; margin-bottom: 8px; font-size: 12px; font-weight: 850; }
+    .stack-bar { display: flex; flex-direction: column-reverse; min-height: 2px; overflow: hidden; border-radius: 8px 8px 0 0; background: #eef2f6; }
+    .stack-segment { min-height: 2px; position: relative; cursor: default; }
+    .stack-label { text-align: center; color: var(--muted); font-size: 10px; margin-top: 9px; white-space: nowrap; }
+    .stack-col.active .stack-label { color: var(--ink); font-weight: 900; }
+
+    .donut-layout { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 22px; align-items: center; }
+    .donut { width: 170px; height: 170px; border-radius: 50%; position: relative; }
+    .donut::after { content: ""; position: absolute; inset: 34px; border-radius: 50%; background: #fff; }
+    .donut-center { position: absolute; inset: 0; display: grid; place-items: center; z-index: 1; text-align: center; pointer-events: none; }
+    .donut-center strong { display: block; font-size: 32px; line-height: 1; letter-spacing: -.04em; }
+    .donut-center span { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+    .composition-list { display: grid; gap: 9px; }
+    .composition-item { display: grid; grid-template-columns: 10px minmax(0,1fr) 44px; gap: 8px; align-items: center; font-size: 11px; }
+    .composition-item strong { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .alignment-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr); gap: 22px; }
+    .scatter { height: 430px; }
+    .chart-empty {
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      border: 1px dashed #d0d5dd;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+    .scatter svg { width: 100%; height: 430px; display: block; }
+    .gap-list { display: grid; gap: 14px; }
+    .gap-item { padding: 16px 0; border-top: 1px solid var(--line); }
+    .gap-item:first-child { border-top: 0; padding-top: 0; }
+    .gap-item .gap-head { display: flex; justify-content: space-between; gap: 12px; font-weight: 850; font-size: 13px; }
+    .gap-positive { color: var(--green); }
+    .gap-negative { color: var(--red); }
+    .gap-item p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .caveat { margin-top: 18px; padding: 14px 16px; background: #fffaeb; border-left: 3px solid #f79009; color: #7a2e0e; font-size: 12px; }
+
+    .lag-grid { display: grid; grid-template-columns: minmax(300px, .45fr) minmax(0, 1.55fr); gap: 22px; margin-top: 22px; }
+    .lag-big { background: var(--navy); color: #fff; }
+    .lag-big strong { display: block; font-size: 52px; letter-spacing: -.055em; line-height: 1; }
+    .lag-big h3 { margin: 16px 0 8px; font-size: 20px; }
+    .lag-big p { margin: 0; color: rgba(255,255,255,.74); font-size: 12px; }
+    .lag-bar { display: flex; height: 18px; border-radius: 99px; overflow: hidden; margin-top: 24px; }
+    .lag-bar span:nth-child(1) { background: #5fe2cb; }
+    .lag-bar span:nth-child(2) { background: #56a8e8; }
+    .lag-bar span:nth-child(3) { background: #c7d4df; }
+    .lag-legend { margin-top: 13px; display: grid; gap: 8px; color: rgba(255,255,255,.78); font-size: 11px; }
+    .matrix-wrap { overflow-x: auto; }
+    .matrix { min-width: 620px; border-collapse: separate; border-spacing: 4px; width: 100%; font-size: 11px; }
+    .matrix th { color: var(--muted); font-weight: 800; padding: 7px; }
+    .matrix td { text-align: center; padding: 9px 6px; border-radius: 6px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .matrix td:first-child { text-align: left; color: var(--muted); background: transparent !important; }
+
+    .topic-toolbar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .topic-control-group { display: flex; align-items: center; gap: 14px; }
+    .topic-control-label { min-width: 72px; color: var(--muted); font-size: 11px; font-weight: 850; }
+    .topic-module-buttons { display: flex; flex-wrap: wrap; gap: 7px; }
+    .topic-module-button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #475467;
+      padding: 7px 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .topic-module-button:hover { border-color: #98a2b3; color: var(--ink); }
+    .topic-module-button.active { border-color: var(--teal); background: var(--teal); color: #fff; }
+    .topic-quarter-filter { flex: 1; padding: 0; margin: 0; border: 0; }
+    .topic-quarter-filter .quarter-buttons { justify-content: flex-start; }
+    .topic-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    .topic-summary-item { padding: 18px 20px; border-right: 1px solid var(--line); background: #fff; }
+    .topic-summary-item:last-child { border-right: 0; }
+    .topic-summary-item span { color: var(--muted); font-size: 11px; font-weight: 800; }
+    .topic-summary-item strong { display: block; margin-top: 6px; font-size: 26px; letter-spacing: -.035em; line-height: 1.1; }
+    .topic-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .topic-table th { padding: 11px 10px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 11px; text-align: left; }
+    .topic-table th:nth-child(1), .topic-table td:nth-child(1) { width: 50px; text-align: center; }
+    .topic-table th:nth-child(2), .topic-table td:nth-child(2) { width: 235px; }
+    .topic-table th:nth-child(3), .topic-table td:nth-child(3) { width: 85px; text-align: right; }
+    .topic-table th:nth-child(4), .topic-table td:nth-child(4) { width: 115px; }
+    .topic-table td { padding: 14px 10px; border-bottom: 1px solid #eef0f3; vertical-align: top; font-size: 12px; }
+    .topic-table tr:last-child td { border-bottom: 0; }
+    .topic-rank { color: var(--subtle); font-weight: 900; }
+    .topic-name { color: var(--ink); font-size: 13px; font-weight: 850; line-height: 1.45; }
+    .topic-count { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .topic-share-track { height: 6px; background: #eef2f6; border-radius: 99px; overflow: hidden; margin-top: 5px; }
+    .topic-share-fill { height: 100%; background: var(--teal); border-radius: inherit; }
+    .topic-share-value { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .topic-examples { margin: 0; padding-left: 17px; color: #475467; }
+    .topic-examples li { margin-bottom: 5px; }
+    .topic-examples li:last-child { margin-bottom: 0; }
+    .topic-method-note { margin: 16px 0 0; color: var(--muted); font-size: 11px; }
+    .topic-insight-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 22px; }
+    .topic-insight { padding: 18px; border-top: 3px solid var(--teal); background: #fff; }
+    .topic-insight h3 { margin: 0 0 8px; font-size: 14px; }
+    .topic-insight p { margin: 0; color: var(--muted); font-size: 11px; }
+
+    .conclusion { background: var(--ink); color: #fff; }
+    .conclusion .section-index { color: #5fe2cb; }
+    .conclusion .section-heading { margin-bottom: 30px; }
+    .conclusion .section-intro { color: rgba(255,255,255,.72); }
+    .conclusion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.14); border-radius: var(--radius); overflow: hidden; }
+    .conclusion-item { padding: 28px; background: var(--ink); }
+    .conclusion-item strong { display: block; color: #5fe2cb; font-size: 12px; letter-spacing: .08em; }
+    .conclusion-item h3 { margin: 9px 0 10px; font-size: 21px; }
+    .conclusion-item p { margin: 0; color: rgba(255,255,255,.7); font-size: 13px; }
+
+    .method { padding: 48px 0 64px; color: var(--muted); font-size: 12px; }
+    .method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+    .method h3 { margin: 0 0 8px; color: var(--ink); font-size: 13px; }
+    .method p { margin: 0; }
+
+    .tooltip {
+      position: fixed;
+      z-index: 99;
+      pointer-events: none;
+      display: none;
+      max-width: 240px;
+      padding: 9px 11px;
+      border-radius: 9px;
+      color: #fff;
+      background: rgba(16,24,40,.94);
+      box-shadow: var(--shadow);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .tooltip.show { display: block; }
+
+    @media (max-width: 920px) {
+      .shell { width: min(100% - 28px, 760px); }
+      .topnav { display: none; }
+      .hero { padding-top: 52px; }
+      .hero-grid, .section-heading, .panel-grid, .chart-grid, .launch-grid, .alignment-grid, .lag-grid { grid-template-columns: 1fr; gap: 28px; }
+      .hero-signal { margin-top: 8px; }
+      .kpi-grid, .finding-strip { grid-template-columns: repeat(2, 1fr); }
+      .kpi:nth-child(2) { border-right: 0; }
+      .kpi:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .story-grid, .method-grid { grid-template-columns: 1fr 1fr; }
+      .topic-insight-grid { grid-template-columns: 1fr 1fr; }
+      .topic-summary { grid-template-columns: repeat(2, 1fr); }
+      .topic-summary-item:nth-child(2) { border-right: 0; }
+      .topic-summary-item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .section { padding: 58px 0; }
+    }
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 22px, 560px); }
+      .hero h1 { font-size: 42px; }
+      .quarter-controls { align-items: start; flex-direction: column; }
+      .quarter-buttons { width: 100%; flex-wrap: wrap; overflow: visible; }
+      .quarter-button { flex: 1 0 calc(25% - 6px); }
+      .chart-quarter-filter { align-items: flex-start; flex-direction: column; }
+      .chart-quarter-filter .quarter-buttons { justify-content: flex-start; }
+      .chart-quarter-filter .quarter-button { flex: 1 0 calc(25% - 4px); }
+      .kpi-grid, .finding-strip, .story-grid, .method-grid, .conclusion-grid { grid-template-columns: 1fr; }
+      .topic-control-group { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .topic-insight-grid, .topic-summary { grid-template-columns: 1fr; }
+      .topic-summary-item { border-right: 0; border-bottom: 1px solid var(--line); }
+      .topic-summary-item:last-child { border-bottom: 0; }
+      .topic-table, .topic-table tbody, .topic-table tr, .topic-table td { display: block; width: 100% !important; }
+      .topic-table thead { display: none; }
+      .topic-table tr { padding: 14px 0; border-bottom: 1px solid var(--line); }
+      .topic-table td { border: 0; padding: 4px 0; text-align: left !important; }
+      .topic-table td:nth-child(1) { color: var(--teal); }
+      .topic-table td:nth-child(3)::before { content: "命中建议："; color: var(--muted); font-size: 11px; font-weight: 600; }
+      .topic-quarter-filter .quarter-button { flex: 1 0 calc(25% - 4px); }
+      .topic-module-button { flex: 1 0 calc(50% - 7px); }
+      .kpi { border-right: 0; border-bottom: 1px solid var(--line); }
+      .kpi:last-child { border-bottom: 0; }
+      .trend-lane { grid-template-columns: 72px minmax(0,1fr) 48px; gap: 8px; }
+      .panel { padding: 18px; }
+      .donut-layout { grid-template-columns: 1fr; justify-items: center; }
+      .composition-list { width: 100%; }
+      .chart-canvas, .chart-canvas svg { min-height: 300px; height: 300px; }
+      .scatter, .scatter svg { height: 350px; }
+    }
+    @media print {
+      .topbar, .quarter-rail { position: static; }
+      .quarter-rail { display: none; }
+      .section { break-inside: avoid; }
+      .panel { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="../index.html"><span class="brand-mark">EP</span><span>客户需求季度洞察</span></a>
+      <nav class="topnav" aria-label="报告导航">
+        <a href="#overview">大盘</a>
+        <a href="#attention">客户关注</a>
+        <a href="#launch">上线板块</a>
+        <a href="#alignment">关注与交付</a>
+        <a href="#module-top10">板块 Top10</a><a href="./ep_module_topic_explorer.html">原始明细</a>
+        <a href="#conclusion">结论</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <h1>客户关注的主轴没变，<span>但优先级正在重排</span></h1>
+          <p class="hero-lede">邮件营销、建站、客户管理和数据获客仍是稳定基本盘；从 2026Q2 起，云工厂与 AI 团队合计占比跃升至约四分之一，客户注意力明显转向 Agent 驱动的拓客、沟通和协作体验。</p>
+          <div class="hero-meta">
+            <span>分析区间：2025Q1—2026Q3</span>
+            <span>数据截至：2026-09-24</span>
+            <span>样本：5,543 条建议 / 1,969 条需求</span>
+          </div>
+        </div>
+        <aside class="hero-signal" aria-label="核心信号">
+          <strong>27.9%</strong>
+          <p>2026Q3 云工厂 + AI 团队建议占比；2025 年各季度约为 5%—7%。</p>
+          <strong>49.0%</strong>
+          <p>2026Q3 实际上线需求中，云工厂单一板块占比。</p>
+          <strong>72 天</strong>
+          <p>2025Q3 起正式需求从创建到最后更新时间的中位周期。</p>
+        </aside>
+      </div>
+    </section>
+
+    <div class="quarter-rail">
+      <div class="shell quarter-controls">
+        <span class="quarter-label">联动查看季度</span>
+        <div id="quarterButtons" class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div>
+      </div>
+    </div>
+
+    <section id="overview" class="section">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">01 / 大盘</span><h2>输入稳定，处理节奏在当前季度明显承压</h2></div>
+          <p class="section-intro">建议量长期维持在每季度约 800 条。2026Q3 截至 9 月 24 日已达到 <strong>800 条</strong>，超过完整的 2026Q2；当季共有 333 条需求、已处理 102 条，已处理比例暂为 30.6%。</p>
+        </div>
+
+        <div class="kpi-grid" aria-label="总体指标">
+          <div class="kpi"><span class="kpi-label">EP 建议</span><strong class="kpi-value">5,543</strong><div class="kpi-note">客户原始反馈总量</div></div>
+          <div class="kpi"><span class="kpi-label">EP 需求</span><strong class="kpi-value">1,969</strong><div class="kpi-note">筛选后形成的正式需求</div></div>
+          <div class="kpi"><span class="kpi-label">需求已处理</span><strong class="kpi-value">1,663</strong><div class="kpi-note">占正式需求 84.5%</div></div>
+          <div class="kpi"><span class="kpi-label">需求已上线</span><strong class="kpi-value">254</strong><div class="kpi-note">Q1–Q2 历史建议口径；Q3 起需求口径</div></div>
+        </div>
+
+        <div class="panel-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div><h3 class="panel-title">季度规模走势</h3><p class="panel-caption">各指标独立缩放，关注趋势而非图形高度之间的绝对比较</p></div>
+            </div>
+            <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            <div id="overviewTrend" class="trend-lanes"></div>
+          </article>
+          <aside class="big-note">
+            <strong>45.5%</strong>
+            <h3>建议已关联至少一个需求</h3>
+            <p>2,522 条建议关联了一个或多个正式需求。一个需求可能合并多条建议，因此不能把“需求数 ÷ 建议数”直接当作一对一转化率。</p>
+            <ul class="micro-list">
+              <li>2026Q3 建议日均约 9.3 条，比 2026Q2 高约 9%</li>
+              <li>2026Q3 实际上线 49 项，已追平历史单季最高值</li>
+              <li>上线量与当季新增需求属于不同时间轴，不做同季转化解释</li>
+            </ul>
+          </aside>
+        </div>
+
+        <article class="panel" style="margin-top:22px">
+          <div class="panel-header">
+            <div><h3 class="panel-title">季度明细</h3><p class="panel-caption">上线数已按“状态=已上线 + 最后更新时间所在季度”重新归属</p></div>
+          </div>
+          <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+          <div style="overflow-x:auto"><table class="data-table" id="overviewTable"></table></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="attention" class="section soft">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">02 / 客户关注重点</span><h2>传统基本盘仍在，AI Agent 成为新增量</h2></div>
+          <p class="section-intro">2025Q1 的前四大传统板块占建议量 <strong>71.5%</strong>，到 2026Q3 降至 <strong>52.1%</strong>。下降主要不是基本需求消失，而是云工厂快速吸收了新增注意力。</p>
+        </div>
+
+        <div class="finding-strip">
+          <div class="finding"><span class="value">24.0%</span><h3>云工厂跃居第一</h3><p>2026Q3 共 192 条，覆盖 124 个可识别客户，已连续两个季度排名第一。</p></div>
+          <div class="finding"><span class="value">52.1%</span><h3>传统四大核心</h3><p>邮件营销、建站、客户管理、数据获客仍占一半以上，基本盘依然稳固。</p></div>
+          <div class="finding"><span class="value">−11.5pp</span><h3>邮件营销份额回落</h3><p>从 2025Q1 的 25.9% 降至 14.4%，但仍保持第二大关注板块。</p></div>
+          <div class="finding"><span class="value">10.3%</span><h3>WhatsApp 阶段峰值</h3><p>2025Q4 出现明显集中反馈，随后回到 4%—6% 的常态区间。</p></div>
+        </div>
+
+        <div class="chart-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div><h3 class="panel-title">重点板块季度趋势</h3><p class="panel-caption">点击图例可隐藏或显示板块</p></div>
+              <div class="chart-toolbar">
+                <div class="metric-toggle" role="group" aria-label="切换指标">
+                  <button id="shareToggle" class="active" type="button">占比</button>
+                  <button id="countToggle" type="button">数量</button>
+                </div>
+              </div>
+            </div>
+            <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            <div id="moduleTrend" class="chart-canvas"></div>
+            <div id="moduleLegend" class="legend"></div>
+          </article>
+          <aside class="panel quarter-focus">
+            <div class="focus-title"><strong id="focusQuarter" class="focus-quarter">2026Q3</strong><span id="partialFlag" class="partial">截至 9/24</span></div>
+            <p class="panel-caption">当季建议 Top 6；客户数来自标题中可识别的公司名称</p>
+            <div id="quarterRank" class="rank-list"></div>
+            <div id="focusFoot" class="focus-foot"></div>
+          </aside>
+        </div>
+
+        <article class="panel heatmap-wrap">
+          <div class="panel-header"><div><h3 class="panel-title">板块关注热力图</h3><p class="panel-caption">数字为当季建议占比；颜色越深，关注越集中</p></div></div>
+          <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+          <table id="attentionHeatmap" class="heatmap"></table>
+        </article>
+
+        <div class="story-grid">
+          <article class="story stable"><h3>稳定核心：从“有没有”到“好不好用”</h3><p>邮件营销持续聚焦自动化、批量操作与筛选；建站集中在页面装修、商品与素材管理；客户管理关注分群、字段、跟进与数据质量；数据获客长期围绕搜索、筛选和批量录入。</p></article>
+          <article class="story emerging"><h3>结构变化：Agent 进入实际工作流</h3><p>云工厂反馈从 2026Q1 的 12 条增至 Q2 的 154 条、Q3 的 192 条。重点已从“AI 能否生成”转向消息提醒、回复质量、会话接管、上下文连续性和权限协作。</p></article>
+          <article class="story spike"><h3>阶段热点：渠道问题仍会集中爆发</h3><p>WhatsApp 在 2025Q4 升至 10.3%，普通邮件在 2026Q1 升至 10.4%，说明消息同步、送达、翻译与提醒等基础体验会随使用阶段形成短期高峰。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="launch" class="section">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">03 / 上线需求</span><h2>交付重心已跟随客户注意力转向云工厂</h2></div>
+          <p class="section-intro">累计 254 项已上线需求中，2025Q1–Q2 的 50 项来自 EP建议历史口径；2025Q3 起正式需求共上线 204 项。到 2026Q3，云工厂已占当季实际上线的 <strong>49.0%</strong>，成为非常明确的交付主线。</p>
+        </div>
+
+        <div class="launch-grid">
+          <article class="panel">
+            <div class="panel-header"><div><h3 class="panel-title">实际上线季度与板块</h3><p class="panel-caption">Q1–Q2 按 EP建议季度标签；Q3 起按 EP需求最后更新时间</p></div></div>
+            <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            <div id="launchStack" class="stack-chart"></div>
+            <div id="launchLegend" class="legend"></div>
+          </article>
+          <aside class="panel">
+            <div class="panel-header"><div><h3 class="panel-title">所选季度上线构成</h3><p class="panel-caption">切换季度查看；累计已上线 254 项</p></div></div>
+            <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            <div class="donut-layout">
+              <div id="launchDonut" class="donut"><div class="donut-center"><div><strong>49</strong><span>2026Q3*</span></div></div></div>
+              <div id="launchComposition" class="composition-list"></div>
+            </div>
+            <div class="focus-foot" id="launchQuarterNote"></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="alignment" class="section soft">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">04 / 关注与交付</span><h2>方向一致，但时间差决定了当季不会完全对齐</h2></div>
+          <p class="section-intro">当前季度的交付明显偏向云工厂，与客户新增关注一致；同时，客户管理、邮件营销和建站的当季关注占比仍高于上线占比。这个差距既反映资源选择，也受到约一个季度交付时滞影响。</p>
+        </div>
+
+        <div class="alignment-grid">
+          <article class="panel">
+            <div class="panel-header"><div><h3 class="panel-title"><span id="scatterQuarter">2026Q3</span> 关注—上线对照</h3><p class="panel-caption">横轴为建议占比，纵轴为当季实际上线占比；对角线上方表示当季交付相对偏重</p></div></div>
+            <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            <div id="alignmentScatter" class="scatter"></div>
+          </article>
+          <aside class="panel">
+            <div class="panel-header"><div><h3 class="panel-title">当季结构差</h3><p class="panel-caption">上线占比减去建议占比</p></div></div>
+            <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            <div id="gapList" class="gap-list"></div>
+            <div class="caveat">这是一张“当季输入 vs 当季输出”的资源方向图，不是一对一转化图；2025Q3 起正式需求的典型上线时滞约一个季度。</div>
+          </aside>
+        </div>
+
+        <div class="lag-grid">
+          <aside class="panel lag-big">
+            <strong>72 天</strong>
+            <h3>正式需求创建到上线的中位周期</h3>
+            <p>该周期仅统计 2025Q3 起进入 EP需求的 204 项上线记录；2026Q3 中位周期为 85 天。</p>
+            <div class="lag-bar" aria-label="上线时滞分布"><span style="width:33.8%"></span><span style="width:50%"></span><span style="width:16.2%"></span></div>
+            <div class="lag-legend"><span>33.8% 同季度上线</span><span>50.0% 下一季度上线</span><span>16.2% 间隔两个及以上季度</span></div>
+          </aside>
+          <article class="panel matrix-wrap">
+            <div class="panel-header"><div><h3 class="panel-title">需求创建季度 → 实际上线季度</h3><p class="panel-caption">仅覆盖 2025Q3 起正式需求；Q1–Q2 历史建议口径不进入此矩阵</p></div></div>
+            <div class="chart-quarter-filter"><span>选择季度</span><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            <table id="launchMatrix" class="matrix"></table>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="module-top10" class="section">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">05 / 板块 Top10</span><h2>五大核心板块，每季度客户最关注什么</h2></div>
+          <p class="section-intro">覆盖建站、客户管理、客户履约、邮件营销和数据获客，共 <strong>3,796 条 EP建议</strong>。选择板块和季度后，可查看当季 Top10 关注点、命中数量、组内占比及代表性原始诉求。</p>
+        </div>
+
+        <article class="panel">
+          <div class="topic-toolbar">
+            <div class="topic-control-group">
+              <span class="topic-control-label">选择板块</span>
+              <div id="topicModuleButtons" class="topic-module-buttons" role="group" aria-label="选择板块"></div>
+            </div>
+            <div class="topic-control-group">
+              <span class="topic-control-label">选择季度</span>
+              <div class="chart-quarter-filter topic-quarter-filter"><div class="quarter-buttons" data-quarter-buttons role="group" aria-label="选择季度"></div></div>
+            </div>
+          </div>
+
+          <div id="topicSummary" class="topic-summary"></div>
+          <div style="overflow-x:auto"><table class="topic-table">
+            <thead><tr><th>排名</th><th>客户关注点</th><th>命中建议</th><th>组内占比</th><th>代表性原始诉求</th></tr></thead>
+            <tbody id="topicTableBody"></tbody>
+          </table></div>
+          <p style="margin:16px 0 0"><a class="link-button primary" href="./ep_module_topic_explorer.html">打开可下钻原始明细网站</a></p><p class="topic-method-note">说明：主题采用模块专属语义规则进行多标签归类；同一条建议可能命中多个关注点，因此各主题占比不可相加。Top10 表示讨论频率，而非需求优先级或最终合理性。</p>
+        </article>
+
+        <div class="topic-insight-grid">
+          <article class="topic-insight"><h3>建站</h3><p>商品展示与页面装修始终居前；社媒运营在 2025Q2–Q3 集中，近期移动适配、素材管理和 AI 建站上升。</p></article>
+          <article class="topic-insight"><h3>客户管理</h3><p>标签字段、联系人、导入导出是长期主轴；2026Q3 去重合并与数据关联明显升至第三。</p></article>
+          <article class="topic-insight"><h3>客户履约</h3><p>长期围绕商品库与单据；2025Q2 偏订单，2026Q3 转向自定义字段、权限审批和导出体验。</p></article>
+          <article class="topic-insight"><h3>邮件营销</h3><p>联系人筛选和自动化跟进持续领先；近期更关注过滤规则、发件域与任务稳定性。</p></article>
+          <article class="topic-insight"><h3>数据获客</h3><p>搜索与筛选长期占据前两位；联系人信息、海关数据、批量建档和推荐能力构成稳定第二梯队。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="conclusion" class="section conclusion">
+      <div class="shell">
+        <div class="section-heading">
+          <div><span class="section-index">06 / 结论</span><h2>客户关注点发生了变化，但不是一次替代，而是一次扩展</h2></div>
+          <p class="section-intro">传统营销、建站、客户管理和数据获客依然是产品基本盘；新的增量集中在 AI Agent 如何真正进入日常拓客和沟通流程。</p>
+        </div>
+        <div class="conclusion-grid">
+          <article class="conclusion-item"><strong>变化 01</strong><h3>关注重心从渠道功能转向智能工作流</h3><p>AI 团队 + 云工厂占比由 2025Q1 的 6.6% 升至 2026Q3 的 27.9%。客户开始关注 Agent 的消息、上下文、接管、模板、权限和稳定性，而不仅是生成能力。</p></article>
+          <article class="conclusion-item"><strong>变化 02</strong><h3>传统核心降的是份额，不是需求基础</h3><p>传统四大板块当前仍有 417 条建议，占 52.1%。邮件自动化、网站编辑、客户数据治理和搜索筛选仍是高频刚需，应继续保持基础体验投入。</p></article>
+          <article class="conclusion-item"><strong>变化 03</strong><h3>交付方向已经响应，但呈现一季度时滞</h3><p>2026Q3 云工厂贡献 24 项上线，占当季 49%；同时 75.5% 的当季上线来自上一季度创建的需求，说明资源方向已调整，但结果会滞后于关注变化。</p></article>
+          <article class="conclusion-item"><strong>关注点</strong><h3>下一步应同时守住基本盘和 Agent 成熟度</h3><p>优先解决云工厂的消息提醒、回复质量、会话连续性与人工接管；传统板块则聚焦批量效率、搜索筛选、数据准确性和编辑体验，避免新增热点挤压基本盘。</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="method">
+    <div class="shell method-grid">
+      <div><h3>客户关注口径</h3><p>以 EP建议 的季度标签作为建议提出季度，板块采用子产品字段。</p></div>
+      <div><h3>上线口径</h3><p>2025Q1–Q2 取 EP建议中季度标签对应且状态为“已上线”的历史汇总；2025Q3 起取 EP需求中状态为“已上线”，并按最后更新时间归属季度。</p></div>
+      <div><h3>客户覆盖</h3><p>客户数从标题开头方括号内公司名称提取，整体可识别覆盖率约 81.9%。</p></div>
+      <div><h3>数据限制</h3><p>2026Q3 截至 9 月 24 日，为未完整季度；上线与建议存在交付时滞。EP建议含功能、体验与故障反馈，代表“关注与使用摩擦”。</p></div>
+    </div>
+  </footer>
+
+  <div id="tooltip" class="tooltip" role="status"></div>
+
+  <script>
+    const DATA = {
+      quarters: ["2025Q1", "2025Q2", "2025Q3", "2025Q4", "2026Q1", "2026Q2", "2026Q3"],
+      overview: {
+        suggestions: [787, 815, 917, 808, 642, 774, 800],
+        requirements: [8, 69, 524, 343, 315, 377, 333],
+        processed: [3, 64, 523, 340, 292, 339, 102],
+        launched: [23, 27, 29, 42, 49, 35, 49]
+      },
+      moduleSeries: [
+        { name: "云工厂", color: "#0f766e", counts: [0,0,0,0,12,154,192], shares: [0,0,0,0,1.9,19.9,24.0] },
+        { name: "邮件营销", color: "#2563eb", counts: [204,179,198,145,110,121,115], shares: [25.9,22.0,21.6,18.0,17.1,15.6,14.4] },
+        { name: "建站", color: "#7c3aed", counts: [137,159,147,159,126,113,108], shares: [17.4,19.5,16.0,19.7,19.6,14.6,13.5] },
+        { name: "客户管理", color: "#d97706", counts: [106,136,149,100,103,91,104], shares: [13.5,16.7,16.2,12.4,16.0,11.8,13.0] },
+        { name: "数据获客", color: "#db2777", counts: [116,130,138,100,97,88,90], shares: [14.7,16.0,15.0,12.4,15.1,11.4,11.2] },
+        { name: "AI团队", color: "#0891b2", counts: [52,40,54,40,24,38,31], shares: [6.6,4.9,5.9,5.0,3.7,4.9,3.9] },
+        { name: "WhatsApp", color: "#16a34a", counts: [35,25,42,83,33,44,36], shares: [4.4,3.1,4.6,10.3,5.1,5.7,4.5] },
+        { name: "邮件", color: "#64748b", counts: [63,66,75,79,67,48,46], shares: [8.0,8.1,8.2,9.8,10.4,6.2,5.8] }
+      ],
+      quarterFocus: {
+        "2025Q1": [["邮件营销",204,25.9,97],["建站",137,17.4,67],["数据获客",116,14.7,68],["客户管理",106,13.5,52],["邮件",63,8.0,45],["AI团队",52,6.6,32]],
+        "2025Q2": [["邮件营销",179,22.0,117],["建站",159,19.5,96],["客户管理",136,16.7,72],["数据获客",130,16.0,81],["邮件",66,8.1,45],["AI团队",40,4.9,29]],
+        "2025Q3": [["邮件营销",198,21.6,122],["客户管理",149,16.2,86],["建站",147,16.0,96],["数据获客",138,15.0,94],["邮件",75,8.2,51],["AI团队",54,5.9,35]],
+        "2025Q4": [["建站",159,19.7,90],["邮件营销",145,18.0,98],["数据获客",100,12.4,70],["客户管理",100,12.4,59],["WhatsApp",83,10.3,54],["邮件",79,9.8,53]],
+        "2026Q1": [["建站",126,19.6,80],["邮件营销",110,17.1,70],["客户管理",103,16.0,66],["数据获客",97,15.1,68],["邮件",67,10.4,49],["WhatsApp",33,5.1,25]],
+        "2026Q2": [["云工厂",154,19.9,92],["邮件营销",121,15.6,85],["建站",113,14.6,80],["客户管理",91,11.8,65],["数据获客",88,11.4,68],["邮件",48,6.2,39]],
+        "2026Q3": [["云工厂",192,24.0,124],["邮件营销",115,14.4,83],["建站",108,13.5,67],["客户管理",104,13.0,64],["数据获客",90,11.2,63],["邮件",46,5.8,41]]
+      },
+      launchSeries: [
+        { name: "历史上线（EP建议）", color: "#173b57", counts: [23,27,0,0,0,0,0] },
+        { name: "建站", color: "#7c3aed", counts: [0,0,5,7,14,4,4] },
+        { name: "云工厂", color: "#0f766e", counts: [0,0,0,0,0,8,24] },
+        { name: "邮件", color: "#64748b", counts: [0,0,5,11,8,2,2] },
+        { name: "客户管理", color: "#d97706", counts: [0,0,7,7,7,6,1] },
+        { name: "邮件营销", color: "#2563eb", counts: [0,0,5,5,6,6,3] },
+        { name: "AI团队", color: "#0891b2", counts: [0,0,1,5,5,2,3] },
+        { name: "数据获客", color: "#db2777", counts: [0,0,0,2,5,0,7] },
+        { name: "WhatsApp", color: "#16a34a", counts: [0,0,2,0,2,6,2] }
+      ],
+      launchOverall: [
+        ["历史上线（EP建议）",50,19.7,"#173b57"],["建站",34,13.4,"#7c3aed"],["云工厂",32,12.6,"#0f766e"],["邮件",28,11.0,"#64748b"],["客户管理",28,11.0,"#d97706"],["邮件营销",25,9.8,"#2563eb"],["AI团队",16,6.3,"#0891b2"],["数据获客",14,5.5,"#db2777"],["WhatsApp",12,4.7,"#16a34a"],["其他",15,5.9,"#cbd5e1"]
+      ],
+      launchMatrix: {
+        "2025Q1": {},
+        "2025Q2": {"2025Q3":6,"2025Q4":1},
+        "2025Q3": {"2025Q3":23,"2025Q4":33,"2026Q1":17,"2026Q3":2},
+        "2025Q4": {"2025Q4":8,"2026Q1":17,"2026Q2":9,"2026Q3":2},
+        "2026Q1": {"2026Q1":15,"2026Q2":9,"2026Q3":2},
+        "2026Q2": {"2026Q2":17,"2026Q3":37},
+        "2026Q3": {"2026Q3":6}
+      }
+    };
+
+    const MODULE_TOPIC_DATA = {"建站":{"2025Q1":{"total":137,"coverage":0.8613,"top10":[{"topic":"商品与产品展示","count":51,"share":0.3723,"examples":["希望后续网站可以支持商品分类自定义（独立于本地商品的分类），样式排版可以多一些（参照这个图）","德清林垦装饰材料有限公司+希望本地商品搜索栏增加商品分类的搜索选项","本地商品筛选栏目前只支持使用商品中英文名称和规格编号进行搜索"]},{"topic":"页面装修与组件布局","count":40,"share":0.292,"examples":["首页的轮播的banner模块可以设置字体的跳转下来的时间","江门市安恒通科技有限责任公司+希望一级和二级导航栏可以单独设置字体颜色","希望后续移动端装修时选择模块会弹窗提醒该操作是否会同步电脑端"]},{"topic":"批量操作与编辑效率","count":25,"share":0.1825,"examples":["纽科电子公司---站点联系人数据支持批量录入或者批量勾选一键营销","本地商品筛选栏目前只支持使用商品中英文名称和规格编号进行搜索","本地商品批量编辑、商品分类筛选"]},{"topic":"素材、图片与视频管理","count":17,"share":0.1241,"examples":["瑞瑩包裝用品有限公司+希望上传的视频附件可以不被下载","上传视频希望支持 m4v格式","本地商品上传图片为商品库"]},{"topic":"多语言、翻译与本地化","count":6,"share":0.0438,"examples":["普通商品在网页展示信息需要进入多语言翻译调整，有图片之类的变动修改工作量大，希望可以自动读取","河北佰信达实业有限公司 站点多语言翻译的手机页面展示 能够自适应","深圳市永昊润科技有限公司+希望文章也可以多语言进行手动更改翻译"]},{"topic":"社媒账号与内容运营","count":6,"share":0.0438,"examples":["智能科技有限公司+社媒写帖子没有客户对应行业希望做补充","我的社媒---帖子管理，批量删除帖子","社媒营销任务的发帖时间需要修改"]},{"topic":"访问数据与流量分析","count":6,"share":0.0438,"examples":["站点数据--站点联系人可以通过停留时长筛选","希望站点数据联系人可以直接一键多选发信","站点数据，可以删除自行测试的数据"]},{"topic":"自定义代码与商业扩展","count":5,"share":0.0365,"examples":["希望后续营销落地页可以支持谷歌自定义代码以及SEO设置","希望自定义代码操作插入位置是否可以调整","希望每个页面都支持自定义代码的功能"]},{"topic":"AI建站与智能生成","count":4,"share":0.0292,"examples":["希望ai员工创建的网站可以删掉，客户觉得太多了，要找自己上线的网站，被顶到下面了，麻烦","客户觉得ai组件不应该展示html后缀，不美观","能删除AI员工搭建的网站"]},{"topic":"SEO、域名与搜索收录","count":4,"share":0.0292,"examples":["希望seo优化的收录能否数据更为具体，比如排名实时收录情况等","希望后续营销落地页可以支持谷歌自定义代码以及SEO设置","SEO优化增加一键导出功能"]}]},"2025Q2":{"total":159,"coverage":0.8994,"top10":[{"topic":"商品与产品展示","count":53,"share":0.3333,"examples":["需要网站产品这边可以有一个规格颜色之类的搜索项目来搜索商品","嘉兴市跃卡贸易有限公司+希望本地商品可以批量修改分类","批量设置本地商品的商品规格编号等等。"]},{"topic":"页面装修与组件布局","count":45,"share":0.283,"examples":["手机端的导航，跟随电脑导航的字体颜色显示，如果字体是白色。手机端的导航打开就是白屏的效果。","装修页面优化，Firefox Bowser复制模块后Ctrl+v不能粘贴","在品牌建设网站装修页面文本输入字体里面有Galdman字体"]},{"topic":"素材、图片与视频管理","count":36,"share":0.2264,"examples":["网站上传的图片/视频希望增加字段添加水印的功能","左侧图片和视频自己都可以先上传，然后ai生成的时候按照选的图片或者视频随机插入到每一条帖子中","18501020519+增加一个文章模块，此模块不展示文章的图片并且可以自动上传文章"]},{"topic":"社媒账号与内容运营","count":20,"share":0.1258,"examples":["可以希望，社媒营销可以选择针对地区进行发帖营销，比如可以选择某个国家或者地区IP进行发帖","广州市爱弋尚服装有限公司5519050广州翱晟+希望社媒发帖任务创建选项增加箱包行业","客户社媒营销内，没有相对应的行业，导致帖子生成后不匹配，客户希望添加翻译行业"]},{"topic":"批量操作与编辑效率","count":14,"share":0.0881,"examples":["德清林垦装饰材料有限公司+建议产品搜索栏增加产品分类/分组选项","需要网站产品这边可以有一个规格颜色之类的搜索项目来搜索商品","嘉兴市跃卡贸易有限公司+希望本地商品可以批量修改分类"]},{"topic":"多语言、翻译与本地化","count":11,"share":0.0692,"examples":["华夏高铁技术有限公司+希望这两个字段支持多语言翻译","希望网站商品在多语言翻译设置下也可以支持搜索","seo可以修改多语言翻译的结果"]},{"topic":"移动端与响应式适配","count":10,"share":0.0629,"examples":["客户端建站与手机端不适配","手机端的导航，跟随电脑导航的字体颜色显示，如果字体是白色。手机端的导航打开就是白屏的效果。","表示建站手机版本比较乱，但是阿里平台可支持自动调整，不用自行操作"]},{"topic":"表单、询盘与访客转化","count":8,"share":0.0503,"examples":["留资弹窗可以输入留言信息","希望组件功能的WhatsApp图标可以展示大一点或者是可支持直接在当前页面发起沟通会话","希望访客识别功能下的公司点击查看后会显示已查看，如变灰这样的展示效果（如同客户发现全球搜板块）"]},{"topic":"AI建站与智能生成","count":7,"share":0.044,"examples":["可以抓取老独立站的商品到AI建站","AI建站发布上线确认按钮","左侧图片和视频自己都可以先上传，然后ai生成的时候按照选的图片或者视频随机插入到每一条帖子中"]},{"topic":"模板、复制与发布流程","count":6,"share":0.0377,"examples":["装修页面优化，Firefox Bowser复制模块后Ctrl+v不能粘贴","网页装修分页和发布后的分页，语言显示不一致，技术说让提交需求","希望本地商品按照模板批量导入可支持图片"]}]},"2025Q3":{"total":147,"coverage":0.932,"top10":[{"topic":"商品与产品展示","count":52,"share":0.3537,"examples":["商品详情页希望点分类可以增加退回商品页的功能","商品页面展示商品分类时不显示ALL分类","客户本地商品页面链接商品录入，..."]},{"topic":"页面装修与组件布局","count":46,"share":0.3129,"examples":["希望商品模块中展示的字段信息能够分别独立的去设置字体字号","导航栏的多语言选择的功能希望支持自定义编辑字体颜色","页面装修移动端模块文本框存在功能按钮遮挡问题，默认文本框在正中央，会遮挡住编辑按钮，只有移动到最右侧才会有一点点编辑按钮出来，希望可以优化展示"]},{"topic":"素材、图片与视频管理","count":26,"share":0.1769,"examples":["苏州天炬纺织科技有限公司+希望发帖任务以图生图的可以更贴近客户上传的原有的图片","苏州天炬纺织科技有限公司+希望社媒发帖上传图片可以同时勾选多个图片，批量选中","浙江先合信息技术有限公司，社媒自动发帖生成的文字和插入的图片/视频做对应"]},{"topic":"社媒账号与内容运营","count":18,"share":0.1224,"examples":["ai社媒生成的帖子/手动发帖每个模块都支持修改放置视频","ins社媒发帖出去的图片很...","苏州天炬纺织科技有限公司+希望社媒发帖上传图片可以同时勾选多个图片，批量选中"]},{"topic":"批量操作与编辑效率","count":16,"share":0.1088,"examples":["希望网页上传商品时可以自己选择商品置顶 ，不被打乱排序。因为每次重新排序很麻烦。","苏州天炬纺织科技有限公司+希望社媒发帖上传图片可以同时勾选多个图片，批量选中","本地商品模块需要添加排序功能，可以提前排序好，方便上传到网站中展示"]},{"topic":"移动端与响应式适配","count":14,"share":0.0952,"examples":["优化PC端网页到移动端的不适配现象","网站页面无法适配ipad端","深圳市斯凯特电子有限公司+站点页面根据不同分辨率做细致的自适应 让页面显示一样"]},{"topic":"多语言、翻译与本地化","count":11,"share":0.0748,"examples":["希望商品多语言翻译下商品介绍这边可以支持编辑栏选项功能","商品多语言翻译优化","广州爱德医疗科技有限公司+需要把多语言的链接加入到谷歌站点地图里。"]},{"topic":"表单、询盘与访客转化","count":9,"share":0.0612,"examples":["目前站点询盘都是默认到管理员账号上，希望能指定一个邮箱收取询盘","访客识别可以具体统计客户访问的商品页面和筛选","访客识别到的数据，外面展示的是加拿..."]},{"topic":"SEO、域名与搜索收录","count":6,"share":0.0408,"examples":["SEO优化，这边显示的也展示位网站的名称，目前是展示为域名的","网站SEO希望增加多一些搜索引擎","惠州马思特电子科技有限公司+目前seo优化中商品设置没有根据选择站点来进行区分，客户希望可以进行区分"]},{"topic":"模板、复制与发布流程","count":5,"share":0.034,"examples":["用户复制阿里国际站链接，链接解析录入商品，但是抓取不到详情页图片，测试页抓取不到","文章管理在添加文章是可以选择定时发布文章，因为客户会一次性创建大量文章，需要分批发布，觉得每天操作发布很麻烦","上海喜木家具有限公司+客户希望建站界面系统生成的图片可以添加保存选项"]}]},"2025Q4":{"total":159,"coverage":0.8428,"top10":[{"topic":"页面装修与组件布局","count":52,"share":0.327,"examples":["自定义模块的轮播图元素，在装修页是填充满的，预览页面边缘有缝隙，需要优化","上海直大实业有限公司-建站详情页图文编辑模块期望能有字体颜色等自定义编辑需求","导航栏字间距调整不了，子级导航字体大小无法修改"]},{"topic":"商品与产品展示","count":34,"share":0.2138,"examples":["装修页的商品类目页跳转后分类数据是无法排序的，默认按照本地商品的添加排序","希望本地商品设置的规格在网页上展示可以分字段展示具体信息（参考如图））","编辑本地商品下同一商品只能设置一个价格，无法区分不同规格的价格"]},{"topic":"素材、图片与视频管理","count":19,"share":0.1195,"examples":["图片上传素材库的时候超5M限的希望可以自动压缩","建站的图片库不支持多选图片进行移动文件夹操作性，需要优化下","上传图片功能优化"]},{"topic":"批量操作与编辑效率","count":14,"share":0.0881,"examples":["站点联系人数据可以跟excel一样筛选，选择亚洲就把亚洲访问的人都展示出来，国家非必选","装修页的商品类目页跳转后分类数据是无法排序的，默认按照本地商品的添加排序","上海孚骏智能科技有限公司+客户希望商品有筛选的模块可以调整框的大小"]},{"topic":"移动端与响应式适配","count":14,"share":0.0881,"examples":["希望网站不同电脑打开展示得都和装修显示的样子一样，可以展示全，不会因为分辨率问题导致需要调整浏览器比例才可以正常查看","希望外贸通网站可以自适应不同屏幕大小和分辨率","广州金鸟灯光设备有限公司+客户希望我们的建站展示在所有笔记本设备上再所有线索比例和分辨率的情况下都可以完美展示"]},{"topic":"AI建站与智能生成","count":10,"share":0.0629,"examples":["广州碧涛化妆品有限公司，ai建站写文章能够预设公司信息","AI生成的文章公司名称全是中文，也没有统一更改的位置，每个都需要手动修改，花费时间，需要优化","ai生成的帖子，按照日历规划后，详情上显示的是创建帖子的时间"]},{"topic":"表单、询盘与访客转化","count":10,"share":0.0629,"examples":["佛山市南海区机械装备行业协会+客户希望此模块的留资可以上下调整大小，当前测试只能左右调整","锋火psm，网站留资信息 , 希望设置只有管理员账号才能收到通知信息，其他账号都不能收到","外部站点绑定留资信息代码这块希望是可以直接使用的js代码，方便添加使用"]},{"topic":"多语言、翻译与本地化","count":9,"share":0.0566,"examples":["上海石易电子科技有限公司 页面装修多语言翻译多加个斯瓦希里语","商品多语言翻译币种优化","多语言翻译一次性生效"]},{"topic":"模板、复制与发布流程","count":9,"share":0.0566,"examples":["河北央哲金属制品有限公司，希望平台商品点击复制为本地商品之后，三方平台商品链接可以同步","上海孚骏智能科技有限公司+客户希望自己建立的模块可以保存到侧边的系统模块选择中","希望模板建站的时候，模板里的所有模块可以单独也更新到我们建站左侧的“添加”里"]},{"topic":"自定义代码与商业扩展","count":7,"share":0.044,"examples":["留资组件添加提交后动作优化，以及提交按钮支持自定义代码","元素自定义代码的功能希望可以支持颜色等效果渲染的功能","导航栏添加单独设置自定义代码入口"]}]},"2026Q1":{"total":126,"coverage":0.8492,"top10":[{"topic":"商品与产品展示","count":41,"share":0.3254,"examples":["本地商品不管多少个规格，都不显示别的数字。因为目前只有一个规格的时候，显示为sku编号，多一个-1。他觉得很影响自己编辑商品，会认错产品","一个商品可以展示在不同分类下面，目前是选不了的。他一个产品有多个材质，按照材质分类","希望网站点击商品分类后展示的页面有个后退按钮，直接返回到原商品列表页下。"]},{"topic":"页面装修与组件布局","count":37,"share":0.2937,"examples":["希望自定义模块文字元素设置超链接后，可以实现字体颜色不变，鼠标悬浮上去才改变字体颜色","自测---希望自定义模块的页脚页编辑修改后的内容能支持所有导航下的页脚页同步","系统模块导航栏字体同步"]},{"topic":"素材、图片与视频管理","count":27,"share":0.2143,"examples":["希望系统有一个素材库的位置，可以存放自己上传的图片，视频等素材，可以全公司共享使用，方便建站，发布社媒帖子和发邮件时调用","本地产品可以批量下载，他要下载自己上传过的图片，批量修改水印","希望详情页设置视频+图片的情况下，视频不要把第一张图片顶替，图片可以顺延到下一张"]},{"topic":"社媒账号与内容运营","count":13,"share":0.1032,"examples":["社媒任务设置的发帖，希望都用上自己上传的图片。目前会有自动生成的帖子都用一个图片的情况，客户觉得不合适","希望社媒发帖任务可以复制任务的时候修改发帖账号，这样生成一次任务之后，就可以将这个任务的帖子复制到其他社媒账号内发帖","社媒发帖任务生成的帖子内容高度重复，希望可以优化"]},{"topic":"模板、复制与发布流程","count":12,"share":0.0952,"examples":["文章内容发布后查看翻译的内容，装修页和访问时展示不一致（文字颜色翻译后无法识别）","平台商品是抓取的，或获取到关键词超过保存上限的内容，但是抓取是可以保存的，导致客户后续编辑的其他字段无法保存","自定义商品模板都是后台传好还得进行手动前端图片上传，系统模板可以直接应用但是不能调间距，希望可以调整系统模块的间距"]},{"topic":"批量操作与编辑效率","count":8,"share":0.0635,"examples":["本地产品可以批量下载，他要下载自己上传过的图片，批量修改水印","希望网站内加个文章搜索元素，可以根据文章内出现的词搜到文章","希望社媒实现自动化对好友批量互动、批量点赞能力"]},{"topic":"表单、询盘与访客转化","count":6,"share":0.0476,"examples":["访客识别功能，只要对方访问网站，我们系统就做记录，想百分百识别","所有元素和模块的留资按钮能实现跳转到thankyou页面","侧边栏在线客服无邮件选项，创建邮件图标也不能跳转"]},{"topic":"AI建站与智能生成","count":5,"share":0.0397,"examples":["希望ai生成文章任务，自动使用网站内的图片做封面，或者他们自己上传一个图片库。生成的文章自动匹配图片封面。他觉得现在ai的很难用","建站接入ai工具，实现模块内文字文案快速替换","文章管理AI自动生成文章发布时间可以手动修改"]},{"topic":"多语言、翻译与本地化","count":5,"share":0.0397,"examples":["多语言翻译后文本字符可以自适应","多语言翻译排版自适应","商品价格字段支持自动翻译，也就是可以根据国家常用货币和汇率，自动在不同国家展示对应货币的价格"]},{"topic":"性能、稳定性与兼容性","count":3,"share":0.0238,"examples":["列表首图压缩，详情页没有压缩，导致加载过慢；能否统一压缩？","本地商品不管多少个规格，都不显示别的数字。因为目前只有一个规格的时候，显示为sku编号，多一个-1。他觉得很影响自己编辑商品，会认错产品","在创建发帖任务的时候，输入营销名称，系统自动翻译的中文名称存在不准确的情况，如“Linxi County Weishida Bearing Manufacture Co.,Ltd”翻译为“林西县伟士达轴承制造有限公司”实际公司名称是“临西县维仕达轴承制造有限公司”lin和wei的拼音错误"]}]},"2026Q2":{"total":113,"coverage":0.8673,"top10":[{"topic":"商品与产品展示","count":39,"share":0.3451,"examples":["本地商品批量修改支持修改 三方平台商品链接、支持批量修改规格信息","本地商品规格信息设置正常，但是多...","商品详情图显示右侧的产品信息时，不希望有商品字段标签，产品信息的文字支持自定义排版显示"]},{"topic":"页面装修与组件布局","count":22,"share":0.1947,"examples":["移动端导航背景颜色是白色的，无法同步默认的导航颜色，不支持用户设置白色字体","客户群内反馈，希望系统商品模块的分类展示栏可以缩放调整位置，方便调整展示样式","客户群内反馈，网站装修的图片样式太少，而且不能旋转，比如直角三角形图标，只有左下直角和右下直角，没有左上和右上的，辛苦看一下"]},{"topic":"批量操作与编辑效率","count":18,"share":0.1593,"examples":["希望生成文章时一键生成封面、SEO以及文章图片，这三个内容三键合一","本地商品批量修改支持修改 三方平台商品链接、支持批量修改规格信息","品牌建设-站点数据-站点联系人增加筛选、备注以及导出表格功能"]},{"topic":"素材、图片与视频管理","count":16,"share":0.1416,"examples":["客户的商品图片是中文的，希望上传图片到外贸通的时候吗，图片里的文字自动翻译成英文，他觉得这样方便","客户需要添加视频后在商品详情页调整图片视频的显示位置","商品详情页单独上传的附件跟视频附件希望可以分开展示"]},{"topic":"社媒账号与内容运营","count":11,"share":0.0973,"examples":["社媒发帖帖子内容的公司名称希望可以不自动翻译","社媒任务AI生成帖子可以选择商品信息的中文名称或英文名称","社媒生成帖子，可取值商品英文名称"]},{"topic":"表单、询盘与访客转化","count":7,"share":0.0619,"examples":["希望访客识别绑定的外部站点，可以分配权限，自己看自己绑定的网站，而不是所有人可见","支持针对网站留资客户，开启自动发邮件功能，邮件内容和发件人可以自定义","客户需要在访客识别中添加按照大洲筛选选项"]},{"topic":"权限与多站点协作","count":5,"share":0.0442,"examples":["希望访客识别绑定的外部站点，可以分配权限，自己看自己绑定的网站，而不是所有人可见","企业设置-品牌建设权限-无法禁用子账号操作编辑网站","客户需要在权限管理中新增建站相关权限，客户可以自行设置那些账号没有建站功能无法不能查看站点"]},{"topic":"模板、复制与发布流程","count":5,"share":0.0442,"examples":["希望手动修图功能可以展示在网站内的预览效果图","网站发布后，“上线中”字样优化为“已上线”","客户预览帖子的时候，网页端查看..."]},{"topic":"多语言、翻译与本地化","count":4,"share":0.0354,"examples":["建站翻译带其他语言中的文章描述内容需要支持自定义修改","目前商品字段中客户货号，在详情页会翻译为Product Code，有误导性，需要修改完善下","客户的商品图片是中文的，希望上传图片到外贸通的时候吗，图片里的文字自动翻译成英文，他觉得这样方便"]},{"topic":"AI建站与智能生成","count":3,"share":0.0265,"examples":["AI新建文章之后生成多篇文章，但只有1个2个的封面图，希望能优化","社媒任务AI生成帖子可以选择商品信息的中文名称或英文名称","请问这个AI问答只能是英文的吗..."]}]},"2026Q3":{"total":108,"coverage":0.8889,"top10":[{"topic":"商品与产品展示","count":34,"share":0.3148,"examples":["希望分类页商品顺序可以和产品页展示顺序一致","产品的规格，在商品详情页可单独选择","品牌建设-建站编辑-商品分类字段部分，点击分类名称后面的箭头，文字上面不会亮，有点难以区分"]},{"topic":"页面装修与组件布局","count":34,"share":0.3148,"examples":["商品详情页的规格只能用文字形式展示，希望可以优化样式，比如颜色展示","网站页面多语言，支持非默认语言下调整元素布局，不影响其他语言的展示","模块可以自由调整展示的宽度，然后可以设置展示文章内容在模块页面上"]},{"topic":"素材、图片与视频管理","count":21,"share":0.1944,"examples":["素材库可批量移动图片到文件夹","本地商品查看上传好的图片，同一个商品的多个图片点击查看后需要取消才可以查看下一个，需要支持切换","希望素材库的图片可以双击放大查看，客户觉得现在不能直接放大查看影响自己判断图片的情况"]},{"topic":"移动端与响应式适配","count":10,"share":0.0926,"examples":["网页端是会自动添加回到顶部按钮，在访问的时候下滑一定高度自动展示，但是移动端没有，希望移动端也添加这个功能","希望移动端模块删除不影响电脑端展示，或者可以隐藏整个模块","商品介绍里插入表格后，表格在移动端可自适应展示全部"]},{"topic":"AI建站与智能生成","count":9,"share":0.0833,"examples":["商品详情页的product details和essential details的第二个首字母要大写","设置页面SEO的时候，之前AI生成的内容是超过系统上限的，修改其他内容，导致之前的保存部分无法保存，需要优化","品牌建设-文章管理-无法批量删除ai生成的文章"]},{"topic":"模板、复制与发布流程","count":9,"share":0.0833,"examples":["希望支持自定义设置一个页面模板，后续设置超链可统一沿用这个模板（如自定义上商品详情页）","设置页面SEO的时候，之前AI生成的内容是超过系统上限的，修改其他内容，导致之前的保存部分无法保存，需要优化","文章详情页，字体编辑加粗后，预览的正常的实际不显示"]},{"topic":"批量操作与编辑效率","count":7,"share":0.0648,"examples":["建站+站内搜索时，搜索范围希望不止局限于产品标题，还要覆盖产品完整描述","素材库，目前文件夹不支持移动，不支持批量移动拖或文件","品牌建设-文章管理-无法批量删除ai生成的文章"]},{"topic":"表单、询盘与访客转化","count":6,"share":0.0556,"examples":["希望留资元素，点击提交后，会有一个提交成功的提示或者表示感谢的提示，因为没有提示可能会以为没有成功或者卡顿","留资设置了必填项，但是用空格是可以提交不写具体内容的，客户觉得不合理，希望检测到空格，提示客户无法提交或者无效提交","站点留资板块，用户点击提交之后，可以跳转到新页面"]},{"topic":"多语言、翻译与本地化","count":5,"share":0.0463,"examples":["多语言翻译的 时候系统不会根据语言翻译的长短自适应页面","网站页面多语言，支持非默认语言下调整元素布局，不影响其他语言的展示","文章板块多语言识别摘要优化"]},{"topic":"SEO、域名与搜索收录","count":4,"share":0.037,"examples":["可以自己手动设置添加的链接属性为dofollow还是nofollow。他觉得有利于seo","设置页面SEO的时候，之前AI生成的内容是超过系统上限的，修改其他内容，导致之前的保存部分无法保存，需要优化","外贸通搭建网站文章支持插入上传视频，去进行seo优化调整"]}]}},"客户管理":{"2025Q1":{"total":106,"coverage":0.8868,"top10":[{"topic":"标签、字段与列表定制","count":33,"share":0.3113,"examples":["目前一次性勾选线索数量不能超1000，希望不做上限设置，全部勾选需要操作设置标签 修改字段","内部互娱---客户列表查重字段希望支持所有字段内容重复进行一个一键查重识别","客户管理—线索列表—跟进记录添加字段"]},{"topic":"联系人与联系方式管理","count":26,"share":0.2453,"examples":["客户想要客户管理的里面的主联系人的邮箱地址，姓名，电话，单独按照字段独立一列显示。不想鼠标移过去点开，觉得直接显示比较直观","希望线索列表/客户列表中，支持联系人邮箱地址“为空”或者“包含”筛选方式。","宁波匹帝展示用品有限公司--线索转客户，中间的联系人电话还需要自己编辑调整很麻烦"]},{"topic":"导入、导出与批量处理","count":20,"share":0.1887,"examples":["宁波双麦玩具有限公司---报价单的导出模版里希望能展示本地商品自定义的字段选项","线索列表里面，手动导入的联系人，上限是100.客户希望取消限制，改为不限制人数","内部互娱---客户列表查重字段希望支持所有字段内容重复进行一个一键查重识别"]},{"topic":"跟进记录、提醒与待办","count":18,"share":0.1698,"examples":["希望后续跟进记录可以支持对应跳转，如跟进方式为wa，点击跟进记录后就自动跳转到wa消息界面","希望线索客户的跟进记录可以在同步wa记录的同时做总结日志，例如对询盘，报价等信息做总结","客户跟进记录需要添加修改或者删除功能，以免误操作后无法调整"]},{"topic":"客户与线索的新建、建档和转换","count":14,"share":0.1321,"examples":["宁波匹帝展示用品有限公司--线索转客户，中间的联系人电话还需要自己编辑调整很麻烦","线索转客户的字段信息，线索批量转客户","河北恒嘉鑫玻璃纤维制造有限公司 新建客户添加电话国际区号出现问题 很多都是错误的 需要修改"]},{"topic":"搜索、筛选、排序与分群","count":14,"share":0.1321,"examples":["希望联系人那里能不能增加一个凭关键词（名字，职位）搜索的功能，有些公司有几十个联系人，要一个个看很麻烦","希望线索列表/客户列表中，支持联系人邮箱地址“为空”或者“包含”筛选方式。","希望全球搜索导入线索的时候可以导入主要联系人比如管理层什么的，有些联系人太多很无效不需要导入，手动点击太麻烦了"]},{"topic":"去重、合并与数据关联","count":11,"share":0.1038,"examples":["内部互娱---客户列表查重字段希望支持所有字段内容重复进行一个一键查重识别","客户列表重复的数据支持直接删除或者合并的操作","希望增加线索同域名重复的支持批量合并的功能"]},{"topic":"邮件、WhatsApp等渠道联动","count":11,"share":0.1038,"examples":["希望后续跟进记录可以支持对应跳转，如跟进方式为wa，点击跟进记录后就自动跳转到wa消息界面","希望线索客户的跟进记录可以在同步wa记录的同时做总结日志，例如对询盘，报价等信息做总结","客户管理对往来邮件进行进行回复，希望弹出新的窗口，而不是跳转到写邮件界面，关闭所有的客户管理界面"]},{"topic":"分配、转移、公海与权限","count":4,"share":0.0377,"examples":["希望客户转移负责人后，负责人可以直接查看往来邮件","共享客户后，双方都可以看到对方发给客户的往来邮件","设置子账号可见具体是那个账号的客户"]},{"topic":"性能、稳定性与操作体验","count":3,"share":0.0283,"examples":["河北恒嘉鑫玻璃纤维制造有限公司 新建客户添加电话国际区号出现问题 很多都是错误的 需要修改","客户跟进记录需要添加修改或者删除功能，以免误操作后无法调整","客户合并无法多个同事合并"]}]},"2025Q2":{"total":136,"coverage":0.8897,"top10":[{"topic":"联系人与联系方式管理","count":43,"share":0.3162,"examples":["希望后续新建客户的联系人字段里，可以支持邮箱，wa，电话，社交平台4选一选填","新建客户的时候联系人WhatsApp、邮箱、电话号码可以不必填","中山市东石材料科技有限公司+客户希望线索转客户以及客户列表的联系人电话和公司电话支持特殊符号"]},{"topic":"导入、导出与批量处理","count":33,"share":0.2426,"examples":["批量导入客户模版中可以添加导入字段“微信”","希望在任务列表的详情里面批量录入线索的时候可以选择录入这批联系人对应的分组，方便自行管理","厦门优尔雅进出口有限公司+全球搜录入线索的时候批量录入可以手动选择录入哪些职位的联系人"]},{"topic":"标签、字段与列表定制","count":33,"share":0.2426,"examples":["WA管理助手侧边栏快速建档的功能希望增加添加客户标签的字段","线索转客户的时候同名的自定义字段可以同步添加","自定义字段的选项希望增加导入功能"]},{"topic":"客户与线索的新建、建档和转换","count":31,"share":0.2279,"examples":["中山市东石材料科技有限公司+客户希望线索转客户以及客户列表的联系人电话和公司电话支持特殊符号","上海晞纳机械科技有限公司】希望后续线索转客户时可以支持添加多个电话，电话可以支持其他非数字字符","中山市东石材料科技有限公司+线索转客户的时候很多个联系人要拉到最底下才能确认，很影响使用和浪费时间"]},{"topic":"搜索、筛选、排序与分群","count":21,"share":0.1544,"examples":["客户管理想直接设置分组后，将公司拖进去，觉得分群要设置条件不好用","希望公海客户可以按照公海分组条件做筛选","希望在任务列表的详情里面批量录入线索的时候可以选择录入这批联系人对应的分组，方便自行管理"]},{"topic":"去重、合并与数据关联","count":18,"share":0.1324,"examples":["客户列表可以把重复客户一键展示出来快速合并","苏州银锦阻燃新材料有限公司+希望线索加入字段查重，重复字段客户无法直接录入，避免同企业重复进行营销","在线索管理添加查重功能，希望可以一键筛选全部重复数据"]},{"topic":"邮件、WhatsApp等渠道联动","count":18,"share":0.1324,"examples":["营销效果统计中“网站互动”和“订阅邮件”的新增明细无法区分单条信息是否点开过","江苏谱新生物医药有限公司+希望创建邮件营销任务的时候客户筛选可以全选","建议客户管理系统联系人可以设置一个停用的按钮（停用后效果等同于营销黑名单）设计类似富通"]},{"topic":"跟进记录、提醒与待办","count":14,"share":0.1029,"examples":["希望客户管理的跟进提醒自动识别是否已回复。没回复的当然需要提醒下更好。回复的需要自动识别不再提醒","希望客户的跟进记录可以支持评论","客户列表的跟进记录支持删除"]},{"topic":"分配、转移、公海与权限","count":10,"share":0.0735,"examples":["广东盈富工贸-批量转移负责人提高批量操作上限","广东永衡良品科技有限公司+客户希望此界面可以自定义展示的同事的客户的词条（不需要单独设置角色权限）","客户觉得退回公海的有效跟进方式里面，应该加上wa联系"]},{"topic":"客户画像、背调与企业详情","count":6,"share":0.0441,"examples":["希望后续客户管理系统可以关联国内搜索的公司，不要只关联全球搜公司信息","广东盈富工贸-希望邮件建档的时候可以智能抓取邮件内容中体现的公司信息","希望支持一次选中多个客户详情里联系人操作批量删除"]}]},"2025Q3":{"total":149,"coverage":0.8859,"top10":[{"topic":"标签、字段与列表定制","count":46,"share":0.3087,"examples":["查看往来邮件按列表展示一个订单一行的，点一下出来个小窗口，不要新标签查看全文","厦门乐翔进出口有限公司，客户要求在客户列表和线索列表里加入一个字段","客户需要在客户列表中根据分组或者标签筛选批量认领的公海客户"]},{"topic":"联系人与联系方式管理","count":38,"share":0.255,"examples":["新建的客户/线索，系统需要识别哪些是公共邮箱，然后联系人姓名默认为空","广州诺彦生物科技有限公司-CRM支持检测无联系人客户&邮箱失效客户","挂载邮箱的邮件希望支持新建联系人到客户/线索"]},{"topic":"邮件、WhatsApp等渠道联动","count":29,"share":0.1946,"examples":["和客户有邮件往来或者WhatsApp往来商机最近更新时间可以自动更新","邮件营销选择从线索添加联系人的时候希望增加线索/公司名称的筛选功能","用户营销发信，邮件地址因“我的线索..."]},{"topic":"搜索、筛选、排序与分群","count":23,"share":0.1544,"examples":["客户需要在客户列表中根据分组或者标签筛选批量认领的公海客户","客户客户详情里的往来邮件可以新增一个按照关键词筛选的按钮（关键词包含邮件正文+主题）","可以实现打开客户/线索列表自动按照最近跟进时间来进行排序（目前需要手动点击）"]},{"topic":"跟进记录、提醒与待办","count":23,"share":0.1544,"examples":["绍兴贸擎网络科技有限公司+客户列表里的跟进记录可以同步未创建客户之前的跟这个客户的往来邮件","无锡顺浩国际货运代理有限公司，子账号跟进客户的记录管理员账号可以评论","希望客户列表的跟进记录，管理员能评论业务员跟进"]},{"topic":"导入、导出与批量处理","count":21,"share":0.1409,"examples":["希望恢复勾选5000条线索一键营销可跳转单次发信任务（每天要发5000条手动，改成200一次，没有考虑过工作量）","手动导入客户，联系人不生效查重规则，不同的业务员还是可以录入同一个客户。客户希望导入的方式也可以限制提交重复内容","线索列表用户是否可以批量转为客户，而不是单个转为客户，操作流程台繁琐"]},{"topic":"去重、合并与数据关联","count":15,"share":0.1007,"examples":["增加批量合并客户的重复客户的操作","手动导入客户，联系人不生效查重规则，不同的业务员还是可以录入同一个客户。客户希望导入的方式也可以限制提交重复内容","联系人从建站黄页进入重复数据多，不支持去重"]},{"topic":"客户与线索的新建、建档和转换","count":12,"share":0.0805,"examples":["潜客营销池，需要直接录入线索，目前只支持录入客户中","线索列表里和客户列表里重复的客户，可以在线索列表里一键把他合并到客户列表里（现在的线索转客户，再在客户列表里合并客户也可以解决问题，但是操作起来比较麻烦）","可否提高线索转客户的数量"]},{"topic":"分配、转移、公海与权限","count":11,"share":0.0738,"examples":["客户列表转移负责人优化","深圳市锐启特科技有限公司+希望关注客户可以企业内通用，多个负责人看到这个客户都显示前面的红心","苏州市立凯城新材料有限公司，公海规则能够实现管理员同意后，业务员才能领取成功的功能"]},{"topic":"商机、销售阶段与漏斗","count":4,"share":0.0268,"examples":["和客户有邮件往来或者WhatsApp往来商机最近更新时间可以自动更新","希望商机的跟进记录能单独汇总或外露查看","商机的商机时长可以设置为天数不要小时"]}]},"2025Q4":{"total":100,"coverage":0.83,"top10":[{"topic":"标签、字段与列表定制","count":28,"share":0.28,"examples":["线索列表和客户列表可以将有相同标签的数据排列在一起展示，而不是只能按照时间排序默认展示","商机展示字段支持显示客户对应的国家地区","希望客户编号字段规则可以自定义，比如根据国家代码自动设置，美国就是USA， 中国就是CHN"]},{"topic":"联系人与联系方式管理","count":21,"share":0.21,"examples":["希望客户详情里的联系人邮箱能像富通一样，有开启和关闭状态的按钮，方便筛选区分","在线索列表批量勾选线索后，可以支持批量关联全球搜索数据，然后进行批量回填所有线索的联系人信息","客户列表导出数据时，不勾选联系人，但是还是以联系人为单位导出多个公司名的重复内容"]},{"topic":"搜索、筛选、排序与分群","count":18,"share":0.18,"examples":["在线索列表批量勾选线索后，可以支持批量关联全球搜索数据，然后进行批量回填所有线索的联系人信息","线索列表和客户列表可以将有相同标签的数据排列在一起展示，而不是只能按照时间排序默认展示","青岛麦吉新材料科技有限公司，客户列表里对即将流入公海的客户分组里有客户时设置高亮或者增加红色小字提示"]},{"topic":"导入、导出与批量处理","count":13,"share":0.13,"examples":["在线索列表批量勾选线索后，可以支持批量关联全球搜索数据，然后进行批量回填所有线索的联系人信息","客户列表导出数据时，不勾选联系人，但是还是以联系人为单位导出多个公司名的重复内容","导入的线索或者客户自动关联并且自动回填全球搜的数据，不想手动回填，太多了很不方便"]},{"topic":"邮件、WhatsApp等渠道联动","count":13,"share":0.13,"examples":["联系人希望有停止邮件营销的按钮","【山东恒新新材料有限公司】+希望增加公海客户中可以查看往来邮件但私海里同事客户查看往来邮件权限还需要特殊申请","客户想要导出客户管理里面的营销历史标签的内容"]},{"topic":"商机、销售阶段与漏斗","count":10,"share":0.1,"examples":["广州琴飞生物科技有限公司-商机赢单阶段支持自定义","秒秒测科技（北京）有限公司，商机支持直接输入商机金额，不需要填写商品字段","商机模块绑定客户的时候 可以直接选择把客户邮箱绑定进去"]},{"topic":"客户与线索的新建、建档和转换","count":10,"share":0.1,"examples":["﻿ ﻿ 用户反馈线索转客户的时候，...","希望可以批量线索转客户","广州诺彦生物科技有限公司-希望CRM录入客户的时候支持根据公司名称模糊匹配查重"]},{"topic":"去重、合并与数据关联","count":9,"share":0.09,"examples":["同一个账号中的重复线索可以自动合并。不论是线索列表还是客户列表","希望后续客户这边感叹号的重复提示展开后可以支持批量合并操作","在线索列表批量勾选线索后，可以支持批量关联全球搜索数据，然后进行批量回填所有线索的联系人信息"]},{"topic":"客户状态、生命周期与统计","count":9,"share":0.09,"examples":["使用分析目前是统计的客户的创建的数量，希望可以统计到具体实际客户/.线索数量","客户管理“业务数据分析”统计逻辑优化","深圳市电科电源股份有限公司，客户管理-销售设置-系统使用分析"]},{"topic":"分配、转移、公海与权限","count":8,"share":0.08,"examples":["【山东恒新新材料有限公司】+希望增加公海客户中可以查看往来邮件但私海里同事客户查看往来邮件权限还需要特殊申请","青岛麦吉新材料科技有限公司，客户列表里对即将流入公海的客户分组里有客户时设置高亮或者增加红色小字提示","客户需要对公海认领的客户有具体的标签筛选"]}]},"2026Q1":{"total":103,"coverage":0.9029,"top10":[{"topic":"标签、字段与列表定制","count":30,"share":0.2913,"examples":["外贸通电脑网页端和客户端的客户列表展示字段不会同步，希望后续可以优化","使用自己的文件导入客户列表时，导入的时候匹配字段中的联系人-邮箱和联系人-联系人邮箱做区分，不然会选错，导入失败，以及匹配字段的对应希望改成左右对齐","自定义字段支持选项支持二级选项"]},{"topic":"搜索、筛选、排序与分群","count":20,"share":0.1942,"examples":["广州叁越食品机械有限公司-希望CRM内的往来邮件支持聚合&搜索","将全部客户位置的负责人筛选修改为可以按照手动输入内容筛选","湖南中楚冰铖制冷设备技术有限公司+比如筛选当前所有商机中， 某个区域的商机，或者达到“攻单”阶段的商机，筛选后，自动统计出总金额"]},{"topic":"联系人与联系方式管理","count":20,"share":0.1942,"examples":["退信原因邮箱地址不存在，这部分邮箱能自动从联系人邮箱中删除","新增客户的时候，必须手机号邮箱WhatsApp三个之中填写一个，客户只有其他联系方式需要保存","客户，线索联系人电话号码位置支持不同格式，不要校验，录入后再自动校验并更正"]},{"topic":"导入、导出与批量处理","count":16,"share":0.1553,"examples":["批量导入客户的时候，客户导入表格内没有qq、微信之类的数据列，但是单个新建的时候有，希望后续导入表格可以优化添加","宁波艾克赛伦新材料有限公司+客户希望标签可以批量增加而不是只有替换和清空两个选项","psm烽火，客户导入数据，公司商业类型字符能否增加，客户行业导入时提升字符不够"]},{"topic":"邮件、WhatsApp等渠道联动","count":14,"share":0.1359,"examples":["希望crm系统里客户国家地区标记中文的，营销邮件插入国家地区变量支持展示英文","新增客户的时候，必须手机号邮箱WhatsApp三个之中填写一个，客户只有其他联系方式需要保存","根据动态其他账号编辑平台之后，负责人不会收到通知邮件，希望后续可以优化，增加这个通知功能"]},{"topic":"客户与线索的新建、建档和转换","count":12,"share":0.1165,"examples":["希望线索转客户的时候 可以自动识别国家区号","客户导入查重的规则可以跟企业设置设置新建客户查重规则一致","建档客户列表的联系人，可以按照职位顺序自动设置主联系人"]},{"topic":"去重、合并与数据关联","count":10,"share":0.0971,"examples":["客户导入查重的规则可以跟企业设置设置新建客户查重规则一致","带重复字段的客户掉进公海，公海捞回会产生新的客户冲突","公海客户希望也支持反向关联全球搜数据的功能"]},{"topic":"商机、销售阶段与漏斗","count":10,"share":0.0971,"examples":["希望后续商机的呈现模式能按这个图表示例来，以看板模式呈现，且支持拖拽改变商机阶段（比如商机1赢单了，可以直接拖到赢单这里）","客户商机列表中是有赢单金额的 再...","商机字段内的总金额字段小数点位数过多，也无法编辑，希望后续可以优化可以自己编辑"]},{"topic":"跟进记录、提醒与待办","count":10,"share":0.0971,"examples":["跟进记录的地方通过复制粘贴的方式上传图片","客户管理的跟进记录需要修改或者删除","管理员可操作删除建档客户的跟进记录"]},{"topic":"分配、转移、公海与权限","count":9,"share":0.0874,"examples":["客户转移负责人后添加前负责人字段可以筛选","根据动态其他账号编辑平台之后，负责人不会收到通知邮件，希望后续可以优化，增加这个通知功能","将全部客户位置的负责人筛选修改为可以按照手动输入内容筛选"]}]},"2026Q2":{"total":91,"coverage":0.9121,"top10":[{"topic":"标签、字段与列表定制","count":30,"share":0.3297,"examples":["【深圳市米奇电子有限公司】客户希望字段里的客户标签也可以设置为必填项","客户列表-管理设置-字段配置-类目字段无法自定义","客户列表里面的电话号码字段可以不限输入形式"]},{"topic":"搜索、筛选、排序与分群","count":20,"share":0.2198,"examples":["在客户管理内可以搜索文件名称查询对应客户的往来邮件","【亿逊（浙江）国际贸易有限公司】+客户分群的无法按照多少天内未联系对方进行分群，希望可以优化","在客户管理的客户列表搜索，三个字母无法搜索到结果，需要至少四个字母，希望可以优优化"]},{"topic":"联系人与联系方式管理","count":19,"share":0.2088,"examples":["线索列表支持可以筛选非邮箱的联系人","希望增加一个联系人多个邮箱的功能","希望客户管理可以标记多个主要联系人/重点联系人。现在是只能标记一个的。客户觉得不方便自己发信"]},{"topic":"邮件、WhatsApp等渠道联动","count":13,"share":0.1429,"examples":["希望可以增加微信聊天功能，像邮件和wa一样，直接客户管理里面微信跟对方联系","邮件营销智能建档不会自动获取联系人的公司名称，希望可以自动获取对应信息","希望客户列表中支持自动导入关联的WhatsApp和微信的联系人"]},{"topic":"分配、转移、公海与权限","count":10,"share":0.1099,"examples":["业务员也可以有权限设置标签为企业，客户觉得这样方便查看别人的客户情况，小满是可以的","希望编辑设置客户字段的时候，支持部分选项字段选择之后可以输入文本，就像退回公海需要编辑退回公海原因","想要增加一个掉入线索公海中的客户多少天不可领取的规则"]},{"topic":"客户与线索的新建、建档和转换","count":10,"share":0.1099,"examples":["线索转客户，频繁卡在座机电话输入有误","优化邮件侧边栏一键建档创建客户逻辑","线索列表查看对应公司海关数据的时候可以把相关的供应商和采购商公司录入线索列表中，目前不支持"]},{"topic":"导入、导出与批量处理","count":10,"share":0.1099,"examples":["在客户列表中的客户详情位置增加批量导入联系人的功能柜","标签管理支持表格导入，和导出进行管理","希望客户列表中支持自动导入关联的WhatsApp和微信的联系人"]},{"topic":"跟进记录、提醒与待办","count":10,"share":0.1099,"examples":["希望跟进记录有评论会收到通知提醒，不然客户都不知道有评论了，耽误跟进","商机设置跟进日程后跟进邮件中可以同时展示公司名称","客户管理添加跟进记录时，跟进记录的窗口可以缩小"]},{"topic":"去重、合并与数据关联","count":8,"share":0.0879,"examples":["合并公司之后，有合并记录可以查看，哪些公司之间合并，合并了什么信息，并且可以让同事看到","希望live.com.mx这个邮箱后缀和gmail.com这类域名一下，可以不被查重","希望客户列表中支持自动导入关联的WhatsApp和微信的联系人"]},{"topic":"商机、销售阶段与漏斗","count":8,"share":0.0879,"examples":["希望商机里可以增加筛选公司名称的字段，目前设置不了，不方便","商机板块新增邮件往来功能（参考客户列表板块已有功能）","商机设置跟进日程后跟进邮件中可以同时展示公司名称"]}]},"2026Q3":{"total":104,"coverage":0.8654,"top10":[{"topic":"标签、字段与列表定制","count":33,"share":0.3173,"examples":["客户列表字段列宽可以自动适应字段文字数据","希望客户和线索的展示字段多一个“退回公海时间字段”辛苦看一下","客户列表关联了全球搜索数据，公司主体或者其他信息变更后关联不失效，可以自动和更新好的数据关联"]},{"topic":"搜索、筛选、排序与分群","count":20,"share":0.1923,"examples":["客户分群设置-想要筛选字段中添加【最近写跟进时间:】","希望后续潜客池筛选项可以增加一个“联系人分组”","最近普邮发信时间希望支持排序和筛选的功能"]},{"topic":"去重、合并与数据关联","count":19,"share":0.1827,"examples":["已经关联全球搜索数据的客户可以有取消关联的按钮","客户列表查重时，可以操作合并联系人","客户列表关联了全球搜索数据，公司主体或者其他信息变更后关联不失效，可以自动和更新好的数据关联"]},{"topic":"联系人与联系方式管理","count":18,"share":0.1731,"examples":["建档的时候会有很多的联系人是没有邮箱，电话，WhatsApp中的三个中的一个，目前系统是必填的需要优化下","希望商机那里显示客户的详细信息，客户需要看到联系人和联系电话","客户管理API可以添加客户联系人的'国际区号'字段对应 的 field_id"]},{"topic":"导入、导出与批量处理","count":17,"share":0.1635,"examples":["客户管理-线索列表-导入导出-线索导入模版里面没有线索编号","客户批量导入的时候，无法查重域名信息，希望后续优化添加","导入线索或客户后有匹配到的全球搜索数据支持批量回填"]},{"topic":"跟进记录、提醒与待办","count":15,"share":0.1442,"examples":["希望跟进记录可以直接截图粘贴到记录框里，而不是通过附件或者拖拽的方式，客户觉得麻烦","客户列表导出把最后一次的跟进记录导出","跟进记录后续支持上传图片"]},{"topic":"客户与线索的新建、建档和转换","count":14,"share":0.1346,"examples":["线索转客户的座机电话可以自动识别录入","客户认为智能建档默认开启不合理，应提前给到设置流程，以免和自己实际客户管理造成混乱。","客户管理API可以添加客户联系人的'国际区号'字段对应 的 field_id"]},{"topic":"邮件、WhatsApp等渠道联动","count":10,"share":0.0962,"examples":["潜客营销池里的客户列表支持按任务来源、国家/地区、原邮件语言进行筛选","建档的时候会有很多的联系人是没有邮箱，电话，WhatsApp中的三个中的一个，目前系统是必填的需要优化下","客户列表中的联系人希望也有类似营销联系人的单独展示出来的功能"]},{"topic":"商机、销售阶段与漏斗","count":9,"share":0.0865,"examples":["客户管理+希望商机详情页支持关联全球搜索数据，点击客户名称右侧栏出现客户详情页","希望商机的关联客户可以在商机页面直接点击跳转，而不是要负责到客户列表搜索","希望商机那里显示客户的详细信息，客户需要看到联系人和联系电话"]},{"topic":"分配、转移、公海与权限","count":7,"share":0.0673,"examples":["希望客户和线索的展示字段多一个“退回公海时间字段”辛苦看一下","公海规则条件能根据”目标客户是否回复“来判断是否有效跟进","希望公海客户池子支持单页勾选1000或者全选"]}]}},"客户履约":{"2025Q1":{"total":15,"coverage":1.0,"top10":[{"topic":"商品、产品库、分类与规格","count":7,"share":0.4667,"examples":["编辑单据模板里面的商品列表里面的字段太少了，商品英文名都没有，能不能把本地商品里面的字段同步过来","建立销售订单，这边得成本价不能填写。要在本地商品那边写。可是我们的成本价不是固定的。要弄成可以在销售订单里面编辑","本地商品，wa发送"]},{"topic":"报价单制作与管理","count":7,"share":0.4667,"examples":["北京海硅信息技术有限公司 报价单生成订单需要审批","报价单转销售订单时希望可以把报价单主题一并转过去","深圳市根茂计算机有限公司-----报价单序号"]},{"topic":"销售订单与订单管理","count":5,"share":0.3333,"examples":["建立销售订单，这边得成本价不能填写。要在本地商品那边写。可是我们的成本价不是固定的。要弄成可以在销售订单里面编辑","报价单转销售订单时希望可以把报价单主题一并转过去","销售订单能直接编辑商品信息"]},{"topic":"字段、编号与自定义配置","count":3,"share":0.2,"examples":["报价单实现自定义添加字段并抓取对应数据","报价单能够支持自定义字段","编辑单据模板里面的商品列表里面的字段太少了，商品英文名都没有，能不能把本地商品里面的字段同步过来"]},{"topic":"客户、商品与单据的数据关联","count":3,"share":0.2,"examples":["编辑单据模板里面的商品列表里面的字段太少了，商品英文名都没有，能不能把本地商品里面的字段同步过来","关联商机之后，报价单有导入商机中的产品","销售订单能直接编辑商品信息"]},{"topic":"供应商与采购管理","count":2,"share":0.1333,"examples":["订单信息分开——采购员录入采购部分，业务员录入PI，财务录入付款和发货信息","希望供应商这边可以支持按商品名字搜索"]},{"topic":"单据模板、合同与PI","count":2,"share":0.1333,"examples":["编辑单据模板里面的商品列表里面的字段太少了，商品英文名都没有，能不能把本地商品里面的字段同步过来","订单信息分开——采购员录入采购部分，业务员录入PI，财务录入付款和发货信息"]},{"topic":"搜索、筛选与列表操作","count":2,"share":0.1333,"examples":["编辑单据模板里面的商品列表里面的字段太少了，商品英文名都没有，能不能把本地商品里面的字段同步过来","希望供应商这边可以支持按商品名字搜索"]},{"topic":"审批、权限与多人协作","count":1,"share":0.0667,"examples":["北京海硅信息技术有限公司 报价单生成订单需要审批"]},{"topic":"导入、导出、打印与PDF","count":1,"share":0.0667,"examples":["关联商机之后，报价单有导入商机中的产品"]}]},"2025Q2":{"total":26,"coverage":0.9231,"top10":[{"topic":"销售订单与订单管理","count":15,"share":0.5769,"examples":["同一个商品关联不同的销售订单，商品价格信息互相独立，不关联","希望销售订单里面的订量可以写小数点，他们公司可以定一单半","希望销售订单-商品明细界面的字段列表可以左右拖动顺序"]},{"topic":"商品、产品库、分类与规格","count":13,"share":0.5,"examples":["本地商品批量上传图片，批量修改商品分类","希望供应商管理-本地商品字段可以展示统计统计总采购价金额，已支付多少金额，多少未支付给供应商","希望供应商管理-本地商品那边可以展示成本价字段信息"]},{"topic":"字段、编号与自定义配置","count":8,"share":0.3077,"examples":["希望供应商管理-本地商品字段可以展示统计统计总采购价金额，已支付多少金额，多少未支付给供应商","企业设置——设置单据模版的时候可以使用商品英文名字段","希望销售订单-商品明细界面的字段列表可以左右拖动顺序"]},{"topic":"金额、币种、汇率与税费","count":6,"share":0.2308,"examples":["希望供应商管理-本地商品字段可以展示统计统计总采购价金额，已支付多少金额，多少未支付给供应商","同一个商品关联不同的销售订单，商品价格信息互相独立，不关联","希望销售订单里面的订量可以写小数点，他们公司可以定一单半"]},{"topic":"供应商与采购管理","count":5,"share":0.1923,"examples":["希望供应商管理-本地商品字段可以展示统计统计总采购价金额，已支付多少金额，多少未支付给供应商","在权限配置里面有供应商导出权限配置，但是实际没有对应功能，客户希望添加对应功能","希望供应商管理-本地商品那边可以展示成本价字段信息"]},{"topic":"搜索、筛选与列表操作","count":4,"share":0.1538,"examples":["希望销售订单-商品明细界面的字段列表可以左右拖动顺序","希望供应商管理-本地商品字段可以按更新时间排序","本地商品批量上传图片，批量修改商品分类"]},{"topic":"客户、商品与单据的数据关联","count":3,"share":0.1154,"examples":["同一个商品关联不同的销售订单，商品价格信息互相独立，不关联","希望本地商品详情里可以查看关联的销售订单详情","如果已经创建好商机，再去创建报价单时，报价单可以自动关联选择商机中已经选择的商品，比如你创建了一个商机，里面有勾选三个商品，然后我在创建报价单关联客户和商机后，会自动勾选对应的商品，需要额外再次勾选"]},{"topic":"导入、导出、打印与PDF","count":3,"share":0.1154,"examples":["在权限配置里面有供应商导出权限配置，但是实际没有对应功能，客户希望添加对应功能","销售订单导出需要增加导出的字段","增加销售订单批量导入功能"]},{"topic":"审批、权限与多人协作","count":2,"share":0.0769,"examples":["在权限配置里面有供应商导出权限配置，但是实际没有对应功能，客户希望添加对应功能","希望业务员修改订单状态的时候需要管理员审批同意才可以修改成功"]},{"topic":"单据模板、合同与PI","count":1,"share":0.0385,"examples":["企业设置——设置单据模版的时候可以使用商品英文名字段"]}]},"2025Q3":{"total":45,"coverage":1.0,"top10":[{"topic":"商品、产品库、分类与规格","count":27,"share":0.6,"examples":["可以在报价单中映射出本地商品自定义的字段内容，报价单中的产品字段可以自定义显示","本地商品的规格信息，规格选项无法删除只能修改，因为误操作导致选项堆积，影响使用，希望可以增加删除规格选项功能","本地商品商品分类优化"]},{"topic":"报价单制作与管理","count":15,"share":0.3333,"examples":["可以在报价单中映射出本地商品自定义的字段内容，报价单中的产品字段可以自定义显示","中山市泽创电器有限公司+客户希望报价单这个界面可以关联已有客户的地址和信息","百超（江苏）智能科技有限公司+添加报价单的时候，选择好关联客户后，货运信息也可以直接关联好对应公司的地址信息"]},{"topic":"销售订单与订单管理","count":13,"share":0.2889,"examples":["藻之元（上海）生物技术有限公司+客户希望销售订单可以直接添加电子公章然后导出","东莞市万塑成塑料有限公司+销售订单新增筛选维度（订单负责人、客户名）","东莞市万塑成塑料有限公司，销售订单里添加商品支持编辑功能"]},{"topic":"字段、编号与自定义配置","count":10,"share":0.2222,"examples":["可以在报价单中映射出本地商品自定义的字段内容，报价单中的产品字段可以自定义显示","东莞市万塑成塑料有限公司+本地商品录入，商品编号可以自定义规则","东莞市万塑成塑料有限公司，订单、商品字段自定义"]},{"topic":"搜索、筛选与列表操作","count":6,"share":0.1333,"examples":["东莞市万塑成塑料有限公司+销售订单新增筛选维度（订单负责人、客户名）","13826119098，客户希望在产品搜索处加入按图搜索的功能","订单管理中的销售订单可批量处理"]},{"topic":"单据模板、合同与PI","count":5,"share":0.1111,"examples":["客户想要自动生成销售订单并且自动提供形式发票等等","百超（江苏）智能科技有限公司+报价单选择收款信息的时候可以提前创建不同银行的模板，按照不同的报价单灵活选择银行","订单模板自定义或支持上传（参考报价单侧的功能）"]},{"topic":"导入、导出、打印与PDF","count":5,"share":0.1111,"examples":["藻之元（上海）生物技术有限公司+客户希望销售订单可以直接添加电子公章然后导出","报价单导出支持联系人邮箱 ；产品的前的序列数字； 产品——备注","希望本地商品和平台商品支持导出"]},{"topic":"客户、商品与单据的数据关联","count":4,"share":0.0889,"examples":["中山市泽创电器有限公司+客户希望报价单这个界面可以关联已有客户的地址和信息","百超（江苏）智能科技有限公司+添加报价单的时候，选择好关联客户后，货运信息也可以直接关联好对应公司的地址信息","客户是使用英文编辑的商品信息，但是多语言翻译还是会将英文翻译，并且出错了，导致英语语言下商品信息变动，需要手动编辑修改，增加了他们的工作量"]},{"topic":"审批、权限与多人协作","count":3,"share":0.0667,"examples":["商品的权限子账号只展示自己设置的商品","东莞市万塑成塑料有限公司+销售订单新增筛选维度（订单负责人、客户名）","希望有设置报价单审批流程"]},{"topic":"金额、币种、汇率与税费","count":3,"share":0.0667,"examples":["报价单的商品订量希望支持小数点","价格条款字段支持多选","销售订单汇总金额"]}]},"2025Q4":{"total":47,"coverage":1.0,"top10":[{"topic":"商品、产品库、分类与规格","count":39,"share":0.8298,"examples":["请问下，本地商品有多个规格，且每...","希望同一个产品可以设置多个商品分类","本地商品规格删除优化"]},{"topic":"导入、导出、打印与PDF","count":11,"share":0.234,"examples":["无锡佳捷惠工业服务有限公司+希望本地商品或平台商品可以导出excel","本地商品模板可导入商品图片了，但是因为表格大小有5M的限制，实际并不能上传很多图片，有较多局限性","希望本地商品导入文件大小限制可以放大一点，5M实在太小了，放几张图片就无法导入了"]},{"topic":"字段、编号与自定义配置","count":7,"share":0.1489,"examples":["不希望自己下面的员工看到商品成本 价格等一些公司敏感信息，希望这些字段支持部分隐藏，不展示给子账号","商品管理支持自定义配置场景，并结合官网，效果类类似于在官网购买汽车时，可以根据客户的需求选择对应部件/样式等直接出好报价单等","销售订单中的订单金额以及显示的金额币种是可以自定义修改的"]},{"topic":"报价单制作与管理","count":7,"share":0.1489,"examples":["供应商管理功能可以升级起来，如在销售订单，报价单里选择里面的公司","报价单金额填写0.006会自动变成0.01，客户认为不够严谨","商品管理支持自定义配置场景，并结合官网，效果类类似于在官网购买汽车时，可以根据客户的需求选择对应部件/样式等直接出好报价单等"]},{"topic":"性能、稳定性与操作体验","count":6,"share":0.1277,"examples":["希望本地商品导入文件大小限制可以放大一点，5M实在太小了，放几张图片就无法导入了","商品多语言翻译内的文本无法设置字体大小等信息","本地商品打开编辑的时候，ai助理无法使用"]},{"topic":"单据模板、合同与PI","count":4,"share":0.0851,"examples":["本地商品模板可导入商品图片了，但是因为表格大小有5M的限制，实际并不能上传很多图片，有较多局限性","客户以导入数据的方式上传商品时模板添加图片后很容易超过5M限制","报价单导出模板希望增加更多字段"]},{"topic":"搜索、筛选与列表操作","count":4,"share":0.0851,"examples":["内部反馈----规格选项增加二次筛选的条件","希望可以增加商品名称批量多语言翻译","批量导入商品后无法自动创建规格匹配"]},{"topic":"销售订单与订单管理","count":4,"share":0.0851,"examples":["客户的产品都是按照平方卖的，销售订单中的商品订量不可能都是整数，需要优化","销售订单中订单状态中的选项内容不支持更改，订单状态内容不全，希望优化","供应商管理功能可以升级起来，如在销售订单，报价单里选择里面的公司"]},{"topic":"金额、币种、汇率与税费","count":3,"share":0.0638,"examples":["销售订单中的订单金额以及显示的金额币种是可以自定义修改的","不希望自己下面的员工看到商品成本 价格等一些公司敏感信息，希望这些字段支持部分隐藏，不展示给子账号","报价单金额填写0.006会自动变成0.01，客户认为不够严谨"]},{"topic":"审批、权限与多人协作","count":2,"share":0.0426,"examples":["不希望自己下面的员工看到商品成本 价格等一些公司敏感信息，希望这些字段支持部分隐藏，不展示给子账号","希望增加一个 本地商品管理设置的权限"]}]},"2026Q1":{"total":25,"coverage":0.96,"top10":[{"topic":"商品、产品库、分类与规格","count":18,"share":0.72,"examples":["内部反馈---客户履约本地商品本地导入支持导入规格字段选项","泉州市欣龙汽车零部件制造有限公司+客户需要本地商品可以直接拖拽更改图片的顺序来确定首图","客户觉得本地商品的商品介绍，限制字符1w不合理，不应该限制字数。他内容很多，要用表格的形式，不接受用截图或者附件这些，"]},{"topic":"字段、编号与自定义配置","count":7,"share":0.28,"examples":["内部反馈---客户履约本地商品本地导入支持导入规格字段选项","本地商品编辑里面的的faq部分字段限制太少，而且没有说明","中国制造网的链接解析，可识别字段太少"]},{"topic":"搜索、筛选与列表操作","count":4,"share":0.16,"examples":["本地商品列表字段支持排序","希望销售订单支持按照负责人筛选，并且能显示这个负责人订单的数据统计结果，比如销售总金额、pi总金额等","希望本地商品位置可以按一定条件排序（目前创建出来次序都是乱的）"]},{"topic":"销售订单与订单管理","count":4,"share":0.16,"examples":["希望销售订单支持按照负责人筛选，并且能显示这个负责人订单的数据统计结果，比如销售总金额、pi总金额等","无锡纬特流体进出口有限公司+客户希望报价单和销售订单一样能导出那种表格，想要个报价单的统计表单而不是单独导出某一个报价单","销售订单/报价单希望支持转移负责人的功能"]},{"topic":"导入、导出、打印与PDF","count":3,"share":0.12,"examples":["无锡纬特流体进出口有限公司+客户希望报价单和销售订单一样能导出那种表格，想要个报价单的统计表单而不是单独导出某一个报价单","内部反馈---客户履约本地商品本地导入支持导入规格字段选项","本地商品希望支持导出数据"]},{"topic":"报价单制作与管理","count":3,"share":0.12,"examples":["无锡纬特流体进出口有限公司+客户希望报价单和销售订单一样能导出那种表格，想要个报价单的统计表单而不是单独导出某一个报价单","销售订单/报价单希望支持转移负责人的功能","客户报价单中 填写了 价格条款..."]},{"topic":"审批、权限与多人协作","count":2,"share":0.08,"examples":["希望销售订单支持按照负责人筛选，并且能显示这个负责人订单的数据统计结果，比如销售总金额、pi总金额等","销售订单/报价单希望支持转移负责人的功能"]},{"topic":"金额、币种、汇率与税费","count":2,"share":0.08,"examples":["希望销售订单支持按照负责人筛选，并且能显示这个负责人订单的数据统计结果，比如销售总金额、pi总金额等","客户报价单中 填写了 价格条款..."]},{"topic":"单据模板、合同与PI","count":1,"share":0.04,"examples":["希望销售订单支持按照负责人筛选，并且能显示这个负责人订单的数据统计结果，比如销售总金额、pi总金额等"]},{"topic":"性能、稳定性与操作体验","count":1,"share":0.04,"examples":["希望商品和订单等功能也有回收站功能，以免删除无法找回"]}]},"2026Q2":{"total":33,"coverage":0.9697,"top10":[{"topic":"商品、产品库、分类与规格","count":21,"share":0.6364,"examples":["希望本地商品编辑里的规格可以按字母顺序排序","本地商品支持给子账号授权规格新增权限","本地商品规格明细优化"]},{"topic":"销售订单与订单管理","count":9,"share":0.2727,"examples":["客户履约-销售订单/报价单-币种和汇率字段缺少MXN墨西哥比索","希望销售订单里的商品信息的字段内容是全部可以直接修改的","客户履约-销售订单-订单商品来源于本地商品，不好修改"]},{"topic":"字段、编号与自定义配置","count":7,"share":0.2121,"examples":["报价单商品映射字段里面只有商品中文名，但是对外贸来说，英文名使用更多，系统添加商品英文名称字段","客户履约-销售订单/报价单-币种和汇率字段缺少MXN墨西哥比索","希望销售订单里的商品信息的字段内容是全部可以直接修改的"]},{"topic":"报价单制作与管理","count":5,"share":0.1515,"examples":["报价单商品映射字段里面只有商品中文名，但是对外贸来说，英文名使用更多，系统添加商品英文名称字段","客户履约-销售订单/报价单-币种和汇率字段缺少MXN墨西哥比索","报价单可以以附件的形式批量导入"]},{"topic":"单据模板、合同与PI","count":4,"share":0.1212,"examples":["销售订单设置的回款单。单据设置...","广州汇通重工单据关联展示需求","单据模版里面缺少可选字段"]},{"topic":"搜索、筛选与列表操作","count":4,"share":0.1212,"examples":["客户履约-本地商品-批量处理无法批量更换多个商品的图片顺序","希望本地商品编辑里的规格可以按字母顺序排序","报价单可以以附件的形式批量导入"]},{"topic":"审批、权限与多人协作","count":3,"share":0.0909,"examples":["希望本地商品和平台商品也有权限限制子账号只能看到自己设置的商品","本地商品支持给子账号授权规格新增权限","管理员能给业务员分配进行商品的管理设置的权限"]},{"topic":"客户、商品与单据的数据关联","count":3,"share":0.0909,"examples":["客户履约-本地商品-导入数据-无法自动识别重复商品信息并更新","希望销售订单里的商品信息的字段内容是全部可以直接修改的","广州汇通重工单据关联展示需求"]},{"topic":"导入、导出、打印与PDF","count":3,"share":0.0909,"examples":["客户履约-本地商品-导入数据-无法自动识别重复商品信息并更新","报价单可以以附件的形式批量导入","新增供应商导入功能"]},{"topic":"金额、币种、汇率与税费","count":3,"share":0.0909,"examples":["客户履约-销售订单/报价单-币种和汇率字段缺少MXN墨西哥比索","希望销售订单的总金额支持小数点显示位数的设置","销售订单成本汇总可以自定义小数位置"]}]},"2026Q3":{"total":36,"coverage":0.9167,"top10":[{"topic":"商品、产品库、分类与规格","count":19,"share":0.5278,"examples":["本地商品的“规格明细”可支持调整上下顺序","希望商品规格勾选之后可以收到一定顺序，而不是删除后重新添加","本地商品转化为商品册后，图片会固定被压缩，希望优化展示。"]},{"topic":"字段、编号与自定义配置","count":10,"share":0.2778,"examples":["希望自定义的其他费用-款项描述字段可以业务员共享选择，现在是只能管理员自己看到和选择的","希望报价单自定义字段中选项可以单独设置展示格式","增加可以添加自定义字段"]},{"topic":"审批、权限与多人协作","count":5,"share":0.1389,"examples":["希望自定义的其他费用-款项描述字段可以业务员共享选择，现在是只能管理员自己看到和选择的","其他费用添加后只有管理员可以使用，需要子账号也可以使用","希望审批流功能可以设置报价单的审批"]},{"topic":"销售订单与订单管理","count":5,"share":0.1389,"examples":["客户履约-销售订单-管理设置-关联商品信息-订量字段无法设置小数位，目前是整数位","深圳市尚德仕有机玻璃制品有限公司销售订单导出","订单实际中会遇到分批提货的情况，目前系统只有已出货，需要增加状态或者支持自定义"]},{"topic":"导入、导出、打印与PDF","count":4,"share":0.1111,"examples":["商品导入如遇到字段不合法可以显示具体不合规字段信息","深圳市尚德仕有机玻璃制品有限公司销售订单导出","导出模块优化"]},{"topic":"报价单制作与管理","count":4,"share":0.1111,"examples":["报价单的“商品列表”字段，可以使用合并单元格功能","希望报价单自定义字段中选项可以单独设置展示格式","本地商品板块，可以多选商品，然后生成报价单"]},{"topic":"性能、稳定性与操作体验","count":3,"share":0.0833,"examples":["客户履约-销售订单-管理设置-关联商品信息-订量字段无法设置小数位，目前是整数位","客户履约这边功能较少，无法统计所有订单/月订单/年订单的订单金额","本地商品里面的faq可以无法批量操作修改"]},{"topic":"搜索、筛选与列表操作","count":3,"share":0.0833,"examples":["商品规格字段支持搜索或按字母排序","报价单的“商品列表”字段，可以使用合并单元格功能","本地商品里面的faq可以无法批量操作修改"]},{"topic":"单据模板、合同与PI","count":2,"share":0.0556,"examples":["FAQ可以保存模板"]},{"topic":"金额、币种、汇率与税费","count":2,"share":0.0556,"examples":["客户履约-销售订单-管理设置-关联商品信息-订量字段无法设置小数位，目前是整数位","客户履约这边功能较少，无法统计所有订单/月订单/年订单的订单金额"]}]}},"邮件营销":{"2025Q1":{"total":204,"coverage":0.8529,"top10":[{"topic":"收件人筛选与联系人选择","count":55,"share":0.2696,"examples":["深圳市恒富隆国际贸易有限公司+希望这个界面的联系人不进行勾选防止不小心点到一键营销错误营销","广州狮子王电子科技有限公司 自动开发任务详情中的营销列表联系人勾选支持1000个","厦门环华有限公司，AI员工或者自动开发任务能够支持筛选职位去营销"]},{"topic":"自动化营销与多轮跟进","count":53,"share":0.2598,"examples":["希望自动开发任务可以设置自动回复超过n次自动停发该客户（或者域名）邮件","中山市华登兴照明有限公司+希望自动开发插入模版的时候可以自动把模块删除掉，防止内容重复","兴锐高新科技（常州）有限公司+希望自动开发可以自由设置周几进行营销，而不是固定的全周，周一到周五"]},{"topic":"打开、点击、回复等效果统计","count":32,"share":0.1569,"examples":["希望后续营销效果统计这里可以增加反馈按钮（如背调后发现不是目标客户可以点击反馈，后续减少挖掘类似企业的营销）","希望营销效果统计可以追踪到对方点击附件或者报价单下载数据","客户开发->联系人->数据统计 界面需要添加客户公司信息（点击直接跳转客户公司界面）"]},{"topic":"发件箱、邮箱、域名与签名","count":27,"share":0.1324,"examples":["深圳福思光通信技术有限公司---因为发件任务使用预热邮箱发信，导致没同步营销发件箱邮件，最近跟进字段没更新","发信邮箱必选一个个人邮箱，客户不想选择","深圳思诚资源科技有限公司 客户开发 自动挖掘中挖掘到的邮箱发营销邮件的时候能够过滤掉中国的域名 sales,info, admin 开头的邮箱也支持过滤"]},{"topic":"任务列表、状态、搜索与复用","count":24,"share":0.1176,"examples":["自动开发任务列表 ： .邮件打开数需要增加打开设置次数功能和排序功能","自动开发任务列表可以按公司搜索","客户开发-手动开发-任务列表-任务详情-查看客户，这里的查看客户没有群发按钮，很不方便 希望优化"]},{"topic":"去重、黑名单与过滤规则","count":24,"share":0.1176,"examples":["过滤功能，希望公共邮箱过滤也支持自定义设置或增加sales，web的过滤规则","公共邮箱的过滤规则勾选了，但是很多公共前缀没有剔除掉，需要优化","中山市华登兴照明有限公司+希望自动开发插入模版的时候可以自动把模块删除掉，防止内容重复"]},{"topic":"回复识别、潜客沉淀与客户关联","count":22,"share":0.1078,"examples":["希望后续潜客回复识别归类可以按邮件内容来识别","希望后续潜客任务可以根据不同国家地区的客户设置不同的发送时间，具体的要看后续研发的评估了","泉州南柏万纺织科技有限公司+希望数据获客插件抓取邮箱录入线索的时候可以选择线索标签"]},{"topic":"邮件模板、编辑器、变量与附件","count":13,"share":0.0637,"examples":["希望后续邮件模板可以支持保存附件","希望邮件模板可以保存邮件标题信息","杭州优盛链达贸易有限公司---变量联系人姓名变量希望能自动展示首字母是大写的"]},{"topic":"发信额度、频率与数量控制","count":11,"share":0.0539,"examples":["自动开发任务同一家公司能设置挖掘或营销的联系人数量上限","希望后续数据统计可以筛选多次打开（如2次，3次及以上）的人并做数量的总和展示","发信上限更新后被调整到300-2000，客户希望下限调整的100"]},{"topic":"发信任务创建、配置与调度","count":7,"share":0.0343,"examples":["希望单次发信任务也可以操作暂停（修改信息之后再开启，继续完成未发送完的联系人）","杭州东瑞医药科技有限公司--自动开发的任务设置的跳过节假日希望能客户自己输入","杭州华傲纺织有限公司---自动开发任务能支持按对方国家地区的定时发信功能"]}]},"2025Q2":{"total":179,"coverage":0.8268,"top10":[{"topic":"收件人筛选与联系人选择","count":56,"share":0.3128,"examples":["自动开发可以区分职位发信，并且可设置不发企业下所有联系人","自动开发可以设置限制发信客户的联系人人数或只发主要职位","自动开发任务勾选国家地区后，将全球搜索合并的多国家公司，里面包含不勾选国家的也过滤掉，比如没有勾选中国，那面合并国家中有中国的公司也屏蔽"]},{"topic":"自动化营销与多轮跟进","count":45,"share":0.2514,"examples":["希望自动开发任务发信时间可以设置成持续三小时，且增加半点选项，如可以设置一点半这样子","自动开发任务列表，全部任务中管理员查看其他的邮箱显示已失效，目前显示问题需要优化","上海东音乐器有限公司+用户希望自动开发增加行业的判定，不光是命中关键词，还要确保目标公司和用户的行业一致"]},{"topic":"发件箱、邮箱、域名与签名","count":23,"share":0.1285,"examples":["客户查看全部任务的详情信息时，线索发信邮箱已失效，但是实际没有失效","相同域名的邮箱支持批量添加到已有线索下3人关注中","深圳市逆旅科技有限公司+希望黑名单增加手动添加邮箱前缀对邮箱进行加黑的操作，避免发往公共邮箱"]},{"topic":"打开、点击、回复等效果统计","count":22,"share":0.1229,"examples":["营销效果统计位置的订阅 点击商品页也支持导出或者全选，如单次任务详情里面的批量导出按钮","2、客户开发/营销效果统计/希望有新增潜在客户，商品点击，订阅邮件等这些有营销效果的客户，可以直接勾选加到已经创建的线索里，方便建组再次营销，每次新建线索没必要，不好管理","3、数据统计的位置筛选已打开/已回复的地址，一键录入所有地址到已有线索。建立群组进行再次营销。不想单页发信"]},{"topic":"任务列表、状态、搜索与复用","count":20,"share":0.1117,"examples":["希望自动开发任务列表位置支持打开/回复次数的排序（降序升序）","自动开发任务列表，全部任务中管理员查看其他的邮箱显示已失效，目前显示问题需要优化","添成货运代理（广州）有限公司-希望自动开发任务列表的联系人邮箱支持批量导出"]},{"topic":"去重、黑名单与过滤规则","count":19,"share":0.1061,"examples":["深圳市逆旅科技有限公司+希望黑名单增加手动添加邮箱前缀对邮箱进行加黑的操作，避免发往公共邮箱","过滤规则企业公共邮箱没有包含前缀admin和sales的 希望支持自定义添加","希望后续营销任务过滤公共邮箱可以识别前缀为team ，support，admin，sales，it这类邮箱"]},{"topic":"回复识别、潜客沉淀与客户关联","count":15,"share":0.0838,"examples":["3、数据统计的位置筛选已打开/已回复的地址，一键录入所有地址到已有线索。建立群组进行再次营销。不想单页发信","同时运行了潜客营销任务和自行创建的开发任务，但不支持同一个联系人在2个任务中，不符合自身营销需求，希望优化","自动开发任务已回复的无法发信 但是营销效果统计位置会推荐 需要优化（可支持有回复的客户仍操作自动开发任务）"]},{"topic":"邮件模板、编辑器、变量与附件","count":15,"share":0.0838,"examples":["保存邮件模板时会保存邮件添加的收件人","手动开发任务使用模板之后图片不展示","希望后续版本可以支持内容库个人图文模板那边可以直接创建企业模板，企业内都可以使用这个模板"]},{"topic":"AI文案、翻译与内容质量","count":14,"share":0.0782,"examples":["希望退订文案可以加回去这句If you dont want to receive our emails, you can easily unsubscribe here. 退订按钮会显示成按钮样式","觉得AI润色接入deepseek后生成内容不如原来的好，希望后续可以选择之前的方式润色邮件","温州沃顿阀门有限公司+ai润色恢复之前老版本未接入deepseek的界面"]},{"topic":"发信额度、频率与数量控制","count":11,"share":0.0615,"examples":["希望营销任务自动选取限额数量内的地址进行发信？","单次任务每日同域收件人上限默认设置","希望开发任务可以设置一个选择数量的功能，如一个企业有100多人，可以自动选择20个去发"]}]},"2025Q3":{"total":198,"coverage":0.8434,"top10":[{"topic":"收件人筛选与联系人选择","count":57,"share":0.2879,"examples":["联系人没有根据未营销状态搜索联系人，然后给这些联系人一键营销，希望增加未营销状态得筛选条件","自动挖掘获取联系人根据关键职位去获取，然后给这些关键职位的联系人去发信，比如老板、采购等","希望自动开发任务支持批量转任务，联系人数量很多的时候，每次都要翻页勾选"]},{"topic":"自动化营销与多轮跟进","count":41,"share":0.2071,"examples":["嘉兴富瑞邦新材料科技有限公司+自动开发任务 管理联系人页面单页选择上限提高到一千条每页选项","客户想要管理员角度查看从数据统计打开次数多的邮箱对应的公司，需要全部自动开发列表中能够搜索","自动开发任务勾选切换每页条数如100条/每页后，保持记录，下次打开还是之前的条数100条/页"]},{"topic":"回复识别、潜客沉淀与客户关联","count":27,"share":0.1364,"examples":["在营销潜客池中线索对应潜客可以显示对应联系人的分组","潜客营销池内的联系人可以支持单独导出，而不是通过潜客营销任务添加联系人，在任务详情导出","东莞市乐和智能科技有限公司，自动开发任务的营销列表希望加上对线索精准度的评分/希望挖掘信息更精准"]},{"topic":"打开、点击、回复等效果统计","count":25,"share":0.1263,"examples":["广州城博建科展览有限公司-营销效果统计的点击链接次数不去重","希望营销效果统计，点击去跟进，自动展示自己初始的发信内容","客户想要管理员角度查看从数据统计打开次数多的邮箱对应的公司，需要全部自动开发列表中能够搜索"]},{"topic":"发件箱、邮箱、域名与签名","count":23,"share":0.1162,"examples":["希望在：我方发信的时候，提示收件人的域名是否是新域名。 我方收信的时候，提示发件人的域名是否是新域名。","发信域名勾选的逻辑一定要勾选个人邮箱才能发信，需要增加多域名营销可以单独发信","安心发的邮箱营销发信希望可以同步到营销发件箱记录"]},{"topic":"去重、黑名单与过滤规则","count":20,"share":0.101,"examples":["希望后续自动任务可以屏蔽挖掘admin为前缀的邮箱，或者过滤企业公共邮箱可以被过滤掉不发","过滤规则里面最好有投诉邮箱的前缀进行过滤，目前只能过滤公共邮箱","衍界之行（杭州）互联科技有限公司+客户开发-黑名单希望可以添加邮箱前缀禁止发信的功能"]},{"topic":"邮件模板、编辑器、变量与附件","count":19,"share":0.096,"examples":["邮件模板希望支持插入变量","变量希望可以跟随邮件字体","营销黑名单希望可以忽略格式错误的只通过正确的，或者可以批量展示出格式错误的内容"]},{"topic":"任务列表、状态、搜索与复用","count":16,"share":0.0808,"examples":["客户想要管理员角度查看从数据统计打开次数多的邮箱对应的公司，需要全部自动开发列表中能够搜索","联系人没有根据未营销状态搜索联系人，然后给这些联系人一键营销，希望增加未营销状态得筛选条件","希望任务列表增加公司官网显示字段，方便导出查看"]},{"topic":"管理员、子账号与权限协作","count":11,"share":0.0556,"examples":["管理员可以在自动开发任务看下属的邮件和修改下属任务的权限","自动开发任务希望管理员可以看到子账号的任务邮件内容","客户想要管理员角度查看从数据统计打开次数多的邮箱对应的公司，需要全部自动开发列表中能够搜索"]},{"topic":"挖掘条件、产品词与行业排除","count":9,"share":0.0455,"examples":["在自动挖掘设置中添加屏蔽词，可以屏蔽某些词不挖掘","自动挖掘获取联系人根据关键职位去获取，然后给这些关键职位的联系人去发信，比如老板、采购等","希望自动开发任务可设置关键词屏蔽，符合这个屏蔽词的都会剔除不做挖掘及营销"]}]},"2025Q4":{"total":145,"coverage":0.8414,"top10":[{"topic":"收件人筛选与联系人选择","count":38,"share":0.2621,"examples":["希望点击任务详情下划查看联系人的时候每页可勾选的联系人可以调整到1000","希望联系人位置的筛选条件更多一些，营销发信状态能加个60天的筛选条件","客户操作联系人100页后的勾选，..."]},{"topic":"自动化营销与多轮跟进","count":31,"share":0.2138,"examples":["希望自动开发任务识别自动回复的地址，后续的轮次也不在发信，客户觉得没意思并且浪费数量","希望自动开发任务能完全按照设置的单日发信量来发送，如设置500，启动之后单日就可实际发送500","希望自动开发任务，在识别客户的时候，分析挖掘的客户的官网信息。跟关键词匹配度高的才挖掘以及发信"]},{"topic":"打开、点击、回复等效果统计","count":17,"share":0.1172,"examples":["系统支持A/B测试功能，（具体想法看截图）他想统计不同内容的回复率和打开率）","广州厨小侠商厨科技有限公司+客户希望营销效果统计中对于已订阅客户可以引用之前发送的营销邮件进行回复","营销效果统计的“回复”类统计里，可以串联看到往来邮件"]},{"topic":"回复识别、潜客沉淀与客户关联","count":15,"share":0.1034,"examples":["希望潜客回复不识别引用内容","希望自动开发任务识别自动回复的地址，后续的轮次也不在发信，客户觉得没意思并且浪费数量","广州厨小侠商厨科技有限公司+客户希望营销效果统计中对于已订阅客户可以引用之前发送的营销邮件进行回复"]},{"topic":"任务列表、状态、搜索与复用","count":12,"share":0.0828,"examples":["客户想要联系人列表可以全选删除联系人，不想一页一页选。也不想联系人列表删除全部，客户觉得麻烦","希望自动开发任务在未开启自动挖掘的前提下，手动添加联系人，营销轮次发完就可以将任务变为结束的状态","希望联系人位置的筛选条件更多一些，营销发信状态能加个60天的筛选条件"]},{"topic":"去重、黑名单与过滤规则","count":12,"share":0.0828,"examples":["希望后续过滤规则可以过滤前缀如图所示的这类公共邮箱","东莞井塘盛自动化精密科技有限公司+希望可以通过邮箱前缀过滤收件人","营销列表-发信失败，如果原因是地址被过滤，希望可以展示过滤原因"]},{"topic":"发信任务创建、配置与调度","count":12,"share":0.0828,"examples":["希望自动开发任务能完全按照设置的单日发信量来发送，如设置500，启动之后单日就可实际发送500","在潜客任务设置有人点击了商品链接或者网站链接等互动消息或只是看了邮件，然后立即发送特定设置好的回访信","希望针对回复中明确表示不感兴趣的可以做识别，后续营销轮次自动暂停"]},{"topic":"邮件模板、编辑器、变量与附件","count":11,"share":0.0759,"examples":["我们推荐的圣诞邮件模板，发出去之...","希望后续模板里的变量可以直接生效使用","个人邮件模板希望支持对同事分享"]},{"topic":"AI文案、翻译与内容质量","count":10,"share":0.069,"examples":["希望自动开发任务位置也支持邮件内容AI评分功能","客户去操作AI邮件评分的时候...","AI营销专家-按区域精细化开发-邮件内容更改一个地区的，那剩余地区邮件内容可以支持自动同步"]},{"topic":"发件箱、邮箱、域名与签名","count":9,"share":0.0621,"examples":["希望数据统计里的网站互动，可以显示哪些邮箱已经跟进过了。不然数据多起来找不到哪些是已跟进过的","东莞井塘盛自动化精密科技有限公司+希望可以通过邮箱前缀过滤收件人","希望收到邮件中客户提到更换邮箱可以自动替换任务中原来的邮箱"]}]},"2026Q1":{"total":110,"coverage":0.8273,"top10":[{"topic":"收件人筛选与联系人选择","count":32,"share":0.2909,"examples":["可以筛选职位进行发送，每个公司发送的联系人上限可以自行调整","倍威实业（嘉兴）有限公司+客户希望数据统计界面可以增加国家，洲地区的筛选项","有国家地区信息但是添加联系人后选..."]},{"topic":"打开、点击、回复等效果统计","count":22,"share":0.2,"examples":["开户开发营销效果统计中，商品点击中的信息，点开详情页后可以查看到所有往来邮件内容","希望营销效果统计里面，链接点击记录，可以删除，或者可以设置哪些已读未读，不然客户分辨不出哪些是跟进过的","在营销效果统计这边订阅统计数据无法导出，也无法做标记区分，希望可以优化一下，后续可以标记"]},{"topic":"回复识别、潜客沉淀与客户关联","count":16,"share":0.1455,"examples":["潜客营销跟进自动筛选效果反馈的线索能否做分类？比如不同业务线创建的不同任务","开发任务生成报错统计中增加潜客回复统计数据","潜客营销池不能直接转为已建档潜在客户"]},{"topic":"自动化营销与多轮跟进","count":15,"share":0.1364,"examples":["义乌市胜慧贸易有限公司+客户希望自动开发可以看到具体发往哪些国家，发了多少封邮件的数据","创建的自动开发任务可以手动将任务合并为任务集，方便任务创建比较多之后的管理","希望自动开发的联系人信息能添加自己公司的官网/产品介绍，增强搜索的精准度"]},{"topic":"发信额度、频率与数量控制","count":9,"share":0.0818,"examples":["营销额度，可以直接设置账号的可用额度，目前限额需要加上之前的已有额度","义乌市胜慧贸易有限公司+客户希望自动开发可以看到具体发往哪些国家，发了多少封邮件的数据","无锡迈隆金属制品有限公司-企业设置新增单公司最多发 20 封邮件的限制项"]},{"topic":"邮件模板、编辑器、变量与附件","count":9,"share":0.0818,"examples":["宁波优胜国际贸易有限公司+客户希望邮件模板可以保存主题","青岛精锐机械制造有限公司+希望变量可以自定义字体","希望邮件模板可以支持自定义编辑，类似网站一样"]},{"topic":"任务列表、状态、搜索与复用","count":8,"share":0.0727,"examples":["管理员可查看下属自动开发任务列表的具体营销信内容","希望营销列表总览位置支持不同轮次分别再做数据拆分展示（如第一轮打开/回复，第二轮打开回复）","希望设置营销黑名单之后可同步移除掉原有在营销列表中的联系人（还显示在列表中，容易误导）"]},{"topic":"去重、黑名单与过滤规则","count":6,"share":0.0545,"examples":["希望设置营销黑名单之后可同步移除掉原有在营销列表中的联系人（还显示在列表中，容易误导）","客户需要将营销黑名单设置调整到邮件位置，在邮件位置可以设置营销黑名单","希望支持过滤时可同步删除状态长期不活跃的邮箱"]},{"topic":"发件箱、邮箱、域名与签名","count":6,"share":0.0545,"examples":["常州晟皓智能科技有限公司+客户希望录入域名的客户，没录入邮箱的联系人在营销效果统计中显示已录入客户但未添加联系人","上禾生物+客户希望开发任务可以所有邮件都回复到设置好的回复邮箱中","自己的回复邮箱不设置在邮箱模块也能够设置成..."]},{"topic":"AI文案、翻译与内容质量","count":5,"share":0.0455,"examples":["客户认为AI生成目标客户特征词功能很鸡肋，生成的客户行业没有一个准的。希望直接取消掉。","AI生成目标客户特征词，自己的任务关键词需要重新设定了，增加工作量，希望取消。","单次发信定时发信任务，国家地区厄瓜多尔翻译错误"]}]},"2026Q2":{"total":121,"coverage":0.8595,"top10":[{"topic":"收件人筛选与联系人选择","count":28,"share":0.2314,"examples":["东莞市伟俊玩具有限公司+客户希望勾选的邮箱都可以在联系人中清理掉，而不是只能清理无效地址","自动开发任务支持只对有职位的联系人进行发信","营销列表可筛选职位"]},{"topic":"自动化营销与多轮跟进","count":28,"share":0.2314,"examples":["希望单次发信任务的多轮营销可支持按前一轮的条件来触发，比如第二轮，第三轮。","希望自动开发任务详情里可以增加为500每页或者1000每页以便于录入线索","自动开发挖掘到的客户公司，希望只发2/3个邮箱地址，不用全部都发，不用一天发10个，客户觉得是浪费资源，没必要"]},{"topic":"打开、点击、回复等效果统计","count":16,"share":0.1322,"examples":["单次开发任务——可以搜索回复率或者是打开率","希望在营销效果统计位置直接可以展示对方的网站，社媒等详细信息","营销效果统计1对1发信之后再返回过来无法回到原页面，需要优化"]},{"topic":"回复识别、潜客沉淀与客户关联","count":14,"share":0.1157,"examples":["潜客回复识别准确度太低","客户管理中的线索列表希望增加一个筛选5千个邮箱的筛选项（用于点击一键营销选择单次发信的限制）","任务添加联系人，到线索列表添加的时候只能100条/页，线索列表是支持1000条/页的"]},{"topic":"任务列表、状态、搜索与复用","count":12,"share":0.0992,"examples":["任务列表目前不支持多个批量导出","在手动开发的任务列表，可...","客户管理中的线索列表希望增加一个筛选5千个邮箱的筛选项（用于点击一键营销选择单次发信的限制）"]},{"topic":"发件箱、邮箱、域名与签名","count":12,"share":0.0992,"examples":["东莞市伟俊玩具有限公司+客户希望勾选的邮箱都可以在联系人中清理掉，而不是只能清理无效地址","客户管理中的线索列表希望增加一个筛选5千个邮箱的筛选项（用于点击一键营销选择单次发信的限制）","希望自动挖掘可以屏蔽所有域名中带有blog，xblog, yblog这个博客的词的域名"]},{"topic":"挖掘条件、产品词与行业排除","count":12,"share":0.0992,"examples":["希望自动挖掘功能可以设置屏蔽词，对应词汇就不挖掘","自动挖掘可以选择挖掘行业","希望自动挖掘可以屏蔽所有域名中带有blog，xblog, yblog这个博客的词的域名"]},{"topic":"去重、黑名单与过滤规则","count":11,"share":0.0909,"examples":["自动挖掘设置 排除对方域名关键字, 公司名关键字，不给这些域名和公司挖掘进来发信，她觉得黑名单不满足需求","过滤时候的同步删除联系人的功能希望也增加同步删除黑名单的联系人","优化公共邮箱过滤词库"]},{"topic":"邮件模板、编辑器、变量与附件","count":10,"share":0.0826,"examples":["邮件模板可以支持自定义排版","变量格式目前是一个默认的格式，跟邮件内容不一致需要可以适应当前内容格式或者支持设置","希望后续软件可以支持营销邮件里附件可以上传mp4格式的视频"]},{"topic":"AI文案、翻译与内容质量","count":5,"share":0.0413,"examples":["Ai拓词的客户商品与公司自有商品不能一致，但是不标注出哪些词需要删除","自动开发任务创建的时候AI优化关键词功能希望增加不采用的可选项","AI团队邮件标题字数超限希望在修改的时候就增加一道检测功能"]}]},"2026Q3":{"total":115,"coverage":0.8348,"top10":[{"topic":"收件人筛选与联系人选择","count":39,"share":0.3391,"examples":["营销AGENT可以筛选联系人职位","希望自动开发任务详情中可一次勾选1000条，方便筛选及管理","营销任务选择发信联系人可以设置优先发送指定职位的联系人"]},{"topic":"自动化营销与多轮跟进","count":29,"share":0.2522,"examples":["自动开发任务-任务设置-过滤条件设置-无法过滤crm客户列表中标记了已成交客户的这部分联系人","自动开发每日营销记录希望增加按条件筛选是否打开或者回复的，然后增加导出功能，以及增加查看公司详情的功能","自动开发自动挖掘的公司希望增加对公司规模联系人数量的限制，或者优先推荐大公司。"]},{"topic":"回复识别、潜客沉淀与客户关联","count":17,"share":0.1478,"examples":["这个线索被标记已回复，但是去...","自动开发每日营销记录希望增加按条件筛选是否打开或者回复的，然后增加导出功能，以及增加查看公司详情的功能","每个下属员工的邮箱都收到了推荐线索处理的邮件提醒，无法设置只让管理员账号收到"]},{"topic":"打开、点击、回复等效果统计","count":16,"share":0.1391,"examples":["希望营销效果统计，链接点击、网站互动留资这些企业下共同可见的类别，可以设置查看权限，让别的同事不能查看。客户觉得不合理，不利于分配线索","营销效果统计的【潜在客户回复】可以支持针对：海外客户回复的邮件内容里提及“邮箱变更、人员转接和带返岗日期的休假”之类的自动回复的邮件归类","客户在营销效果统计的时候查看回复数..."]},{"topic":"发件箱、邮箱、域名与签名","count":15,"share":0.1304,"examples":["使用域别名发信的时候，可以识别发信邮箱并附带对应的签名","邮件营销可以支持按邮箱前缀、邮箱域名后缀、职位进行过滤排除","多域名邮箱收到的回复，也可以转发。不然不方便使用"]},{"topic":"去重、黑名单与过滤规则","count":14,"share":0.1217,"examples":["邮件营销可以支持按邮箱前缀、邮箱域名后缀、职位进行过滤排除","过滤规则里的过滤公共邮箱，可以识别更多类型的公共邮箱地址","任务过滤条件设置拦截企业公共邮箱，..."]},{"topic":"任务列表、状态、搜索与复用","count":10,"share":0.087,"examples":["任务列表-任务详情-营销列表-点公司名称跳转到详情页-无法点击海关数据信息里面的采购商或者供应商-跳转到公司详情页","自动开发任务列表，可以记住“展开全部任务”这个设置","客户在手动开发任务列表点击诊断..."]},{"topic":"发信额度、频率与数量控制","count":10,"share":0.087,"examples":["自动开发每日营销记录希望增加按条件筛选是否打开或者回复的，然后增加导出功能，以及增加查看公司详情的功能","自动开发自动挖掘的公司希望增加对公司规模联系人数量的限制，或者优先推荐大公司。","希望自动开发可设置单个企业发信联系人的数量，如同一企业只发前5个联系人"]},{"topic":"性能、稳定性与操作体验","count":9,"share":0.0783,"examples":["自动开发任务-任务详情-营销列表；筛选地址异常-目前无法展示异常原因","如果自己没有勾选同步营销发件夹的情况下，任务详情里是无法查看邮件内容的，客户希望邮件详情这个按钮直接置灰无法点击，他觉得现在可以跳转提示加载失败很浪费时间和感情","ai团队-营销专家-按语种划分任务-修改其中一个语种下的邮件内容无法自动修改其他语种下的邮件"]},{"topic":"挖掘条件、产品词与行业排除","count":7,"share":0.0609,"examples":["自动开发自动挖掘的公司希望增加对公司规模联系人数量的限制，或者优先推荐大公司。","自动开发任务的自动挖掘联系人，可以把admin, administrator, webmaster 这些前缀过滤","自动开发任务可以负责填写的任务产品词和网站，方便保存出来"]}]}},"数据获客":{"2025Q1":{"total":116,"coverage":0.9224,"top10":[{"topic":"搜索关键词与结果召回","count":46,"share":0.3966,"examples":["智能引擎搜索wa联系人时，无法几个关键词合并搜索","希望搜索词条件位置排除词可设置50-100","全球搜索一键营销，超过1000左右联系人创建任务将不再展示已经添加的收信人，能否优化提供这个上限"]},{"topic":"筛选、排序与条件组合","count":35,"share":0.3017,"examples":["18913141553 展会信息支持按照国家 联系人数做排序 筛选","国内搜索在筛选条件这一块加一个客户类型的筛选功能，就像这样：业务类型：国内贸易，出口，进口，进出口","河北广英紧固件制造有限公司---智能引擎搜索筛选国家希望能支持不筛选中国"]},{"topic":"海关数据与进出口分析","count":34,"share":0.2931,"examples":["公司详情页的海关数据供应商/采购商中希望增加按HS编码/产品搜索的功能","国内搜索在筛选条件这一块加一个客户类型的筛选功能，就像这样：业务类型：国内贸易，出口，进口，进出口","石家庄尚贤货美进出口贸易有限公司+希望不感兴趣客户单独增加一个列表，方便后续感兴趣再重新更改状态"]},{"topic":"联系人挖掘与联系方式","count":27,"share":0.2328,"examples":["全球搜索结果暂时的联系人可以直接查看联系方式为手机号的","深圳市凯西林贸易有限公司+客户希望下图界面的邮箱可以一键复制，方便自己编辑对对应联系人的邮件","全球搜索录入线索根据职位，一个公司可以有多个主联系人（同职位）"]},{"topic":"地图、展会、社媒与插件渠道","count":21,"share":0.181,"examples":["中山市东石材料科技有限公司展会获客后续加上暖通相关的德国ISH 韩国Harfko 美国AHRI展会","希望地图搜索的结果呈现不要以“查看更多”的方式，和全球搜一样可以直接展示全部结果","18913141553 展会信息支持按照国家 联系人数做排序 筛选"]},{"topic":"批量录入、导出与客户建档","count":17,"share":0.1466,"examples":["批量录入线索，线索分组选择位置增加搜索功能","同事录入线索的客户不要有一键营销的按钮","海关数据一键全选数据然后录入线索"]},{"topic":"相似企业推荐与智能引擎","count":13,"share":0.1121,"examples":["全球搜的猜邮箱功能，可以多设置一些规则或者接入ai功能，多一些邮箱提供，客户觉得现在的命中率很低","河北广英紧固件制造有限公司---智能引擎搜索筛选国家希望能支持不筛选中国","希望补充下意大利维罗纳国际石材展览会Marmomacc，中国厦门国际石材展 - Xiamen Stone Fair数据"]},{"topic":"搜索结果展示、详情与分页","count":12,"share":0.1034,"examples":["公司详情页的海关数据供应商/采购商中希望增加按HS编码/产品搜索的功能","希望【客户端可以在公司详情页增加搜索联系人功能】","公司详情页的信息希望回到以前默认展示进口记录"]},{"topic":"数据准确性、完整性与更新","count":4,"share":0.0345,"examples":["海关数据新增“30人以下公司”以及“最新更新数据”的筛选项","希望后续外贸通插件可以支持抓取店铺商品的全部内容信息","把网址输入系统自动去抓取上面的展商信息"]},{"topic":"邮件、WhatsApp等营销联动","count":4,"share":0.0345,"examples":["全球搜索一键营销，超过1000左右联系人创建任务将不再展示已经添加的收信人，能否优化提供这个上限","智能引擎搜索wa联系人时，无法几个关键词合并搜索","同事录入线索的客户不要有一键营销的按钮"]}]},"2025Q2":{"total":130,"coverage":0.9154,"top10":[{"topic":"搜索关键词与结果召回","count":58,"share":0.4462,"examples":["宁波海曙绣菊贸易有限公司+全球搜索新建客户或线索勾选联系人之前勾选的内容不会因为切换职业消失","全球搜索那边添加一个可以搜索30以上或者更多人以上的公司，因为搜索到的公司联系人都很少","张家港凯禄机械密封有限公司+希望海关数据搜索结果勾选后不变为瀑布流查看方式并且展示数量"]},{"topic":"筛选、排序与条件组合","count":38,"share":0.2923,"examples":["智能引擎搜索，找邮箱，增加国家地区的筛选","希望全球搜筛选条件的人数可以自定义","深圳市八方达国际物流有限公司+全球搜索只有30人以下，客户希望增加一百人以下的筛选或自定义筛选人数"]},{"topic":"联系人挖掘与联系方式","count":32,"share":0.2462,"examples":["全球搜筛选条件希望直接加个职位条件的筛选，可批量录入线索中包含职位的联系人","沧州市沣钢法兰管件有限公司+希望官网的邮箱在客户联系人详情中有特殊标注","佛山市恩凯家具有限公司+客户的联系邮箱可以精准到对应的职位"]},{"topic":"海关数据与进出口分析","count":29,"share":0.2231,"examples":["石家庄腾迪机械设备贸易有限公司---希望海关订单数据能展示更多的订单字段","在贸易分析的国内供应商分析界面的国内主要供应商板块，下面切换页面没有跳转到某一页面的选择框，手动翻页很麻烦，希望可以添加这个搜索框","宁波海曙绣菊贸易有限公司+全球搜索新建客户或线索勾选联系人之前勾选的内容不会因为切换职业消失"]},{"topic":"批量录入、导出与客户建档","count":21,"share":0.1615,"examples":["全球搜筛选条件希望直接加个职位条件的筛选，可批量录入线索中包含职位的联系人","江苏棉澳纺织科技有限公司+希望同事录入的客户信息中有同域名或同公司名称的就在全球搜提示同事线索","泽瑞钟表（漳州）有限公司+希望录入线索分组的时候可以直接按照职位进行分组"]},{"topic":"相似企业推荐与智能引擎","count":15,"share":0.1154,"examples":["希望智能推荐有命名功能，这样可以命名成：香水瓶 - 北美；游戏机 - 南美，这样就一目了然了","希望自动化功能里面可以加入根据客户输入的一个目标客户公司，自动推荐出类似的公司这样的功能","智能推荐的结果只提供公司的主营产品是设置的关键词完全一致的。并且不要有渠道和零售等等，只推工厂"]},{"topic":"地图、展会、社媒与插件渠道","count":10,"share":0.0769,"examples":["展会搜索没有按照已录入未录入进行区分的筛选勾选条件，客户希望可以添加","社媒搜索这边希望增加单次全选或者选中5000条之类的功能，目前只能全选单页，一页数据最多50，数据量过大操作很繁琐","浙江守中智能家居有限公司---希望在社媒搜索也增加ai拓展词功能"]},{"topic":"搜索结果展示、详情与分页","count":8,"share":0.0615,"examples":["张家港凯禄机械密封有限公司+希望海关数据搜索结果勾选后不变为瀑布流查看方式并且展示数量","访客识别点击公司详情页查看供应链穿透需要支持再次查看相关公司","查看公司详情页，联系人界面可以添加搜索联系人姓名功能"]},{"topic":"邮件、WhatsApp等营销联动","count":8,"share":0.0615,"examples":["智能营销搜索那边，展示搜索出来的WA账号对应公司名称，方便排查，通杀添加这个wa账号是否已经联系过记录，避免重复联系","邮件营销手动/自动营销增加任务多少天，提醒用户修改的按钮","广州小美科技-提升客户发现板块一键营销的单次发信上限"]},{"topic":"去重与已建档识别","count":5,"share":0.0385,"examples":["在全球搜有一个新增地址的按钮，可以直接新增到已录入的线索或者客户列表去","展会搜索没有按照已录入未录入进行区分的筛选勾选条件，客户希望可以添加","智能营销搜索那边，展示搜索出来的WA账号对应公司名称，方便排查，通杀添加这个wa账号是否已经联系过记录，避免重复联系"]}]},"2025Q3":{"total":138,"coverage":0.913,"top10":[{"topic":"搜索关键词与结果召回","count":59,"share":0.4275,"examples":["深圳出海标杆科技有限公司+全球搜索页面增加筛选输入的关键词只在公司产品目录里显示的选项","海关搜索，排除物流公司，需要过滤公司介绍含有相关关键词的公司","广州翊进国际贸易有限公司+希望关键词不会被分词搜索"]},{"topic":"筛选、排序与条件组合","count":46,"share":0.3333,"examples":["在全球搜索位置添加可以排除国家地区的筛选条件","全球搜索筛选条件30人一下，可以改为人数自定义","客户发现 合并公司的联系人可以支持筛选国家地区"]},{"topic":"海关数据与进出口分析","count":41,"share":0.2971,"examples":["贸易分析hscode可以更长一些，六位查看的数据范围很多不准确","海关数据点进某公司直接找某精准供应商，可以筛选供应商名称","贸易分析的采购商列表，无法通过采购时间排序，希望后续添加"]},{"topic":"联系人挖掘与联系方式","count":28,"share":0.2029,"examples":["在全球搜索搜索到的公司，在公司页面，给联系人添加一个搜索框，可以搜索邮箱具体邮箱或者职位","深圳市华桥供应链有限公司，全球搜索/海关数据中的联系人电话希望能标注是否是wa账号","全球搜位 置-客户批量勾选发起一键营销的时候可以 根据联系人职位进行精确定位营销"]},{"topic":"批量录入、导出与客户建档","count":14,"share":0.1014,"examples":["全球搜位 置-客户批量勾选发起一键营销的时候可以 根据联系人职位进行精确定位营销","海关数据搜索结果可以批量勾选公司录入，而不是每次勾选一页数据","海关数据一键营销发信只能勾选50家企业，用户觉得太少了，希望可以增加一键营销的企业勾选条数"]},{"topic":"地图、展会、社媒与插件渠道","count":13,"share":0.0942,"examples":["深圳出海标杆科技有限公司+展会获客页面选择具体展会进入可以针对展会内行业筛选公司","上海泉金实业有限公司+客户希望地图搜索可以扩大到州或者城市","希望大数据公司信息联系人下面社媒右边可以标注对方的好友数量"]},{"topic":"相似企业推荐与智能引擎","count":13,"share":0.0942,"examples":["嘉兴富瑞邦新材料科技有限公司+客户发现 海关数据页面增加单页选择的上限提高到五千条每页选项","希望自动开发任务，只挖掘命中关键词的采购商和批发商？不要推荐配件或者经营其他产品的公司。","武汉善品金属制品有限公司，在客户发现找客户的时候，希望可以根据客户业务形态进行筛选，比如工厂/贸易商"]},{"topic":"搜索结果展示、详情与分页","count":11,"share":0.0797,"examples":["全球搜索公司详情页增加联系人搜索框，可以搜索具体的联系人，或者联系人的职位信息","公司详情页查看采购商的时候，可以线采购商中已经添加到线索/客户的标签","东莞市乐和智能科技有限公司+希望海关数据可以一键勾选前五千条数据（不论是否瀑布流）"]},{"topic":"邮件、WhatsApp等营销联动","count":8,"share":0.058,"examples":["海关数据一键营销发信只能勾选50家企业，用户觉得太少了，希望可以增加一键营销的企业勾选条数","深圳市华桥供应链有限公司，全球搜索/海关数据中的联系人电话希望能标注是否是wa账号","全球搜位 置-客户批量勾选发起一键营销的时候可以 根据联系人职位进行精确定位营销"]},{"topic":"数据准确性、完整性与更新","count":6,"share":0.0435,"examples":["贸易分析hscode可以更长一些，六位查看的数据范围很多不准确","客户在全球搜索找公司时，已经勾选了过滤物流公司，依旧有物流公司没有被过滤掉，客户希望优化提高准确度","在全球搜索搜索到的公司，介绍翻译存在错误的情况，希望可以优化"]}]},"2025Q4":{"total":100,"coverage":0.89,"top10":[{"topic":"搜索关键词与结果召回","count":45,"share":0.45,"examples":["希望全球搜索输入关键词后，直接点击城市，出现搜索结果，搜索很麻烦","展会的参展商搜索，进入具体展会后可以按照关键词之类的进一步搜索公司，因为一个展会的参展商比较多，不好搜索具体的目标客户","希望海关数据-贸易数据查询功能下的搜索结果可以自定义筛选"]},{"topic":"筛选、排序与条件组合","count":31,"share":0.31,"examples":["在全球搜索里面无法根据公司人数范围筛选，联系人里面职位设置太少","海关数据筛选时加一个企业规模/人数阶梯范围","可以赠送全球搜索，国家地区选择里面的收藏上限数量"]},{"topic":"联系人挖掘与联系方式","count":26,"share":0.26,"examples":["全球搜索公司详情页增加联系人搜索框，可以搜索具体的联系人，或者联系人的职位信息","希望联系人信息，旁边标注哪些是通过海关进口或者出口信息获取的联系方式","在全球搜索里面无法根据公司人数范围筛选，联系人里面职位设置太少"]},{"topic":"海关数据与进出口分析","count":17,"share":0.17,"examples":["常州市化工轻工材料总公司，海关数据进口记录希望可以支持在HScode筛选的基础上筛选公司","希望联系人信息，旁边标注哪些是通过海关进口或者出口信息获取的联系方式","海关数据中可以显示某一个客户一年杜从单个国家进口产品的汇总数据"]},{"topic":"批量录入、导出与客户建档","count":16,"share":0.16,"examples":["希望海关数据的货运关系可以一键录入或者一键营销","一键选择录入线索是能选择单一职位的信息录入","海关数据支持 搜素结果 一键全部录入线索"]},{"topic":"地图、展会、社媒与插件渠道","count":11,"share":0.11,"examples":["最初反馈地图搜索功能外部无网址但是详情数据里有网址的情况，数据没对上，希望可以优化下，使其一致","展会的参展商搜索，进入具体展会后可以按照关键词之类的进一步搜索公司，因为一个展会的参展商比较多，不好搜索具体的目标客户","希望 展会获客 增加一个筛选按钮，排除 国内参展商"]},{"topic":"搜索结果展示、详情与分页","count":11,"share":0.11,"examples":["全球搜索公司详情页增加联系人搜索框，可以搜索具体的联系人，或者联系人的职位信息","智能推荐进入公司详情页在详情页增加不感兴趣按钮","在公司详情页添加一件复制所有邮箱功能"]},{"topic":"相似企业推荐与智能引擎","count":7,"share":0.07,"examples":["上海汇腾达光学科技有限公司，产品词在智能引擎搜索中美国区域不存在数据","希望智能引擎可以一次导出所有结果，单页选择，客户觉得不方便很耽误时间","智能引擎搜索-找邮箱希望可以筛选已经录入线索的，客户觉得不方便"]},{"topic":"数据准确性、完整性与更新","count":5,"share":0.05,"examples":["离线挖掘的公司，如果是已经录入的客户或者线索列表，可以把更新的联系人直接添加到列表中","深圳维拓佳科技有限公司+客户希望可以抓取到详情页的更多商品内容信息","浙江九色鹿车业股份有限公司+客户希望搜索electric bicycles关键词的时候勾选准确将其作为一个词组搜索，而不是直接搜索其中半部分词汇"]},{"topic":"点数、额度与计费","count":3,"share":0.03,"examples":["潜客营销池能看到打开邮件次数和时间","海关数据能有更多筛选维度（近一、二、三、五年进口数据金额分别排列”，“近一、二、三、五年进口次数分别排列”，“以联系人数排列”，“以带电话的数量排列）","增加下钻次数"]}]},"2026Q1":{"total":97,"coverage":0.8557,"top10":[{"topic":"搜索关键词与结果召回","count":40,"share":0.4124,"examples":["海关数据关键词搜索后显示客户总数和剩余页数","公司监测功能目前只能从搜索到的公司详情页去添加，需要在智能监测页面可以新增公司添加","在全球搜索等搜索页面批量录入公司的时候，可以多一些设置字段，不只是设置客户标签"]},{"topic":"筛选、排序与条件组合","count":29,"share":0.299,"examples":["WA的国家/地区，支持按洲筛选","物流行业过滤条件的筛选规则","希望智能引擎搜索的网页搜索，能按国家筛选"]},{"topic":"联系人挖掘与联系方式","count":21,"share":0.2165,"examples":["希望联系人职位里面，可以加上模具工程师，项目工程师的类别，客户需要查看这个类型","希望全球搜里公司详情可以支持搜索邮箱的功能，联系人太多手动翻阅筛选不方便","希望在搜索列表页支持按照职位筛选，可一键批量录入按关键职位的联系人"]},{"topic":"海关数据与进出口分析","count":17,"share":0.1753,"examples":["海关数据模块新增交易明细分析能力与 HS 编码结果二次筛选功能","海关进口记录的复制功能","海关数据–批量录入线索自动按职位优先级筛选前 10 个联系人"]},{"topic":"搜索结果展示、详情与分页","count":14,"share":0.1443,"examples":["公司监测功能目前只能从搜索到的公司详情页去添加，需要在智能监测页面可以新增公司添加","公司详情页中的录入线索和录入客户平行展示","希望直接在搜索页面删除已录入的线索，客户觉得要去线索列表找出线索删除很麻烦"]},{"topic":"批量录入、导出与客户建档","count":10,"share":0.1031,"examples":["希望在搜索列表页支持按照职位筛选，可一键批量录入按关键职位的联系人","在全球搜索等搜索页面批量录入公司的时候，可以多一些设置字段，不只是设置客户标签","海关数据–批量录入线索自动按职位优先级筛选前 10 个联系人"]},{"topic":"相似企业推荐与智能引擎","count":9,"share":0.0928,"examples":["智能推荐规则可以使用AI生成相似词","希望客户发现筛选的结果，可以选择试发xx数量的功能。客户自己选择。客户觉得有的公司联系人太多，都发很不合理，筛选又麻烦","客户发现---国家展示可以不完全根据海关数据国家展示"]},{"topic":"地图、展会、社媒与插件渠道","count":7,"share":0.0722,"examples":["全球搜索筛选项可以添加上过滤有 FB、领英这类社媒账号的公司","在展会获客位置查询参展商是可以看到具体的参展商参展时间","希望社媒搜索支持按照粉丝数，帖子热度来排序展示"]},{"topic":"性能、稳定性与操作体验","count":6,"share":0.0619,"examples":["自动开发任务中的节日跳过功能失效，需要支持支持；且需要更新其他国家节假日","智能搜索这边推荐了很多不相干的线索，无法排除","互斥问题：开启内置VPN无法访问..."]},{"topic":"数据准确性、完整性与更新","count":5,"share":0.0515,"examples":["自动开发任务中的节日跳过功能失效，需要支持支持；且需要更新其他国家节假日","希望系统抓取的邮箱可以参考Apollo这个平台优化准确率","希望自己设置哪些货代物流邮箱需要被过滤的条件，觉得目前过滤物流货代不全面"]}]},"2026Q2":{"total":88,"coverage":0.9659,"top10":[{"topic":"搜索关键词与结果召回","count":37,"share":0.4205,"examples":["希望搜索关键词可以用xxx制造商这些词汇，他觉得只用产品词搜索的结果有限不全面","全球搜索这边录入线索的是，分组是可以直接在录入的时候新增的，标签需要到客户管理去新增，也需要支持新增下","客户需要海关数据勾选扩展词可以勾选后再搜索，而不是每次都勾选一个自动搜索一次"]},{"topic":"联系人挖掘与联系方式","count":28,"share":0.3182,"examples":["希望搜索到到的电话联系人可以匹配对应姓名或职位","客户发现查看联系人信息的时候，姓名后会跟着职位信息，一些是小语种的，需要支持翻译方便查看","在客户发现的搜索功能内，可以给搜索到的公司联系人页面添加一个职位搜索功能，可以输入具体的职位名称搜索对应联系人"]},{"topic":"海关数据与进出口分析","count":27,"share":0.3068,"examples":["查看具体公司海关数据的采购商/供应商的时候也支持筛查hscode","希望海关数据里的提单信息都显示小写，不要大写，客户觉得影响使用效率","贸易分析的采购商列表增加筛选和批量勾选录入线索功能"]},{"topic":"筛选、排序与条件组合","count":24,"share":0.2727,"examples":["希望海关数据有筛选条件的情况下依然显示有多少页数，现在是不显示的，客户觉得不方便","大数据搜索结果能按照公司规模进行筛选，或者按照公司规模排序","海关数据，排序的时候添加按照公司联系人数量进行排序"]},{"topic":"批量录入、导出与客户建档","count":18,"share":0.2045,"examples":["在展会批量录入客户时可以选择要录入主联系人，而不是全部录入","客户发现，批量录入联系人的时候可以选择录入联系人的数量","贸易分析的采购商列表增加筛选和批量勾选录入线索功能"]},{"topic":"相似企业推荐与智能引擎","count":11,"share":0.125,"examples":["客户发现查看联系人信息的时候，姓名后会跟着职位信息，一些是小语种的，需要支持翻译方便查看","希望智能监测功能可以增加按国家监测海关编码，（或者智能推荐里可以有这样的规则要求设定也可以）","在客户发现的搜索功能内，可以给搜索到的公司联系人页面添加一个职位搜索功能，可以输入具体的职位名称搜索对应联系人"]},{"topic":"地图、展会、社媒与插件渠道","count":10,"share":0.1136,"examples":["希望展会获客里面的找参展商也可以按照年份筛选。客户觉得不方便","在展会批量录入客户时可以选择要录入主联系人，而不是全部录入","客户发现-展会搜索-展会下无法按照展会类别和参展商名称搜索"]},{"topic":"搜索结果展示、详情与分页","count":8,"share":0.0909,"examples":["公司详情页面增加翻译和邮箱搜索","自动开发任务模板客户官网，可以从已经保存到线索列表获取到官网，","大数据搜索结果能按照公司规模进行筛选，或者按照公司规模排序"]},{"topic":"性能、稳定性与操作体验","count":3,"share":0.0341,"examples":["希望海关数据有筛选条件的情况下依然显示有多少页数，现在是不显示的，客户觉得不方便","客户发现-展会搜索-展会下无法按照展会类别和参展商名称搜索","全球搜索，筛选项里面无法设置联系人范围"]},{"topic":"数据准确性、完整性与更新","count":3,"share":0.0341,"examples":["希望搜索关键词可以用xxx制造商这些词汇，他觉得只用产品词搜索的结果有限不全面","海关数据的编码描述可抓取对应单据的品名信息","使用完整的十位海关编码进行贸易分析"]}]},"2026Q3":{"total":90,"coverage":0.8889,"top10":[{"topic":"搜索关键词与结果召回","count":41,"share":0.4556,"examples":["希望增加关键词搜索数据变化的功能","客户想在不录入线索或者客户的情况下，直接在搜索结果页给公司备注信息，他觉得录入后再备注不方便它使用","海关搜索搜索海关贸易数据的时候，是无法勾选精准匹配，客户反馈模糊数据没有意义，希望添加精准匹配功能"]},{"topic":"筛选、排序与条件组合","count":28,"share":0.3111,"examples":["希望社媒搜索下三种社媒都可以增加按国家地区检索的条件，国家可以细分","全球搜检索公司后录入线索时，线索联系方式筛选可以默认记忆客户上次选择的筛选条件","智能推荐功能创建智能推荐规则的时候，可以抓取已经创建的规则产品词，这样同一批产品词的不同国家地区就不需要重复输入"]},{"topic":"联系人挖掘与联系方式","count":25,"share":0.2778,"examples":["全球搜索板块里，可以增加识别联系人邮箱的前缀来判定属于哪个职位的逻辑","全球搜索，点击公司详情后，可以单独进行联系人，或是邮箱的搜索","企业联系人支持按领英岗位关键词 or 邮箱过滤"]},{"topic":"海关数据与进出口分析","count":22,"share":0.2444,"examples":["海关搜索搜索海关贸易数据的时候，是无法勾选精准匹配，客户反馈模糊数据没有意义，希望添加精准匹配功能","希望海关数据进口趋势这里可以按照海关编辑筛选","搜索板块，采购商可以按照采购的海关编码来筛选"]},{"topic":"批量录入、导出与客户建档","count":14,"share":0.1556,"examples":["批量录入线索时，可以选择录入指定职位","全球搜索可以批量录入客户","希望客户发现更新了公司信息，不取消已经录入的线索的关联，自动关联新数据，并且还是显示我的线索。"]},{"topic":"相似企业推荐与智能引擎","count":13,"share":0.1444,"examples":["希望客户发现更新了公司信息，不取消已经录入的线索的关联，自动关联新数据，并且还是显示我的线索。","智能引擎搜索在搜索wa的时候，可以添加一个时间搜索功能，筛选比较新的wa网站信息","自动开发任务查看想去可以筛选同一个推荐理由，方便查看管理和屏蔽不合适的联系人"]},{"topic":"地图、展会、社媒与插件渠道","count":10,"share":0.1111,"examples":["搜索到的公司页面可以识别WhatsApp号码类似于其他的社媒X,INS这些的","客户想要在展会获客里添加三级分类的类目搜索，能快速筛选出对口的客户","希望社媒搜索下三种社媒都可以增加按国家地区检索的条件，国家可以细分"]},{"topic":"搜索结果展示、详情与分页","count":9,"share":0.1,"examples":["客户想在不录入线索或者客户的情况下，直接在搜索结果页给公司备注信息，他觉得录入后再备注不方便它使用","搜索到的公司详情页支持搜索联系人","希望搜索点击公司详情的时候，如单页展示100条这个设置可以固定，目前每次进入都需要重新设一下，很不方便"]},{"topic":"数据准确性、完整性与更新","count":7,"share":0.0778,"examples":["希望客户发现更新了公司信息，不取消已经录入的线索的关联，自动关联新数据，并且还是显示我的线索。","联系人更新后再次录入更新的联系人操作繁琐，想要保存带线索联系人客户可以自动更新","智能推荐功能创建智能推荐规则的时候，可以抓取已经创建的规则产品词，这样同一批产品词的不同国家地区就不需要重复输入"]},{"topic":"性能、稳定性与操作体验","count":5,"share":0.0556,"examples":["海关搜索搜索海关贸易数据的时候，是无法勾选精准匹配，客户反馈模糊数据没有意义，希望添加精准匹配功能","客户发现-全球搜索-按照条件筛选后，最下面无法展示具体页数","全球搜索这边无法搜索出生产A产品同时采购B产品的公司"]}]}}};
+
+    const state = {
+      quarterIndex: 6,
+      topicModule: "建站",
+      moduleMetric: "shares",
+      visibleModules: new Set(DATA.moduleSeries.slice(0, 6).map(function(item){ return item.name; }))
+    };
+
+    const tooltip = document.getElementById("tooltip");
+
+    function showTooltip(event, html) {
+      tooltip.innerHTML = html;
+      tooltip.classList.add("show");
+      const x = Math.min(window.innerWidth - 260, event.clientX + 14);
+      const y = Math.min(window.innerHeight - 120, event.clientY + 14);
+      tooltip.style.left = x + "px";
+      tooltip.style.top = y + "px";
+    }
+    function hideTooltip() { tooltip.classList.remove("show"); }
+    function formatNumber(value) { return Number(value).toLocaleString("zh-CN"); }
+    function svgNode(tag, attrs) {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.keys(attrs || {}).forEach(function(key){ node.setAttribute(key, attrs[key]); });
+      return node;
+    }
+
+
+    function renderTopicModuleButtons() {
+      const host = document.getElementById("topicModuleButtons");
+      if (!host) return;
+      host.innerHTML = "";
+      Object.keys(MODULE_TOPIC_DATA).forEach(function(module) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "topic-module-button" + (module === state.topicModule ? " active" : "");
+        button.textContent = module;
+        button.setAttribute("aria-pressed", module === state.topicModule ? "true" : "false");
+        button.addEventListener("click", function() {
+          state.topicModule = module;
+          renderTopicModuleButtons();
+          renderModuleTopicTop10();
+        });
+        host.appendChild(button);
+      });
+    }
+
+    function renderModuleTopicTop10() {
+      const quarter = DATA.quarters[state.quarterIndex];
+      const group = MODULE_TOPIC_DATA[state.topicModule][quarter];
+      const previousQuarter = state.quarterIndex > 0 ? DATA.quarters[state.quarterIndex - 1] : null;
+      const previous = previousQuarter ? MODULE_TOPIC_DATA[state.topicModule][previousQuarter] : null;
+      const top = group.top10[0];
+      const previousTop = previous ? previous.top10.find(function(item) { return item.topic === top.topic; }) : null;
+      const delta = previousTop ? (top.share - previousTop.share) * 100 : null;
+      const deltaText = delta === null ? "首季" : ((delta >= 0 ? "+" : "") + delta.toFixed(1) + "pp");
+      const top3Share = group.top10.slice(0, 3).reduce(function(sum, item) { return sum + item.share; }, 0);
+
+      document.getElementById("topicSummary").innerHTML =
+        "<div class='topic-summary-item'><span>当前组合</span><strong>" + state.topicModule + " · " + quarter + (quarter === "2026Q3" ? "*" : "") + "</strong></div>" +
+        "<div class='topic-summary-item'><span>建议样本</span><strong>" + group.total + " 条</strong></div>" +
+        "<div class='topic-summary-item'><span>主题覆盖率</span><strong>" + (group.coverage * 100).toFixed(1) + "%</strong></div>" +
+        "<div class='topic-summary-item'><span>Top1 较上季</span><strong>" + deltaText + "</strong></div>";
+
+      const host = document.getElementById("topicTableBody");
+      host.innerHTML = "";
+      const maxShare = Math.max.apply(null, group.top10.map(function(item) { return item.share; }));
+      group.top10.forEach(function(item, index) {
+        const row = document.createElement("tr");
+        const examples = item.examples.slice(0, 3).map(function(example) { return "<li>" + example + "</li>"; }).join("");
+        row.innerHTML =
+          "<td><span class='topic-rank'>" + String(index + 1).padStart(2, "0") + "</span></td>" +
+          "<td><span class='topic-name'>" + item.topic + "</span></td>" +
+          "<td><span class='topic-count'>" + item.count + "</span></td>" +
+          "<td><span class='topic-share-value'>" + (item.share * 100).toFixed(1) + "%</span><div class='topic-share-track'><div class='topic-share-fill' style='width:" + (item.share / maxShare * 100).toFixed(1) + "%'></div></div></td>" +
+          "<td><ul class='topic-examples'>" + examples + "</ul></td>";
+        host.appendChild(row);
+      });
+    }
+
+    function renderQuarterButtons() {
+      document.querySelectorAll("[data-quarter-buttons]").forEach(function(host) {
+        host.innerHTML = "";
+        DATA.quarters.forEach(function(quarter, index) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "quarter-button" + (index === state.quarterIndex ? " active" : "");
+          button.textContent = quarter + (quarter === "2026Q3" ? "*" : "");
+          button.setAttribute("aria-pressed", index === state.quarterIndex ? "true" : "false");
+          button.addEventListener("click", function(){
+            state.quarterIndex = index;
+            renderAllLinkedViews();
+          });
+          host.appendChild(button);
+        });
+      });
+    }
+
+    function sparkline(values, color, selectedIndex) {
+      const width = 540;
+      const height = 54;
+      const pad = 6;
+      const max = Math.max.apply(null, values.concat([1]));
+      const points = values.map(function(value, index){
+        const x = pad + index * ((width - pad * 2) / (values.length - 1));
+        const y = height - pad - value / max * (height - pad * 2);
+        return [x, y];
+      });
+      const svg = svgNode("svg", { viewBox: "0 0 " + width + " " + height, class: "spark", preserveAspectRatio: "none", "aria-hidden": "true" });
+      const selectedX = points[selectedIndex][0];
+      svg.appendChild(svgNode("rect", { x: selectedX - 16, y: 0, width: 32, height: height, fill: "#f2f4f7", rx: 7 }));
+      svg.appendChild(svgNode("line", { x1: pad, y1: height-pad, x2: width-pad, y2: height-pad, stroke: "#e4e7ec", "stroke-width": 1 }));
+      svg.appendChild(svgNode("polyline", { points: points.map(function(p){return p.join(",");}).join(" "), fill: "none", stroke: color, "stroke-width": 3, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+      points.forEach(function(point, index){
+        const circle = svgNode("circle", { cx: point[0], cy: point[1], r: index === selectedIndex ? 4.8 : 3.2, fill: index === selectedIndex ? "#fff" : color, stroke: color, "stroke-width": index === selectedIndex ? 3 : 0 });
+        circle.addEventListener("mousemove", function(event){ showTooltip(event, DATA.quarters[index] + "<br><strong>" + formatNumber(values[index]) + "</strong>"); });
+        circle.addEventListener("mouseleave", hideTooltip);
+        svg.appendChild(circle);
+      });
+      return svg;
+    }
+
+    function renderOverviewTrend() {
+      const host = document.getElementById("overviewTrend");
+      host.innerHTML = "";
+      [
+        ["EP建议", DATA.overview.suggestions, "#2563eb"],
+        ["EP需求", DATA.overview.requirements, "#7c3aed"],
+        ["已处理", DATA.overview.processed, "#d97706"],
+        ["实际上线", DATA.overview.launched, "#0f766e"]
+      ].forEach(function(item){
+        const row = document.createElement("div");
+        row.className = "trend-lane";
+        const name = document.createElement("span"); name.className = "lane-name"; name.textContent = item[0];
+        const chart = document.createElement("div"); chart.appendChild(sparkline(item[1], item[2], state.quarterIndex));
+        const value = document.createElement("span"); value.className = "lane-total"; value.textContent = formatNumber(item[1][state.quarterIndex]);
+        row.appendChild(name); row.appendChild(chart); row.appendChild(value); host.appendChild(row);
+      });
+    }
+
+    function renderOverviewTable() {
+      const table = document.getElementById("overviewTable");
+      let html = "<thead><tr><th>季度</th><th>EP建议</th><th>EP需求</th><th>需求已处理</th><th>实际上线</th><th>处理率</th></tr></thead><tbody>";
+      DATA.quarters.forEach(function(quarter, index){
+        const rate = DATA.overview.requirements[index] ? DATA.overview.processed[index] / DATA.overview.requirements[index] * 100 : 0;
+        html += "<tr class='" + (index === state.quarterIndex ? "selected-row" : "") + "'><td>" + quarter + (quarter === "2026Q3" ? "*" : "") + "</td><td>" + DATA.overview.suggestions[index] + "</td><td>" + DATA.overview.requirements[index] + "</td><td>" + DATA.overview.processed[index] + "</td><td>" + DATA.overview.launched[index] + "</td><td>" + rate.toFixed(1) + "%</td></tr>";
+      });
+      table.innerHTML = html + "</tbody>";
+    }
+
+    function renderModuleLegend() {
+      const host = document.getElementById("moduleLegend");
+      host.innerHTML = "";
+      DATA.moduleSeries.forEach(function(series){
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "legend-button" + (state.visibleModules.has(series.name) ? "" : " off");
+        button.innerHTML = "<span class='legend-dot' style='background:" + series.color + "'></span>" + series.name;
+        button.addEventListener("click", function(){
+          if (state.visibleModules.has(series.name)) {
+            if (state.visibleModules.size > 1) state.visibleModules.delete(series.name);
+          } else {
+            state.visibleModules.add(series.name);
+          }
+          renderModuleLegend();
+          renderModuleTrend();
+        });
+        host.appendChild(button);
+      });
+    }
+
+    function renderModuleTrend() {
+      const host = document.getElementById("moduleTrend");
+      host.innerHTML = "";
+      const width = 760, height = 360, left = 52, right = 18, top = 18, bottom = 46;
+      const plotW = width - left - right, plotH = height - top - bottom;
+      const visible = DATA.moduleSeries.filter(function(series){ return state.visibleModules.has(series.name); });
+      const allValues = visible.flatMap(function(series){ return series[state.moduleMetric]; });
+      const rawMax = Math.max.apply(null, allValues.concat([1]));
+      const max = state.moduleMetric === "shares" ? Math.ceil(rawMax / 5) * 5 : Math.ceil(rawMax / 25) * 25;
+      const svg = svgNode("svg", { viewBox: "0 0 " + width + " " + height, role: "img", "aria-label": "重点板块季度趋势图" });
+      const selectedX = left + state.quarterIndex * (plotW / (DATA.quarters.length - 1));
+      svg.appendChild(svgNode("rect", { x: selectedX - 23, y: top, width: 46, height: plotH, fill: "#f2f4f7", rx: 9 }));
+      for (let tick = 0; tick <= 4; tick++) {
+        const value = max * tick / 4;
+        const y = top + plotH - tick * plotH / 4;
+        svg.appendChild(svgNode("line", { x1: left, y1: y, x2: width-right, y2: y, stroke: "#e4e7ec", "stroke-width": 1 }));
+        const label = svgNode("text", { x: left-10, y: y+4, "text-anchor": "end", fill: "#98a2b3", "font-size": 10 });
+        label.textContent = state.moduleMetric === "shares" ? value.toFixed(0) + "%" : value.toFixed(0);
+        svg.appendChild(label);
+      }
+      DATA.quarters.forEach(function(quarter, index){
+        const x = left + index * (plotW / (DATA.quarters.length - 1));
+        const label = svgNode("text", { x: x, y: height-17, "text-anchor": "middle", fill: index === state.quarterIndex ? "#101828" : "#667085", "font-size": 10, "font-weight": index === state.quarterIndex ? 800 : 600 });
+        label.textContent = quarter.replace("20", "");
+        svg.appendChild(label);
+      });
+      visible.forEach(function(series){
+        const values = series[state.moduleMetric];
+        const points = values.map(function(value, index){
+          return [left + index * (plotW / (values.length - 1)), top + plotH - value/max*plotH];
+        });
+        svg.appendChild(svgNode("polyline", { points: points.map(function(p){return p.join(",");}).join(" "), fill: "none", stroke: series.color, "stroke-width": 3, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+        points.forEach(function(point, index){
+          const circle = svgNode("circle", { cx: point[0], cy: point[1], r: index === state.quarterIndex ? 5 : 3.5, fill: "#fff", stroke: series.color, "stroke-width": 2.5 });
+          circle.addEventListener("mousemove", function(event){
+            const suffix = state.moduleMetric === "shares" ? "%" : " 条";
+            showTooltip(event, "<strong>" + series.name + "</strong><br>" + DATA.quarters[index] + "：" + values[index] + suffix);
+          });
+          circle.addEventListener("mouseleave", hideTooltip);
+          svg.appendChild(circle);
+        });
+      });
+      host.appendChild(svg);
+    }
+
+    function renderQuarterFocus() {
+      const quarter = DATA.quarters[state.quarterIndex];
+      const rows = DATA.quarterFocus[quarter];
+      document.getElementById("focusQuarter").textContent = quarter;
+      document.getElementById("partialFlag").style.display = quarter === "2026Q3" ? "inline" : "none";
+      const host = document.getElementById("quarterRank");
+      host.innerHTML = "";
+      const maxShare = Math.max.apply(null, rows.map(function(row){ return row[2]; }));
+      rows.forEach(function(row, index){
+        const item = document.createElement("div");
+        item.className = "rank-item";
+        item.innerHTML = "<span class='rank-no'>" + String(index+1).padStart(2,"0") + "</span><div class='rank-main'><div class='rank-name'><span>" + row[0] + "</span><span>" + row[3] + " 客户</span></div><div class='rank-track'><div class='rank-fill' style='width:" + (row[2]/maxShare*100).toFixed(1) + "%'></div></div></div><strong class='rank-value'>" + row[2].toFixed(1) + "%</strong>";
+        host.appendChild(item);
+      });
+      const top3 = rows.slice(0,3).reduce(function(total,row){return total+row[2];},0);
+      document.getElementById("focusFoot").textContent = "Top 3 合计 " + top3.toFixed(1) + "%；当季建议总量 " + DATA.overview.suggestions[state.quarterIndex] + " 条。";
+    }
+
+    function renderHeatmap() {
+      const table = document.getElementById("attentionHeatmap");
+      let html = "<thead><tr><th>板块</th>" + DATA.quarters.map(function(q){return "<th>"+q.replace("20","")+"</th>";}).join("") + "</tr></thead><tbody>";
+      DATA.moduleSeries.forEach(function(series){
+        html += "<tr><td>" + series.name + "</td>";
+        series.shares.forEach(function(value, index){
+          const alpha = 0.08 + Math.min(value/26,1)*0.78;
+          const color = value > 14 ? "#fff" : "#173b57";
+          const selected = index === state.quarterIndex;
+          html += "<td style='background:rgba(15,118,110," + alpha.toFixed(2) + ");color:" + color + ";box-shadow:" + (selected ? "inset 0 0 0 2px #101828" : "none") + "'>" + value.toFixed(1) + "%</td>";
+        });
+        html += "</tr>";
+      });
+      table.innerHTML = html + "</tbody>";
+    }
+
+    function renderLaunchLegend() {
+      const host = document.getElementById("launchLegend");
+      host.innerHTML = "";
+      DATA.launchSeries.concat([{name:"其他",color:"#cbd5e1"}]).forEach(function(series){
+        const item = document.createElement("span");
+        item.className = "legend-button";
+        item.innerHTML = "<span class='legend-dot' style='background:" + series.color + "'></span>" + series.name;
+        host.appendChild(item);
+      });
+    }
+
+    function renderLaunchStack() {
+      const host = document.getElementById("launchStack");
+      host.innerHTML = "";
+      const maxTotal = Math.max.apply(null, DATA.overview.launched);
+      DATA.quarters.forEach(function(quarter, index){
+        const total = DATA.overview.launched[index];
+        const known = DATA.launchSeries.reduce(function(sum,series){return sum+series.counts[index];},0);
+        const other = Math.max(0,total-known);
+        const col = document.createElement("div");
+        col.className = "stack-col" + (index === state.quarterIndex ? " active" : "");
+        const value = document.createElement("div"); value.className = "stack-value"; value.textContent = total;
+        const bar = document.createElement("div"); bar.className = "stack-bar"; bar.style.height = Math.max(3,total/maxTotal*250) + "px";
+        DATA.launchSeries.forEach(function(series){
+          const count = series.counts[index];
+          if (!count || !total) return;
+          const segment = document.createElement("div");
+          segment.className = "stack-segment";
+          segment.style.height = count/total*100 + "%";
+          segment.style.background = series.color;
+          segment.addEventListener("mousemove", function(event){ showTooltip(event, "<strong>"+series.name+"</strong><br>"+quarter+"："+count+" 项（"+(count/total*100).toFixed(1)+"%）"); });
+          segment.addEventListener("mouseleave", hideTooltip);
+          bar.appendChild(segment);
+        });
+        if (other > 0 && total > 0) {
+          const segment = document.createElement("div"); segment.className = "stack-segment"; segment.style.height = other/total*100 + "%"; segment.style.background = "#cbd5e1";
+          segment.addEventListener("mousemove", function(event){ showTooltip(event, "<strong>其他</strong><br>"+quarter+"："+other+" 项"); });
+          segment.addEventListener("mouseleave", hideTooltip); bar.appendChild(segment);
+        }
+        const label = document.createElement("div"); label.className = "stack-label"; label.textContent = quarter.replace("20", "");
+        col.appendChild(value); col.appendChild(bar); col.appendChild(label); host.appendChild(col);
+      });
+    }
+
+    function renderLaunchComposition() {
+      const index = state.quarterIndex;
+      const quarter = DATA.quarters[index];
+      const total = DATA.overview.launched[index];
+      let rows = DATA.launchSeries.map(function(series) {
+        return [series.name, series.counts[index], series.color];
+      }).filter(function(item) { return item[1] > 0; });
+      const known = rows.reduce(function(sum, item) { return sum + item[1]; }, 0);
+      if (total > known) rows.push(["其他", total - known, "#cbd5e1"]);
+      rows.sort(function(a, b) { return b[1] - a[1]; });
+
+      let cursor = 0;
+      const stops = total ? rows.map(function(item) {
+        const share = item[1] / total * 100;
+        const start = cursor;
+        cursor += share;
+        return item[2] + " " + start.toFixed(1) + "% " + cursor.toFixed(1) + "%";
+      }) : ["#e4e7ec 0% 100%"];
+      document.getElementById("launchDonut").style.background = "conic-gradient(" + stops.join(",") + ")";
+      document.querySelector("#launchDonut .donut-center").innerHTML = "<div><strong>" + total + "</strong><span>" + quarter + (quarter === "2026Q3" ? "*" : "") + "</span></div>";
+
+      const host = document.getElementById("launchComposition");
+      host.innerHTML = "";
+      if (!total) {
+        host.innerHTML = "<p class='panel-caption'>该季度按新口径无实际上线记录。</p>";
+        return;
+      }
+      rows.slice(0, 6).forEach(function(item) {
+        const row = document.createElement("div");
+        row.className = "composition-item";
+        row.innerHTML = "<span class='legend-dot' style='background:"+item[2]+"'></span><span>"+item[0]+"</span><strong>"+item[1]+"</strong>";
+        host.appendChild(row);
+      });
+    }
+
+    function renderLaunchQuarterNote() {
+      const index = state.quarterIndex;
+      const quarter = DATA.quarters[index];
+      const total = DATA.overview.launched[index];
+      if (!total) {
+        document.getElementById("launchQuarterNote").textContent = quarter + " 按新口径无实际上线记录。";
+        return;
+      }
+      const rows = DATA.launchSeries.map(function(series){ return [series.name,series.counts[index]]; }).filter(function(row){return row[1]>0;}).sort(function(a,b){return b[1]-a[1];});
+      document.getElementById("launchQuarterNote").innerHTML = "<strong>" + quarter + "：</strong>共 " + total + " 项；" + rows.slice(0,3).map(function(row){return row[0]+" "+row[1]+" 项";}).join("、") + "。";
+    }
+
+    function renderAlignmentScatter() {
+      const index = state.quarterIndex;
+      const quarter = DATA.quarters[index];
+      document.getElementById("scatterQuarter").textContent = quarter;
+      const host = document.getElementById("alignmentScatter"); host.innerHTML = "";
+      host.className = "scatter";
+      if (index < 2) {
+        host.className = "scatter chart-empty";
+        host.innerHTML = "<div><strong>该季度仅保留历史上线总量</strong><br>Q1–Q2 上线数据来自 EP建议，未按正式需求板块口径拆分，因此不做关注—上线结构对照。</div>";
+        return;
+      }
+      const width = 650, height = 430, left = 54, right = 18, top = 18, bottom = 50, plotW = width-left-right, plotH = height-top-bottom, max=50;
+      const svg = svgNode("svg", { viewBox:"0 0 "+width+" "+height, role:"img", "aria-label":quarter+"关注与上线对照散点图" });
+      for (let tick=0; tick<=5; tick++) {
+        const value = tick*10;
+        const x = left + value/max*plotW;
+        const y = top + plotH - value/max*plotH;
+        svg.appendChild(svgNode("line",{x1:x,y1:top,x2:x,y2:top+plotH,stroke:"#e4e7ec","stroke-width":1}));
+        svg.appendChild(svgNode("line",{x1:left,y1:y,x2:left+plotW,y2:y,stroke:"#e4e7ec","stroke-width":1}));
+        const xt = svgNode("text",{x:x,y:height-22,"text-anchor":"middle",fill:"#98a2b3","font-size":10}); xt.textContent=value+"%"; svg.appendChild(xt);
+        const yt = svgNode("text",{x:left-9,y:y+4,"text-anchor":"end",fill:"#98a2b3","font-size":10}); yt.textContent=value+"%"; svg.appendChild(yt);
+      }
+      svg.appendChild(svgNode("line",{x1:left,y1:top+plotH,x2:left+plotW,y2:top,stroke:"#98a2b3","stroke-width":1.5,"stroke-dasharray":"5 5"}));
+      const launchedTotal = DATA.overview.launched[index];
+      DATA.moduleSeries.forEach(function(series){
+        const launch = DATA.launchSeries.find(function(item){return item.name===series.name;});
+        const launchCount = launch ? launch.counts[index] : 0;
+        const launchShare = launchedTotal ? launchCount/launchedTotal*100 : 0;
+        const attentionShare = series.shares[index];
+        if (!attentionShare && !launchShare) return;
+        const x = left + Math.min(attentionShare,max)/max*plotW;
+        const y = top + plotH - Math.min(launchShare,max)/max*plotH;
+        const circle = svgNode("circle",{cx:x,cy:y,r:7,fill:series.color,stroke:"#fff","stroke-width":2});
+        circle.addEventListener("mousemove",function(event){showTooltip(event,"<strong>"+series.name+"</strong><br>建议占比 "+attentionShare.toFixed(1)+"%<br>上线占比 "+launchShare.toFixed(1)+"%");});
+        circle.addEventListener("mouseleave",hideTooltip); svg.appendChild(circle);
+        const label = svgNode("text",{x:x+10,y:y-9,fill:"#344054","font-size":10,"font-weight":800}); label.textContent=series.name; svg.appendChild(label);
+      });
+      const xLabel = svgNode("text",{x:left+plotW/2,y:height-3,"text-anchor":"middle",fill:"#667085","font-size":11}); xLabel.textContent="客户建议占比"; svg.appendChild(xLabel);
+      const yLabel = svgNode("text",{x:13,y:top+plotH/2,"text-anchor":"middle",fill:"#667085","font-size":11,transform:"rotate(-90 13 "+(top+plotH/2)+")"}); yLabel.textContent="实际上线占比"; svg.appendChild(yLabel);
+      host.appendChild(svg);
+    }
+
+    function renderGapList() {
+      const index = state.quarterIndex;
+      const launchedTotal = DATA.overview.launched[index];
+      const rows = DATA.moduleSeries.map(function(series){
+        const launch = DATA.launchSeries.find(function(item){return item.name===series.name;});
+        const launchCount = launch ? launch.counts[index] : 0;
+        const launchShare = launchedTotal ? launchCount/launchedTotal*100 : 0;
+        return {name:series.name, attention:series.shares[index], launch:launchShare, gap:launchShare-series.shares[index]};
+      }).sort(function(a,b){return Math.abs(b.gap)-Math.abs(a.gap);}).slice(0,5);
+      const host = document.getElementById("gapList"); host.innerHTML = "";
+      if (index < 2) { host.innerHTML = "<div class='chart-empty'><div><strong>暂无可比板块结构</strong><br>该季度使用 EP建议历史上线总量。</div></div>"; return; }
+      if (!launchedTotal) { host.innerHTML = "<p class='panel-caption'>该季度暂无实际上线记录，无法比较结构差。</p>"; return; }
+      rows.forEach(function(row){
+        const item = document.createElement("div"); item.className="gap-item";
+        const sign = row.gap >= 0 ? "+" : "";
+        item.innerHTML = "<div class='gap-head'><span>"+row.name+"</span><span class='"+(row.gap>=0?"gap-positive":"gap-negative")+"'>"+sign+row.gap.toFixed(1)+"pp</span></div><p>建议 "+row.attention.toFixed(1)+"% · 上线 "+row.launch.toFixed(1)+"%</p>";
+        host.appendChild(item);
+      });
+    }
+
+    function renderMatrix() {
+      const table = document.getElementById("launchMatrix");
+      let html = "<thead><tr><th>创建 → 上线</th>"+DATA.quarters.map(function(q, index){
+        return "<th style='" + (index === state.quarterIndex ? "background:#ecfdf3;color:#05603a;border-radius:6px" : "") + "'>"+q.replace("20","")+"</th>";
+      }).join("")+"</tr></thead><tbody>";
+      DATA.quarters.forEach(function(created){
+        html += "<tr><td>"+created.replace("20","")+"</td>";
+        DATA.quarters.forEach(function(launched, index){
+          const value = DATA.launchMatrix[created][launched] || 0;
+          const alpha = value ? 0.12 + Math.min(value/37,1)*0.72 : 0;
+          const color = value > 16 ? "#fff" : "#173b57";
+          const selected = index === state.quarterIndex;
+          html += "<td style='background:rgba(15,118,110,"+alpha.toFixed(2)+");color:"+color+";box-shadow:"+(selected ? "inset 0 0 0 2px #101828" : "none")+"'>"+(value||"")+"</td>";
+        });
+        html += "</tr>";
+      });
+      table.innerHTML = html + "</tbody>";
+    }
+
+    function renderAllLinkedViews() {
+      renderQuarterButtons();
+      renderTopicModuleButtons();
+      renderModuleTopicTop10();
+      renderOverviewTrend();
+      renderOverviewTable();
+      renderModuleTrend();
+      renderQuarterFocus();
+      renderHeatmap();
+      renderLaunchStack();
+      renderLaunchComposition();
+      renderLaunchQuarterNote();
+      renderAlignmentScatter();
+      renderGapList();
+      renderMatrix();
+    }
+
+    document.getElementById("shareToggle").addEventListener("click", function(){
+      state.moduleMetric="shares";
+      this.classList.add("active"); document.getElementById("countToggle").classList.remove("active"); renderModuleTrend();
+    });
+    document.getElementById("countToggle").addEventListener("click", function(){
+      state.moduleMetric="counts";
+      this.classList.add("active"); document.getElementById("shareToggle").classList.remove("active"); renderModuleTrend();
+    });
+
+    renderModuleLegend();
+    renderLaunchLegend();
+    renderAllLinkedViews();
+  </script>
+</body>
+</html>
