@@ -23,34 +23,34 @@
       <p class="eyebrow">海浩的个人空间</p>
       <h1 id="hero-title">工作，生活。<br><span>都在这里。</span></h1>
       <p class="hero-description">聊聊想法，记录成长。<br class="mobile-break">让每一天，多一点可能。</p>
-      <div class="hero-actions"><a class="button" href="#work">认识海浩 AI <span aria-hidden="true">↗</span></a><a class="text-link" href="#life">开始记录训练 <span aria-hidden="true">›</span></a></div>
+      <div class="hero-actions"><a class="button" href="#work">进入工作空间 <span aria-hidden="true">↗</span></a><a class="text-link" href="#life">进入生活空间 <span aria-hidden="true">›</span></a></div>
     </section>
     <div class="page-width home-sections">
       <section id="work" aria-labelledby="work-title">
-        <div class="section-heading"><h2 id="work-title">工作。<span>从一次对话开始。</span></h2><span class="section-number" aria-hidden="true">01</span></div>
+        <div class="section-heading"><h2 id="work-title">工作。<span>把成果沉淀下来。</span></h2><span class="section-number" aria-hidden="true">01</span></div>
         <article class="work-card">
           <div class="work-copy">
-            <span class="badge">海浩 AI · 工作空间</span>
-            <h3>把业务转化，<br>看得更清楚。</h3>
-            <p>编辑增长漏斗，标记每一步的行动。<br>让数据、转化与待办事项一目了然。</p>
-            <div class="work-footnote"><span class="small-label">HAIHAO AI</span><span>增长漏斗图</span></div>
+            <span class="badge">WORKSPACE · 工作空间</span>
+            <h3>把工作成果，<br>放在一个地方。</h3>
+            <p>使用增长漏斗工具，沉淀每一次分析。<br>让工具、报告与思考随时可以回看。</p>
+            <div class="work-footnote"><span class="small-label">WORK</span><span>工具 · 分析汇总</span></div>
           </div>
           <div class="entry-panel">
             <div class="initial-avatar" aria-hidden="true">H<span>AI</span></div>
-            <h4>海浩 AI</h4>
-            <p class="entry-description">增长漏斗图 · 在线编辑与导出</p>
+            <h4>工作空间</h4>
+            <p class="entry-description">工作工具与分析汇总</p>
             <div id="gateLocked">
               <form id="gateForm">
                 <label for="gateInput">访问密码</label>
                 <input id="gateInput" type="password" autocomplete="current-password" placeholder="输入访问密码" required maxlength="128" aria-describedby="gateHint gateError">
-                <p class="field-hint" id="gateHint">解锁后，进入增长漏斗图工具。</p>
+                <p class="field-hint" id="gateHint">解锁后，进入独立工作空间。</p>
                 <p class="form-error" id="gateError" role="alert" hidden></p>
                 <button class="button full-width" type="submit">解锁并进入 <span aria-hidden="true">↗</span></button>
               </form>
             </div>
             <div id="gateOpen" hidden>
               <p class="field-hint" id="gateRemain" role="status"></p>
-              <a class="button full-width" href="agent/index.html">进入海浩 AI <span aria-hidden="true">↗</span></a>
+              <a class="button full-width" href="work/index.html">进入工作空间 <span aria-hidden="true">↗</span></a>
               <button class="quiet-button full-width" id="gateLockBtn" type="button">重新锁定</button>
             </div>
             <noscript><p class="form-error">请开启 JavaScript 后解锁聊天页面。</p></noscript>
@@ -59,12 +59,27 @@
       </section>
       <section id="life" aria-labelledby="life-title">
         <div class="section-heading"><h2 id="life-title">生活。<span>把进步留在日常。</span></h2><span class="section-number" aria-hidden="true">02</span></div>
-        <article class="life-card">
-          <div><p class="eyebrow">FITNESS JOURNAL</p><h3>每一次坚持，<br>都有迹可循。</h3><p class="card-description">记录训练，回看节奏。<br>从今天开始，看见一点点变好的自己。</p><a class="button" href="fitness/index.html">记录我的训练 <span aria-hidden="true">↗</span></a></div>
-          <div class="life-features" aria-label="健身记录功能">
-            <div><span class="feature-number">01</span><div><h4>随手记下</h4><p>文字输入，或从训练截图整理动作。</p></div></div>
-            <div><span class="feature-number">02</span><div><h4>看见积累</h4><p>用训练热力图，回看每一次坚持。</p></div></div>
-            <div><span class="feature-number">03</span><div><h4>找到节奏</h4><p>近 7 天训练回顾，了解自己的状态。</p></div></div>
+        <article class="life-card life-card-locked">
+          <div><p class="eyebrow">PRIVATE · LIFE</p><h3>每一次坚持，<br>都有迹可循。</h3><p class="card-description">生活区已设为私人空间。<br>解锁后记录训练、回看节奏与积累。</p><div class="work-footnote"><span class="small-label">LIFE</span><span>健身记录</span></div></div>
+          <div class="entry-panel life-entry-panel">
+            <div class="initial-avatar life-avatar" aria-hidden="true">L<span>私</span></div>
+            <h4>生活空间</h4>
+            <p class="entry-description">私人记录 · 独立访问密码</p>
+            <div id="lifeGateLocked">
+              <form id="lifeGateForm">
+                <label for="lifeGateInput">访问密码</label>
+                <input id="lifeGateInput" type="password" autocomplete="current-password" placeholder="输入访问密码" required maxlength="128" aria-describedby="lifeGateHint lifeGateError">
+                <p class="field-hint" id="lifeGateHint">解锁后，进入健身记录。</p>
+                <p class="form-error" id="lifeGateError" role="alert" hidden></p>
+                <button class="button full-width" type="submit">解锁并进入 <span aria-hidden="true">↗</span></button>
+              </form>
+            </div>
+            <div id="lifeGateOpen" hidden>
+              <p class="field-hint" id="lifeGateRemain" role="status"></p>
+              <a class="button full-width" href="fitness/index.html">进入生活空间 <span aria-hidden="true">↗</span></a>
+              <button class="quiet-button full-width" id="lifeGateLockBtn" type="button">重新锁定</button>
+            </div>
+            <noscript><p class="form-error">请开启 JavaScript 后解锁生活页面。</p></noscript>
           </div>
         </article>
       </section>

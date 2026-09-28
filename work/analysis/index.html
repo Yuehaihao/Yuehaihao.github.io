@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5f7">
+  <meta name="description" content="海浩的分析报告汇总。">
+  <title>分析汇总 · 工作空间 · YEuhub.ME</title>
+  <script src="../../assets/access.js"></script>
+  <script src="../../assets/guard.js" data-scope="work" data-return="../../index.html#work"></script>
+  <link rel="stylesheet" href="../../assets/site.css">
+  <link rel="stylesheet" href="../../assets/work.css">
+  <script src="../../assets/work.js" defer></script>
+  <script src="analysis.js" defer></script>
+</head>
+<body class="workspace-body" id="top">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <nav class="nav-shell" aria-label="分析汇总导航">
+      <a class="wordmark" href="../../index.html">yeuhub<span>.me</span></a>
+      <div class="nav-links"><a href="../index.html">工作空间</a><button class="nav-lock" type="button" data-lock-scope="work" data-return="../../index.html#work">锁定工作区</button></div>
+    </nav>
+  </header>
+  <main class="workspace-main" id="main">
+    <section class="page-width workspace-hero analysis-hero" aria-labelledby="analysis-title">
+      <div><div class="breadcrumb"><a href="../index.html">工作空间</a><span aria-hidden="true">/</span><strong>分析汇总</strong></div><h1 id="analysis-title">分析，<br><span>都有出处。</span></h1></div>
+      <div><p class="workspace-intro">每份 HTML 报告都会在这里按时间归档。打开即看，不需要额外下载或安装。</p><div class="analysis-stats"><span id="reportCount">0 份报告</span><span>更新时间：<time id="updatedAt">—</time></span></div></div>
+    </section>
+    <section class="page-width workspace-section" aria-labelledby="archive-title">
+      <div class="workspace-section-head"><h2 id="archive-title">报告档案</h2><p>之后你把本地 HTML 发给我，我会部署到这里并补充标题、日期与摘要。</p></div>
+      <div class="analysis-list" id="reportList" aria-live="polite"></div>
+      <div class="analysis-empty" id="emptyState">
+        <div><div class="empty-symbol" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M8 4h12l5 5v19H8V4Z" stroke="currentColor" stroke-width="2"/><path d="M20 4v6h5M12 17h9M12 22h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><h3>等待第一份分析</h3><p>分析汇总已经准备好。下一次上传本地 HTML 后，报告会出现在这里。</p></div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer workspace-footer page-width"><span>© YEuhub.ME</span><span>分析汇总</span><a href="#top">回到顶部 ↑</a></footer>
+</body>
+</html>

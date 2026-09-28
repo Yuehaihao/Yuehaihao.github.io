@@ -13,7 +13,8 @@ const key = 'yeuhub_fitness_records_v1';
 // Exercise the inline application with storage and control stubs; no browser required.
 function app(file = 'fitness/index.html', records = [], options = {}) {
   const data = new Map([[key, JSON.stringify(records)]]);
-  if (options.unlockedAt) data.set('yeuhub_gate_unlock_ts', String(options.unlockedAt));
+  if (options.unlockedAt) data.set('yeuhub_gate_unlock_ts_work', String(options.unlockedAt));
+  if (options.lifeUnlockedAt) data.set('yeuhub_gate_unlock_ts_life', String(options.lifeUnlockedAt));
   const nodes = new Map();
   const alerts = [];
   const state = { confirmed: false, failWrite: false };
@@ -55,7 +56,8 @@ function app(file = 'fitness/index.html', records = [], options = {}) {
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   let code = (file === 'index.html' ? externalScripts(file) : '') + '\n' + scripts(read(file)).join('\n');
-  if (options.passwordFixture) code = code.replace(/var PASSWORD_HASH = '[^']+';/, `var PASSWORD_HASH = '${require('node:crypto').createHash('sha256').update(options.passwordFixture).digest('hex')}';`);
+  if (options.passwordFixture) code = code.replace(/work: '[^']+'/, `work: '${require('node:crypto').createHash('sha256').update(options.passwordFixture).digest('hex')}'`);
+  if (options.lifePasswordFixture) code = code.replace(/life: '[^']+'/, `life: '${require('node:crypto').createHash('sha256').update(options.lifePasswordFixture).digest('hex')}'`);
   if (file.startsWith('fitness/')) {
     code = code.replace(/\}\)\(\);\s*$/, `globalThis.api = {
       parseExercises, totalSets, totalMinutes, exerciseMeta, dateKey, parseDate,
@@ -67,14 +69,16 @@ function app(file = 'fitness/index.html', records = [], options = {}) {
   return { ...sandbox.api, access: sandbox.YeuhubAccess, location: sandbox.location, data, state, alerts, document, node: id => document.getElementById(id) };
 }
 
-test('homepage has one work entry; all active pages have valid script syntax and local links', () => {
+test('homepage links to separate work and life areas; all active pages have valid syntax and local links', () => {
   const homepage = read('index.html');
-  for (const route of ['agent', 'fitness']) {
+  for (const route of ['work', 'fitness']) {
     assert.ok(homepage.includes(`href="${route}/index.html"`), route);
   }
+  assert.ok(read('work/index.html').includes('href="../agent/"'));
+  assert.ok(read('work/index.html').includes('href="analysis/"'));
   assert.match(homepage, /<h1\b/);
   for (const oldRoute of ['email-check/', 'country-query/', 'industry-keyword/']) assert.equal(homepage.includes(oldRoute), false);
-  for (const file of ['index.html', 'agent/index.html', 'fitness/index.html', 'email-check/index.html', 'country-query/index.html', 'industry-keyword/index.html']) {
+  for (const file of ['index.html', 'work/index.html', 'work/analysis/index.html', 'agent/index.html', 'fitness/index.html', 'email-check/index.html', 'country-query/index.html', 'industry-keyword/index.html']) {
     const html = read(file);
     scripts(html).forEach(script => new vm.Script(script, { filename: file }));
     if (file === 'index.html') new vm.Script(externalScripts(file), { filename: file });
@@ -86,6 +90,11 @@ test('homepage has one work entry; all active pages have valid script syntax and
       assert.ok(fs.existsSync((target.startsWith('/') ? path.join(root, decodeURIComponent(target)) : path.resolve(root, path.dirname(file), decodeURIComponent(target)))), `${file}: ${link}`);
     }
   }
+  for (const file of ['assets/access.js', 'assets/home.js', 'assets/guard.js', 'assets/work.js', 'work/analysis/analysis.js']) new vm.Script(read(file), { filename: file });
+  assert.deepEqual(JSON.parse(read('work/analysis/manifest.json')).items, []);
+  assert.match(read('fitness/index.html'), /data-scope="life"/);
+  assert.match(read('work/index.html'), /data-scope="work"/);
+  assert.match(read('work/analysis/index.html'), /data-scope="work"/);
   assert.ok(read('fitness/index.html').indexOf('id="record-training"') < read('fitness/index.html').indexOf('id="heatmapGrid"'));
 });
 
@@ -97,7 +106,7 @@ test('homepage still starts locked and rejects an incorrect password', () => {
   a.node('gateForm').events.submit({ preventDefault() {} });
   assert.equal(a.node('gateError').hidden, false);
   assert.equal(a.node('gateOpen').hidden, true);
-  assert.equal(a.data.has('yeuhub_gate_unlock_ts'), false);
+  assert.equal(a.data.has('yeuhub_gate_unlock_ts_work'), false);
 });
 
 test('accepts common set/rep formats and decimal weights without changing units', () => {
@@ -196,7 +205,7 @@ test('image confirmation supports keyboard escape, focus return and tab wrapping
 });
 
 
-test('correct gate password navigates directly to agent, with storage failures handled', () => {
+test('correct work password navigates to the work area, with storage failures handled', () => {
   const a = app('index.html', [], { passwordFixture: 'test-only-unlock' });
   a.node('gateInput').value = 'test-only-unlock';
   a.state.failWrite = true;
@@ -205,8 +214,20 @@ test('correct gate password navigates directly to agent, with storage failures h
   assert.equal(a.node('gateError').hidden, false);
   a.state.failWrite = false;
   a.node('gateForm').events.submit({ preventDefault() {} });
-  assert.equal(a.location.destination, 'agent/index.html');
-  assert.ok(a.access.remainingMs() > 0);
+  assert.equal(a.location.destination, 'work/index.html');
+  assert.ok(a.access.remainingMs('work') > 0);
+  assert.equal(a.access.remainingMs('life'), 0);
+});
+
+test('life has an independent password and unlock state', () => {
+  const a = app('index.html', [], { lifePasswordFixture: 'test-only-life' });
+  a.node('lifeGateInput').value = 'test-only-life';
+  a.node('lifeGateForm').events.submit({ preventDefault() {} });
+  assert.equal(a.location.destination, 'fitness/index.html');
+  assert.ok(a.access.remainingMs('life') > 0);
+  assert.equal(a.access.remainingMs('work'), 0);
+  a.node('lifeGateLockBtn').events.click();
+  assert.equal(a.access.remainingMs('life'), 0);
 });
 
 test('gate expiry, invalid future timestamp and relocking work consistently', () => {
@@ -217,6 +238,6 @@ test('gate expiry, invalid future timestamp and relocking work consistently', ()
   for (const unlockedAt of [Date.now() - 31 * 60000, Date.now() + 60000]) {
     const a = app('index.html', [], { unlockedAt });
     assert.equal(a.node('gateOpen').hidden, true);
-    assert.equal(a.access.remainingMs(), 0);
+    assert.equal(a.access.remainingMs('work'), 0);
   }
 });

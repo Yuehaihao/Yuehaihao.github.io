@@ -1,9 +1,12 @@
-/* Existing convenience gate. This is not server-side authentication. */
+/* Client-side convenience gates. These are not server-side authentication. */
 (function () {
   'use strict';
-  var GATE_KEY = 'yeuhub_gate_unlock_ts';
+  var GATE_KEY_PREFIX = 'yeuhub_gate_unlock_ts_';
   var GATE_MS = 30 * 60 * 1000;
-  var PASSWORD_HASH = '1fe00ee9a4a47a889df0f79d0fb52fb024670306ee9130e0dd6c000e3ef7ab78';
+  var PASSWORD_HASHES = {
+    work: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
+    life: '1fe00ee9a4a47a889df0f79d0fb52fb024670306ee9130e0dd6c000e3ef7ab78'
+  };
       function utf8(s) {
         try { return unescape(encodeURIComponent(s)); } catch (e) { return s; }
       }
@@ -71,21 +74,28 @@
       }
 
 
-  function remainingMs() {
+  function normalizeScope(scope) {
+    return scope === 'life' ? 'life' : 'work';
+  }
+  function storageKey(scope) {
+    return GATE_KEY_PREFIX + normalizeScope(scope);
+  }
+  function remainingMs(scope) {
     try {
-      var timestamp = Number(localStorage.getItem(GATE_KEY));
+      var timestamp = Number(localStorage.getItem(storageKey(scope)));
       var age = Date.now() - timestamp;
       return timestamp > 0 && age >= 0 && age < GATE_MS ? GATE_MS - age : 0;
     } catch (error) { return 0; }
   }
-  function unlock(password) {
-    if (sha256(utf8(password)) !== PASSWORD_HASH) return false;
-    localStorage.setItem(GATE_KEY, String(Date.now()));
-    if (!remainingMs()) throw new Error('Storage unavailable');
+  function unlock(password, scope) {
+    var normalized = normalizeScope(scope);
+    if (sha256(utf8(password)) !== PASSWORD_HASHES[normalized]) return false;
+    localStorage.setItem(storageKey(normalized), String(Date.now()));
+    if (!remainingMs(normalized)) throw new Error('Storage unavailable');
     return true;
   }
-  function lock() {
-    try { localStorage.removeItem(GATE_KEY); } catch (error) {}
+  function lock(scope) {
+    try { localStorage.removeItem(storageKey(scope)); } catch (error) {}
   }
   window.YeuhubAccess = { remainingMs: remainingMs, unlock: unlock, lock: lock };
 })();
